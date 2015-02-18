@@ -1,22 +1,41 @@
+import java.util.Arrays;
+import java.util.Random;
 
-public class PlayerSkeleton {
+
+public class OhTestPlayer {
+    private Random rand;
+    
+    public OhTestPlayer() {
+        rand = new Random();
+    }
 
 	//implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
-	    
-		return 0;
+	    System.out.println(s.getNextPiece());
+	    System.out.println(Arrays.deepToString(legalMoves));
+
+		return 3;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	public static void main(String[] args) {
 		State s = new State();
 		new TFrame(s);
-		PlayerSkeleton p = new PlayerSkeleton();
+		OhTestPlayer p = new OhTestPlayer();
 		while(!s.hasLost()) {
 			s.makeMove(0, p.pickMove(s,s.legalMoves()));
 			s.draw();
 			s.drawNext(0,0);
 			try {
-				Thread.sleep(300);
+				Thread.sleep(3000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
