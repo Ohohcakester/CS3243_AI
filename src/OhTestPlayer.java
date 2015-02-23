@@ -13,6 +13,33 @@ public class OhTestPlayer {
         current = 0;
         lastPiece = 0;
     }
+    
+    
+    
+    public int[] findBest(State s, int[][] legalMoves) {
+        float largest = Float.NEGATIVE_INFINITY;
+        int[] bestMove = null;
+        for (int[] legalMove : legalMoves) {
+            NextState nextState = NextState.generate(s, legalMove);
+            float sum = 0;
+
+            sum += 0.5f*FeatureFunctions.exampleFeature(s, nextState);
+            sum += 0.7f*FeatureFunctions.exampleFeature(s, nextState);
+            sum += 0.8f*FeatureFunctions.exampleFeature(s, nextState);
+            sum += 0.9f*FeatureFunctions.exampleFeature(s, nextState);
+            sum += 100f*FeatureFunctions.exampleFeature(s, nextState);
+            
+            if (sum > largest) {
+                bestMove = legalMove;
+                largest = sum;
+            }
+        }
+        
+        return bestMove;
+    }
+    
+    
+    
 
     //implement this function to have a working system
     public int[] pickMove(State s, int[][] legalMoves) {
@@ -22,7 +49,7 @@ public class OhTestPlayer {
         
         if (piece != 1 || rand.nextInt(3) != 0) {
             current+=width(lastOrient, lastPiece);
-            if (current >= posLimit(orient, piece)) {
+            if (current > posLimit(orient, piece)) {
                 current = 0;
             }
             position = current;

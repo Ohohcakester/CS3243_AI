@@ -1,7 +1,7 @@
 
 public class FeatureFunctions {
 
-    public static float exampleFeature(State s) {
+    public static float exampleFeature(State s, NextState nextState) {
         return 4;
     }
 
