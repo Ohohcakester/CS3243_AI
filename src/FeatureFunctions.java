@@ -5,8 +5,18 @@ public class FeatureFunctions {
         return 4;
     }
 
-    public static float maximumColumnHeight(int orient, int position, State s) {
-        return 1;
+    /**
+     * returns the height of the tallest "skyscraper"
+     */
+    public static float maximumColumnHeight(State state, NextState nextState) {
+        int maximumHeight = Integer.MIN_VALUE;
+        int top[] = nextState.getTop();
+        for (int x:top) {
+            if (x > maximumHeight) {
+                maximumHeight = x;
+            }
+        }
+        return maximumHeight;
     }
     
 }
