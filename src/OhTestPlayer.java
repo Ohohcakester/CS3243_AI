@@ -22,13 +22,8 @@ public class OhTestPlayer {
         for (int[] legalMove : legalMoves) {
             NextState nextState = NextState.generate(s, legalMove);
             float sum = 0;
-
-            sum += 0.5f*FeatureFunctions.exampleFeature(s, nextState);
-            sum += 0.7f*FeatureFunctions.exampleFeature(s, nextState);
-            sum += 0.8f*FeatureFunctions.exampleFeature(s, nextState);
-            sum += 0.9f*FeatureFunctions.exampleFeature(s, nextState);
-            sum += 100f*FeatureFunctions.exampleFeature(s, nextState);
-            sum = 0;
+            
+            sum += -100f * FeatureFunctions.totalColumnsHeight(s, nextState);
             sum += -100f * FeatureFunctions.maximumColumnHeight(s, nextState);
             sum += FeatureFunctions.lost(s, nextState) > 0 ? Float.NEGATIVE_INFINITY : 0;
             
@@ -104,5 +99,14 @@ public class OhTestPlayer {
         }
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
     }
+    
+    /*public static void main(String[] args) {
+        State s = new State();
+        OhTestPlayer p = new OhTestPlayer();
+        while(!s.hasLost()) {
+            s.makeMove(p.findBest(s,s.legalMoves()));
+        }
+        System.out.println("You have completed "+s.getRowsCleared()+" rows.");
+    }*/
     
 }
