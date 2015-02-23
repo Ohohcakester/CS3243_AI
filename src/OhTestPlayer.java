@@ -1,4 +1,4 @@
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -24,7 +24,8 @@ public class OhTestPlayer {
             float sum = 0;
             
             sum += -100f * FeatureFunctions.totalColumnsHeight(s, nextState);
-            sum += -100f * FeatureFunctions.maximumColumnHeight(s, nextState);
+            sum += -20f * FeatureFunctions.maximumColumnHeight(s, nextState);
+            sum += -30f * FeatureFunctions.totalHoles(s, nextState);
             sum += FeatureFunctions.lost(s, nextState) > 0 ? Float.NEGATIVE_INFINITY : 0;
             
             if (sum >= largest) {
@@ -83,7 +84,7 @@ public class OhTestPlayer {
         return w[piece][orient];
     }
     
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         State s = new State();
         new TFrame(s);
         OhTestPlayer p = new OhTestPlayer();
@@ -98,15 +99,29 @@ public class OhTestPlayer {
             }
         }
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
-    }
-    
-    /*public static void main(String[] args) {
-        State s = new State();
-        OhTestPlayer p = new OhTestPlayer();
-        while(!s.hasLost()) {
-            s.makeMove(p.findBest(s,s.legalMoves()));
-        }
-        System.out.println("You have completed "+s.getRowsCleared()+" rows.");
     }*/
+    
+    public static void main(String[] args) {
+        int sum = 0;
+        int sumSquare = 0;
+        int tries = 200;
+        //ArrayList<Integer> list = new ArrayList<>();
+        
+        for (int i=0; i<tries; i++) {
+            State s = new State();
+            OhTestPlayer p = new OhTestPlayer();
+            while(!s.hasLost()) {
+                s.makeMove(p.findBest(s,s.legalMoves()));
+            }
+            sum += s.getRowsCleared();
+            //list.add(s.getRowsCleared());
+            sumSquare += s.getRowsCleared()*s.getRowsCleared();
+        }
+        double stdDev = Math.sqrt((float)(tries*sumSquare - sum*sum)/tries/tries);
+        
+        //System.out.println(list);
+        System.out.println("Average rows cleared: " + (sum/tries));
+        System.out.println("Standard Dev: " + stdDev);
+    }
     
 }
