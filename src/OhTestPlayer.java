@@ -30,8 +30,9 @@ public class OhTestPlayer {
             sum += 100f*FeatureFunctions.exampleFeature(s, nextState);
             sum = 0;
             sum += -100f * FeatureFunctions.maximumColumnHeight(s, nextState);
+            sum += FeatureFunctions.lost(s, nextState) > 0 ? Float.NEGATIVE_INFINITY : 0;
             
-            if (sum > largest) {
+            if (sum >= largest) {
                 bestMove = legalMove;
                 largest = sum;
             }
@@ -96,7 +97,7 @@ public class OhTestPlayer {
             s.draw();
             s.drawNext(0,0);
             try {
-                Thread.sleep(300);
+                Thread.sleep(150);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -30,5 +30,13 @@ public class FeatureFunctions {
         }
         return totalHeight;
     }
+
+    
+    /**
+     * returns the total height of all "skyscrapers"
+     */
+    public static float lost(State state, NextState nextState) {
+        return nextState.hasLost() ? 1: 0;
+    }
     
 }
