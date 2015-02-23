@@ -28,6 +28,8 @@ public class OhTestPlayer {
             sum += 0.8f*FeatureFunctions.exampleFeature(s, nextState);
             sum += 0.9f*FeatureFunctions.exampleFeature(s, nextState);
             sum += 100f*FeatureFunctions.exampleFeature(s, nextState);
+            sum = 0;
+            sum += -100f * FeatureFunctions.maximumColumnHeight(s, nextState);
             
             if (sum > largest) {
                 bestMove = legalMove;
@@ -90,7 +92,7 @@ public class OhTestPlayer {
         new TFrame(s);
         OhTestPlayer p = new OhTestPlayer();
         while(!s.hasLost()) {
-            s.makeMove(p.pickMove(s,s.legalMoves()));
+            s.makeMove(p.findBest(s,s.legalMoves()));
             s.draw();
             s.drawNext(0,0);
             try {
