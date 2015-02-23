@@ -1,4 +1,9 @@
-
+/**
+ * FeatureFunctions is only for Feature Functions that are well defined.
+ * (The name must be descriptive)
+ * i.e. once you implement it, you will never change it.
+ * That's because changing the functions will affect already implemented algos!!!
+ */
 public class FeatureFunctions {
 
     public static float exampleFeature(State s, NextState nextState) {
