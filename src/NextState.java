@@ -8,7 +8,7 @@ public class NextState {
     public final boolean lost;
     public final int cleared;
     public final int turn;
-    private final int rowsCleared;
+    public final int rowsCleared;
 
     /**
      * Copy constructor
@@ -42,22 +42,50 @@ public class NextState {
         return turn;
     }
     
+
+    /**
+     * @return a new CurrentState object.
+     */
+    public static NextState generate(NextState s, int piece, int[] move) {
+        int nextPiece = piece;
+        int[][] field = s.getField();
+        int[] top = s.getTop();
+        boolean lost = s.hasLost();
+        int cleared = s.getRowsCleared();
+        int turn = s.getTurnNumber();
+
+        return makeMove(top, move, nextPiece, field, lost, cleared, turn);
+    }
+    
     /**
      * @return a new CurrentState object.
      */
     public static NextState generate(State s, int[] move) {
+        int nextPiece = s.getNextPiece();
+        int[][] field = s.getField();
+        int[] top = s.getTop();
+        boolean lost = s.hasLost();
+        int cleared = s.getRowsCleared();
+        int turn = s.getTurnNumber();
+        
+        return makeMove(top, move, nextPiece, field, lost, cleared, turn);
+    }
+
+    private static NextState makeMove(int[] top, int[] move, int nextPiece,
+            int[][] field, boolean lost, int cleared, int turn) {
+        int rowsCleared = 0;
+        
         int orient = move[0];
         int slot = move[1];
-        int nextPiece = s.getNextPiece();
 
+        top = Arrays.copyOf(top, top.length);
         int ROWS = State.ROWS;
         int COLS = State.COLS;
         int[][][] pBottom = State.getpBottom();
         int[][][] pTop = State.getpTop();
         int[][] pWidth = State.getpWidth();
         int[][] pHeight = State.getpHeight();
-
-        int[][] field = s.getField();
+        
         int[][] newField = new int[ROWS][COLS];
         for (int y=0; y<ROWS; ++y) {
             for (int x=0; x<COLS; ++x) {
@@ -65,13 +93,6 @@ public class NextState {
             }
         }
         field = newField;
-        int[] top = Arrays.copyOf(s.getTop(), s.getTop().length);
-        
-        boolean lost = s.hasLost();
-        int cleared = s.getRowsCleared();
-        int turn = s.getTurnNumber();
-        int rowsCleared = 0;
-
         
         
         turn++;

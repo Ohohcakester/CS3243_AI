@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -13,6 +12,7 @@ public class OhTestPlayer {
         current = 0;
         lastPiece = 0;
     }
+    
     
     
     
