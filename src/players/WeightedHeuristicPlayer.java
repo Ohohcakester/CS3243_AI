@@ -32,10 +32,7 @@ public class WeightedHeuristicPlayer {
     
     protected void initialiseWeights() {
         weights = new float[features.length];
-        weights[0] = -999999.99f;
-        weights[1] = -2f;
-        weights[2] = -2f;
-        weights[3] = -2f;
+        weights = new float[]{-99999.0f, -4, -12.78658f, -21.596615f};
     }
     
     private float heuristic(State state, int[] legalMove) {
@@ -82,25 +79,27 @@ public class WeightedHeuristicPlayer {
         results[1] = stdDev;
     }
     
-    public void learn(WeightAdjuster adjuster, int reportInterval) {
+    public void learn(WeightAdjuster adjuster) {
         float[] results = new float[2];
         int iteration = 0;
         while(true) {
             play(results);
-            adjuster.adjust(results, weights);
-            if (iteration%reportInterval == 0) {
-                report(iteration, results, weights);
+            String adjusterReport = adjuster.adjust(results, weights);
+            if (adjusterReport != null) {
+                report(iteration, results, weights, adjusterReport);
             }
             iteration++;
         }
     }
+
     
-    private void report(int iteration, float[] results, float[] weights) {
+    private void report(int iteration, float[] results, float[] weights, String report) {
         System.out.println("===========================================");
         System.out.println("Iteration " + iteration +
                 " | Mean Score = " + results[0] + 
                 " | SD = " + results[1]);
         System.out.println("Weights = " + Arrays.toString(weights));
+        System.out.println(report);
     }
 
     
@@ -134,7 +133,10 @@ public class WeightedHeuristicPlayer {
     
     public static void learn() {
         WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
-        p.learn(new OhAdjuster(), 1);
+        
+        WeightAdjuster adjuster = new OhAdjuster();
+        adjuster.fixValue(0, -99999f);
+        p.learn(adjuster);
     }
 }
 
