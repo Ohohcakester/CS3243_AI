@@ -1,5 +1,7 @@
 package players;
 import java.util.Arrays;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
 import main.FeatureFunctions;
 import main.NextState;
@@ -46,17 +48,21 @@ public class WeightedHeuristicPlayer {
     
     
     public int[] findBest(State s, int[][] legalMoves) {
+        float[] scores = new float[legalMoves.length];
+        DoubleStream stream = IntStream.range(0, legalMoves.length)
+                .parallel()
+                .mapToDouble(i -> scores[i] = heuristic(s, legalMoves[i]));
+        stream.max();
+
         float largest = Float.NEGATIVE_INFINITY;
-        int[] bestMove = null;
-        for (int[] legalMove : legalMoves) {
-            float h = heuristic(s, legalMove);
-            if (h >= largest) {
-                bestMove = legalMove;
-                largest = h;
+        int best = -1;
+        for (int i=0; i<scores.length; i++) {
+            if (scores[i] >= largest) {
+                best = i;
+                largest = scores[i];
             }
         }
-        
-        return bestMove;
+        return legalMoves[best];
     }
     
     public void play(float[] results) {

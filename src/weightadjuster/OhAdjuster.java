@@ -27,7 +27,6 @@ public class OhAdjuster implements WeightAdjuster {
         boolean newHighScore = tryUpdateBest(results);
         setWeights(results, weights);
         setFixedWeights(weights);
-        
         lastWeights = Arrays.copyOf(weights, weights.length);
         return newHighScore ? ("New High Score: " + currentBest) : null;
     }
