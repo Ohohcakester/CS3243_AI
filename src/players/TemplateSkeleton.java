@@ -1,5 +1,9 @@
+package players;
+import main.State;
+import main.TFrame;
 
-public class PlayerSkeleton {
+
+public class TemplateSkeleton {
 
     //implement this function to have a working system
     public int pickMove(State s, int[][] legalMoves) {
@@ -10,7 +14,7 @@ public class PlayerSkeleton {
     public static void main(String[] args) {
         State s = new State();
         new TFrame(s);
-        PlayerSkeleton p = new PlayerSkeleton();
+        TemplateSkeleton p = new TemplateSkeleton();
         while(!s.hasLost()) {
             s.makeMove(0, p.pickMove(s,s.legalMoves()));
             s.draw();

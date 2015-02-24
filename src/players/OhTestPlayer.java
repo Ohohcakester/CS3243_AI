@@ -1,4 +1,10 @@
+package players;
+
 import java.util.Random;
+
+import main.FeatureFunctions;
+import main.NextState;
+import main.State;
 
 
 public class OhTestPlayer {

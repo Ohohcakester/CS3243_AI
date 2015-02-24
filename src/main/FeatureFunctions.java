@@ -1,3 +1,5 @@
+package main;
+
 /**
  * FeatureFunctions is only for Feature Functions that are well defined.
  * (The name must be descriptive)

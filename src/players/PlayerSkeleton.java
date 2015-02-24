@@ -1,5 +1,9 @@
+package players;
+import main.State;
+import main.TFrame;
 
-public class TemplateSkeleton {
+
+public class PlayerSkeleton {
 
     //implement this function to have a working system
     public int pickMove(State s, int[][] legalMoves) {
