@@ -31,8 +31,8 @@ public class WeightedHeuristicPlayer {
         features = new Feature[]{
                 (s,n)->FeatureFunctions.lost(s,n),
                 (s,n)->FeatureFunctions.maximumColumnHeight(s,n),
-                (s,n)->FeatureFunctions.totalColumnsHeight(s,n),
-                (s,n)->FeatureFunctions.totalHoles(s,n)
+                (s,n)->FeatureFunctions.totalHoles(s,n),
+                (s,n)->FeatureFunctions.totalColumnsHeight(s,n)
         };
     }
     

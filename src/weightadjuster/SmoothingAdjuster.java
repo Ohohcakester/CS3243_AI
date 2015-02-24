@@ -225,7 +225,7 @@ public class SmoothingAdjuster implements WeightAdjuster {
         }
         
         public float score() {
-            float value = mean - (sd/mean);
+            float value = mean - (sd/(mean+0.01f));
             if (value < 10) value -= 10;
             else if (value < 5) value -= 50;
             return value;
@@ -246,7 +246,7 @@ public class SmoothingAdjuster implements WeightAdjuster {
                 .mapToDouble(dataPoint -> individualSize(currentPosition, dataPoint))
                 .sum();
         float value = (float)(totalValue/normalizer);
-        return value;
+        return normalizer == 0 ? 0 : value;
     }
 
     private double individualSize(float[] currentPosition, DataPoint dataPoint) {
