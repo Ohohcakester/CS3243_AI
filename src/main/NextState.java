@@ -55,7 +55,7 @@ public class NextState {
         int cleared = s.getRowsCleared();
         int turn = s.getTurnNumber();
 
-        return makeMove(top, move, nextPiece, field, lost, cleared, turn);
+        return makeMove(nextPiece, move, field, top, lost, cleared, turn);
     }
     
     /**
@@ -69,29 +69,26 @@ public class NextState {
         int cleared = s.getRowsCleared();
         int turn = s.getTurnNumber();
         
-        return makeMove(top, move, nextPiece, field, lost, cleared, turn);
+        return makeMove(nextPiece, move, field, top, lost, cleared, turn);
     }
 
-    private static NextState makeMove(int[] top, int[] move, int nextPiece,
-            int[][] field, boolean lost, int cleared, int turn) {
+    private static NextState makeMove(int nextPiece, int[] move, int[][] field,
+            int[] top, boolean lost, int cleared, int turn) {
         int rowsCleared = 0;
-        
         int orient = move[0];
         int slot = move[1];
 
-        top = Arrays.copyOf(top, top.length);
         int ROWS = State.ROWS;
         int COLS = State.COLS;
         int[][][] pBottom = State.getpBottom();
         int[][][] pTop = State.getpTop();
         int[][] pWidth = State.getpWidth();
         int[][] pHeight = State.getpHeight();
-        
+
+        top = Arrays.copyOf(top, top.length);
         int[][] newField = new int[ROWS][COLS];
         for (int y=0; y<ROWS; ++y) {
-            for (int x=0; x<COLS; ++x) {
-                newField[y][x] = field[y][x];
-            }
+            newField[y] = Arrays.copyOf(field[y], field[y].length);
         }
         field = newField;
         
