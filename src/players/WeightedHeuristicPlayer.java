@@ -7,7 +7,7 @@ import main.FeatureFunctions;
 import main.NextState;
 import main.State;
 import main.TFrame;
-import weightadjuster.OhAdjuster;
+import weightadjuster.SmoothingAdjuster;
 import weightadjuster.WeightAdjuster;
 
 /**
@@ -21,6 +21,10 @@ public class WeightedHeuristicPlayer {
     public WeightedHeuristicPlayer() {
         configure();
         initialiseWeights();
+    }
+    
+    public int dim() {
+        return features.length;
     }
     
     protected void configure() {
@@ -140,7 +144,7 @@ public class WeightedHeuristicPlayer {
     public static void learn() {
         WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
         
-        WeightAdjuster adjuster = new OhAdjuster();
+        WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
         adjuster.fixValue(0, -99999f);
         p.learn(adjuster);
     }
