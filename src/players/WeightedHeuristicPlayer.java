@@ -5,6 +5,7 @@ import main.FeatureFunctions;
 import main.NextState;
 import main.State;
 import main.TFrame;
+import weightadjuster.OhAdjuster;
 import weightadjuster.WeightAdjuster;
 
 /**
@@ -104,6 +105,17 @@ public class WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
+        int choice = 1; // 0 to watch, 1 to learn.
+        
+        switch(choice) {
+            case 0:
+                watch();break;
+            case 1:
+                learn();break;
+        }
+    }
+    
+    public static void watch() {
         State s = new State();
         new TFrame(s);
         WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
@@ -120,24 +132,10 @@ public class WeightedHeuristicPlayer {
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
     }
     
-    /*public static void main(String[] args) {
-        int sum = 0;
-        int sumSquare = 0;
-        int tries = 200;
-        
-        for (int i=0; i<tries; i++) {
-            State s = new State();
-            WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
-            while(!s.hasLost()) {
-                s.makeMove(p.findBest(s,s.legalMoves()));
-            }
-            sum += s.getRowsCleared();
-            sumSquare += s.getRowsCleared()*s.getRowsCleared();
-        }
-        double stdDev = Math.sqrt((float)(tries*sumSquare - sum*sum)/tries/tries);
-        System.out.println("Average rows cleared: " + (sum/tries));
-        System.out.println("Standard Dev: " + stdDev);
-    }*/
+    public static void learn() {
+        WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
+        p.learn(new OhAdjuster(), 1);
+    }
 }
 
 interface Feature {
