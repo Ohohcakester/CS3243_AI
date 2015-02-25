@@ -30,7 +30,7 @@ public class SmoothingAdjuster implements WeightAdjuster {
         fixedWeights = new HashMap<>();
 
         this.dim = dim;
-        this.unfixedDim = dim;
+        adjustUnfixedMappings();
     }
 
     @Override
@@ -47,7 +47,10 @@ public class SmoothingAdjuster implements WeightAdjuster {
     @Override
     public void fixValue(int index, float value) {
         fixedWeights.put(index, value);
-        
+        adjustUnfixedMappings();
+    }
+    
+    public void adjustUnfixedMappings() {
         unfixedDim = dim - fixedWeights.size();
         unfixedMappings = new int[unfixedDim];
         int unfixedIndex = 0;
@@ -116,7 +119,7 @@ public class SmoothingAdjuster implements WeightAdjuster {
     }
 
     private void peturb(float[] fs) {
-        final float peturbDistance = weightRange/100f;
+        final float peturbDistance = weightRange/1000f;
         final float halfPeturbDistance = peturbDistance/2;
         
         for (int i=0; i<fs.length; i++) {
@@ -128,7 +131,7 @@ public class SmoothingAdjuster implements WeightAdjuster {
 
 
     private boolean exploring() {
-        return (sequence+1)%10 != 0;
+        return (sequence+1)%20 != 0;
     }
 
     private float[] computeHighestScoringPosition() {
@@ -225,9 +228,11 @@ public class SmoothingAdjuster implements WeightAdjuster {
         }
         
         public float score() {
-            float value = mean - (sd/(mean+0.01f));
-            if (value < 10) value -= 10;
-            else if (value < 5) value -= 50;
+            float value = mean;
+            if (value < 1) value -= 500;
+            if (value < 2) value -= 100;
+            else if (value < 5) value -= 20;
+            else if (value < 10) value -= 5;
             return value;
         }
         

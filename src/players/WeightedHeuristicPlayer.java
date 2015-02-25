@@ -38,7 +38,7 @@ public class WeightedHeuristicPlayer {
     
     protected void initialiseWeights() {
         weights = new float[features.length];
-        weights = new float[]{-99999.0f, -4, -12.78658f, -21.596615f};
+        weights = new float[]{-99999.0f, -1, -4, -95};
     }
     
     private float heuristic(State state, int[] legalMove) {
@@ -53,10 +53,9 @@ public class WeightedHeuristicPlayer {
     
     public int[] findBest(State s, int[][] legalMoves) {
         float[] scores = new float[legalMoves.length];
-        DoubleStream stream = IntStream.range(0, legalMoves.length)
-                .parallel()
-                .mapToDouble(i -> scores[i] = heuristic(s, legalMoves[i]));
-        stream.max();
+        IntStream.range(0, legalMoves.length)
+            .parallel()
+            .forEach(i -> scores[i] = heuristic(s, legalMoves[i]));
 
         float largest = Float.NEGATIVE_INFINITY;
         int best = -1;
@@ -114,7 +113,7 @@ public class WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 1; // 0 to watch, 1 to learn.
+        int choice = 0; // 0 to watch, 1 to learn.
         
         switch(choice) {
             case 0:
