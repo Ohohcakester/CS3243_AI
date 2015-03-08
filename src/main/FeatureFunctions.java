@@ -99,5 +99,22 @@ public class FeatureFunctions {
 		}
 		return numCompletedLines;
 	}
-
+	
+	/**
+	 * returns number of completed cells in the field
+	 **/
+	public static float totalFilledCells(State state, NextState nextState) {
+		int filledCells = 0;
+		int field[][] = nextState.getField();
+	
+		for(int i = 0; i < State.ROWS; i++) {
+			for(int j = 0; j < State.COLS; j++) {
+				if(field[i][j] != 0) {
+					filledCells++;
+				}
+			}
+		}
+	
+		return filledCells;
+	}
 }
