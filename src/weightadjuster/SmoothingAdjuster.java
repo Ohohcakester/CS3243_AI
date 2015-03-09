@@ -229,10 +229,10 @@ public class SmoothingAdjuster implements WeightAdjuster {
         
         public float score() {
             float value = mean;
-            if (value < 1) value -= 500;
-            if (value < 2) value -= 100;
-            else if (value < 5) value -= 20;
-            else if (value < 10) value -= 5;
+            //if (value < 1) value -= 500;
+            //if (value < 2) value -= 100;
+            //else if (value < 5) value -= 20;
+            //else if (value < 10) value -= 5;
             return value;
         }
         
@@ -255,7 +255,7 @@ public class SmoothingAdjuster implements WeightAdjuster {
     }
 
     private double individualSize(float[] currentPosition, DataPoint dataPoint) {
-        return computeSize(currentPosition, dataPoint.weights);
+        return Math.abs(computeSize(currentPosition, dataPoint.weights));
     }
 
     private double computeValue(float[] currentPosition, DataPoint dataPoint) {
@@ -264,13 +264,23 @@ public class SmoothingAdjuster implements WeightAdjuster {
     }
 
     private double computeSize(float[] vector1, float[] vector2) {
-        double distance = computeDistance(vector1, vector2);
+        return dotProduct(vector1, vector2)/10000;
+        
+        /*(double distance = computeDistance(vector1, vector2);
         double val = distance/weightRange; // e^-(x^4)
         val *= val;
         val *= val;
         val = Math.exp(-val);
         if (val < 0.1f) val = 0;
-        return val;
+        return val;*/
+    }
+    
+    private double dotProduct(float[] vector1, float[] vector2) {
+        double sum = 0;
+        for (int i=0; i<vector1.length; ++i) {
+            sum += vector1[i]*vector2[i];
+        }
+        return sum;
     }
 
     private double computeDistance(float[] vector1, float[] vector2) {

@@ -113,20 +113,23 @@ public class WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 0; // 0 to watch, 1 to learn.
+        int choice = 1; // 0 to watch, 1 to learn.
+
+        WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
+        WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
+        adjuster.fixValue(0, -99999f);
         
         switch(choice) {
             case 0:
-                watch();break;
+                watch(p);break;
             case 1:
-                learn();break;
+                learn(p, adjuster);break;
         }
     }
     
-    public static void watch() {
+    public static void watch(WeightedHeuristicPlayer p) {
         State s = new State();
         new TFrame(s);
-        WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
         while(!s.hasLost()) {
             s.makeMove(p.findBest(s,s.legalMoves()));
             s.draw();
@@ -140,11 +143,7 @@ public class WeightedHeuristicPlayer {
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
     }
     
-    public static void learn() {
-        WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
-        
-        WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
-        adjuster.fixValue(0, -99999f);
+    public static void learn(WeightedHeuristicPlayer p, WeightAdjuster adjuster) {
         p.learn(adjuster);
     }
 }
