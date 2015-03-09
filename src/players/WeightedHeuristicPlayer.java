@@ -32,13 +32,16 @@ public class WeightedHeuristicPlayer {
                 (s,n)->FeatureFunctions.lost(s,n),
                 (s,n)->FeatureFunctions.maximumColumnHeight(s,n),
                 (s,n)->FeatureFunctions.totalHoles(s,n),
-                (s,n)->FeatureFunctions.totalColumnsHeight(s,n)
+                (s,n)->FeatureFunctions.totalColumnsHeight(s,n),
+                (s,n)->FeatureFunctions.bumpiness(s, n),
+                (s,n)->FeatureFunctions.completedLines(s, n),
+                (s,n)->FeatureFunctions.totalFilledCells(s, n)
         };
     }
     
     protected void initialiseWeights() {
         weights = new float[features.length];
-        weights = new float[]{-99999.0f, -1, -4, -95};
+        //weights = new float[]{-99999.0f, -1, -4, -95};
     }
     
     private float heuristic(State state, int[] legalMove) {
@@ -69,9 +72,9 @@ public class WeightedHeuristicPlayer {
     }
     
     public void play(float[] results) {
-        final int tries = 200;
-        int sum = 0;
-        int sumSquare = 0;
+        final int tries = 20;
+        long sum = 0;
+        long sumSquare = 0;
         
         for (int i=0; i<tries; i++) {
             State s = new State();
@@ -82,7 +85,6 @@ public class WeightedHeuristicPlayer {
             sum += cleared;
             sumSquare += cleared*cleared;
         }
-        
         float stdDev = (float)Math.sqrt((float)(tries*sumSquare - sum*sum)/tries/tries);
         results[0] = (float)sum/tries;
         results[1] = stdDev;
@@ -91,12 +93,13 @@ public class WeightedHeuristicPlayer {
     public void learn(WeightAdjuster adjuster) {
         float[] results = new float[2];
         int iteration = 0;
+        String adjusterReport = null;
         while(true) {
             play(results);
-            String adjusterReport = adjuster.adjust(results, weights);
             if (adjusterReport != null) {
                 report(iteration, results, weights, adjusterReport);
             }
+            adjusterReport = adjuster.adjust(results, weights);
             iteration++;
         }
     }
@@ -118,6 +121,12 @@ public class WeightedHeuristicPlayer {
         WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
         WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
         adjuster.fixValue(0, -99999f);
+        adjuster.fixValue(1, -0f);
+        //adjuster.fixValue(2, -5f);
+        //adjuster.fixValue(3, -1f);
+        //adjuster.fixValue(4, -1f);
+        adjuster.fixValue(5, 1000f);
+        adjuster.fixValue(6, 0f);
         
         switch(choice) {
             case 0:
