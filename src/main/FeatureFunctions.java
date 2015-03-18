@@ -117,4 +117,67 @@ public class FeatureFunctions {
 	
 		return filledCells;
 	}
+	
+	/**
+	 * return the min max value of highest column height
+	 */
+	public static float minMaximumColumnHeight(State state, NextState nextState) {
+	    float worstPiece = Float.POSITIVE_INFINITY;
+	    for (int i = 0; i < State.N_PIECES; ++i) {
+	        float bestMove = Float.NEGATIVE_INFINITY;
+	        for (int[] j:NextState.legalMoves[i]) {
+	            NextState ns = NextState.generate(nextState,i,j);
+	            float maxColumnHeight = maximumColumnHeight(state,ns);
+	            if (maxColumnHeight > bestMove) {
+	                bestMove = maxColumnHeight;
+	            }
+	        }
+	        if (bestMove < worstPiece) {
+	            worstPiece = bestMove;
+	        }
+	    }
+	    return worstPiece;
+	}
+	
+	/**
+     * return the min max value of the total number of holes
+     */
+    public static float minMaxTotalHoles(State state, NextState nextState) {
+        float worstPiece = Float.POSITIVE_INFINITY;
+        for (int i = 0; i < State.N_PIECES; ++i) {
+            float bestMove = Float.NEGATIVE_INFINITY;
+            for (int[] j:NextState.legalMoves[i]) {
+                NextState ns = NextState.generate(nextState,i,j);
+                float maxColumnHeight = totalHoles(state,ns);
+                if (maxColumnHeight > bestMove) {
+                    bestMove = maxColumnHeight;
+                }
+            }
+            if (bestMove < worstPiece) {
+                worstPiece = bestMove;
+            }
+        }
+        return worstPiece;
+    }
+	
+	/*
+	 * return the difference of highest top and lowest top
+	 */
+	public static float differenceHigh(State state, NextState nextState) {
+	    float highestColumn = Float.NEGATIVE_INFINITY;
+	    float lowestColumn = Float.POSITIVE_INFINITY;
+	    int top[] = nextState.getTop();
+        for (int x:top) {
+            if (x > highestColumn) {
+                highestColumn = x;
+            }
+            if (x < lowestColumn) {
+                lowestColumn = x;
+            }
+        }
+        return highestColumn - lowestColumn;
+	}
 }
+
+
+

@@ -22,7 +22,7 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
     
     protected void initialiseWeights() {
         weights = new float[features.length];
-        weights = new float[]{-99999.0f, -50.376028f, -66.54607f, 2.692179f, 0.0f, 0.0f, 0.0f};/*
+        weights = new float[]{-99999.0f, 4.0560007f, -0.26706317f, -89.41267f, 1.0095192f, -5.205208f, 0.04954661f};/*
         weights[0] = -99999.0f;
         weights[1] = -50.0f;
         weights[2] = -25.0f;
@@ -34,13 +34,13 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
 
 
     public static void main(String[] args) {
-        BlahPlayer p = new BlahPlayer();
+        JonathanPlayer p = new JonathanPlayer();
         SmoothingAdjuster adj = new SmoothingAdjuster(p.dim());
         
-        watch(p);
+        //watch(p);
         
         adj.fixValue(0, -99999f);
-        //learn(p, adj);
+        learn(p, adj);
     }
     
     public static void watch(WeightedHeuristicPlayer p) {

@@ -11,6 +11,33 @@ public class NextState {
     public final int turn;
     public final int rowsCleared;
 
+    static int[][][] legalMoves = new int[State.N_PIECES][][];
+    
+    {
+        //for each piece type
+        for(int i = 0; i < State.N_PIECES; i++) {
+            //figure number of legal moves
+            int n = 0;
+            for(int j = 0; j < State.pOrients[i]; j++) {
+                //number of locations in this orientation
+                n += State.COLS+1-State.pWidth[i][j];
+            }
+            //allocate space
+            legalMoves[i] = new int[n][2];
+            //for each orientation
+            n = 0;
+            for(int j = 0; j < State.pOrients[i]; j++) {
+                //for each slot
+                for(int k = 0; k < State.COLS+1-State.pWidth[i][j];k++) {
+                    legalMoves[i][n][State.ORIENT] = j;
+                    legalMoves[i][n][State.SLOT] = k;
+                    n++;
+                }
+            }
+        }
+    
+    }
+    
     /**
      * Copy constructor
      */
