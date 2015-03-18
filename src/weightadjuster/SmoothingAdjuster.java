@@ -300,7 +300,12 @@ public class SmoothingAdjuster implements WeightAdjuster {
         for (int i=0; i<vector1.length; i++) {
             float ri = (Math.abs(vector1[i]) + Math.abs(vector2[i]))/2 + 0.1f;
             float di = vector1[i] - vector2[i];
-            sumSquares += di*di / Math.pow(ri, 0.5f);
+            
+            if (vector1[i] > 0 != vector2[i] > 0) {
+                di += 1;
+            }
+            
+            sumSquares += di*di / Math.pow(ri, 0.3f);
         }
         return Math.sqrt(sumSquares);
     }
