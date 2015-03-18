@@ -40,7 +40,8 @@ public class WeightedHeuristicPlayer {
     }
     
     protected void initialiseWeights() {
-        weights = new float[features.length];
+        //weights = new float[features.length];
+        weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f};
         //weights = new float[]{-99999.0f, -1, -4, -95};
     }
     
@@ -72,7 +73,7 @@ public class WeightedHeuristicPlayer {
     }
     
     public void play(float[] results) {
-        final int tries = 20;
+        final int tries = 3;
         long sum = 0;
         long sumSquare = 0;
         
@@ -116,7 +117,7 @@ public class WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 1; // 0 to watch, 1 to learn.
+        int choice = 0; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
         WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
@@ -125,8 +126,8 @@ public class WeightedHeuristicPlayer {
         //adjuster.fixValue(2, -5f);
         //adjuster.fixValue(3, -1f);
         //adjuster.fixValue(4, -1f);
-        adjuster.fixValue(5, 1000f);
-        adjuster.fixValue(6, 0f);
+        //adjuster.fixValue(5, 1000f);
+        //adjuster.fixValue(6, 0f);
         
         switch(choice) {
             case 0:
@@ -144,7 +145,7 @@ public class WeightedHeuristicPlayer {
             s.draw();
             s.drawNext(0,0);
             try {
-                Thread.sleep(150);
+                Thread.sleep(0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
