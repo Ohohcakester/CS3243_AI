@@ -68,10 +68,10 @@ public class SmoothingAdjuster implements WeightAdjuster {
         }
         return unfixedWeights;
     }
-    
+
+    final float sqrtWeightRange = (float)Math.sqrt(weightRange);
+    final float twoTimesSqrtWeightRange = 2*sqrtWeightRange;
     private boolean setWeights(float[] results, float[] weights) {
-        final float sqrtWeightRange = (float)Math.sqrt(weightRange);
-        final float twoTimesSqrtWeightRange = 2*sqrtWeightRange;
         
         boolean report;
         if (exploring()) {
@@ -118,9 +118,11 @@ public class SmoothingAdjuster implements WeightAdjuster {
         }
     }
 
+    final float peturbDistance = weightRange/1000f;
+    final float halfPeturbDistance = peturbDistance/2;
     private void peturb(float[] fs) {
-        final float peturbDistance = weightRange/1000f;
-        final float halfPeturbDistance = peturbDistance/2;
+        //final float peturbDistance = weightRange/1000f;
+        //final float halfPeturbDistance = peturbDistance/2;
         
         for (int i=0; i<fs.length; i++) {
             float p = rand.nextFloat()*peturbDistance - halfPeturbDistance;
@@ -267,7 +269,7 @@ public class SmoothingAdjuster implements WeightAdjuster {
     private double computeSize(float[] vector1, float[] vector2) {
         //return dotProduct(vector1, vector2)/10000;
         
-        double distance = computeDistance(vector1, vector2);
+        double distance = computeScaledDistance(vector1, vector2);
         double val = distance/weightRange; // e^-(x^4)
         val *= val;
         val *= val;
@@ -289,6 +291,16 @@ public class SmoothingAdjuster implements WeightAdjuster {
         for (int i=0; i<vector1.length; i++) {
             float di = vector1[i] - vector2[i];
             sumSquares += di*di;
+        }
+        return Math.sqrt(sumSquares);
+    }
+
+    private double computeScaledDistance(float[] vector1, float[] vector2) {
+        float sumSquares = 0;
+        for (int i=0; i<vector1.length; i++) {
+            float ri = (Math.abs(vector1[i]) + Math.abs(vector2[i]))/2 + 0.1f;
+            float di = vector1[i] - vector2[i];
+            sumSquares += di*di / Math.pow(ri, 0.5f);
         }
         return Math.sqrt(sumSquares);
     }
