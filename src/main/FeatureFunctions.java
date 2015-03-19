@@ -46,22 +46,46 @@ public class FeatureFunctions {
 		return nextState.hasLost() ? 1: 0;
 	}
 
-	/**
-	 * returns the total number of holes
-	 */
-	public static float totalHoles(State state, NextState nextState) {
-		int totalHoles = 0;
-		int field[][] = nextState.getField();
-		int top[] = nextState.getTop();
-		for (int i = 0; i < State.ROWS; ++i) {
-			for (int j = 0; j < State.COLS; ++j) {
-				if (field[i][j] == 0 && i < top[j]) {
-					++totalHoles;
-				}
-			}
-		}
-		return totalHoles;
-	}
+    /**
+     * returns the total number of holes
+     */
+    public static float totalHoles(State state, NextState nextState) {
+        int totalHoles = 0;
+        int field[][] = nextState.getField();
+        int top[] = nextState.getTop();
+        for (int i = 0; i < State.ROWS; ++i) {
+            for (int j = 0; j < State.COLS; ++j) {
+                if (field[i][j] == 0 && i < top[j]) {
+                    ++totalHoles;
+                }
+            }
+        }
+        return totalHoles;
+    }
+
+
+    /**
+     * returns the total number of holes
+     */
+    public static float totalHolePieces(State state, NextState nextState) {
+        int totalHoles = 0;
+        int field[][] = nextState.getField();
+        int top[] = nextState.getTop();
+        for (int j = 0; j < State.COLS; ++j) {
+            boolean last = false;
+            for (int i = 0; i < top[j]; ++i) {
+                if (field[i][j] == 0) {
+                    if (!last) {
+                        ++totalHoles;
+                    }
+                    last = true;
+                } else {
+                    last = false;
+                }
+            }
+        }
+        return totalHoles;
+    }
 
 	/**
 	 * returns the 'bumpiness of the top layer of 'skyscrapers'
@@ -117,7 +141,7 @@ public class FeatureFunctions {
 	
 		return filledCells;
 	}
-	
+    
 	/**
 	 * return the min max value of highest column height
 	 */
@@ -180,4 +204,7 @@ public class FeatureFunctions {
 }
 
 
+interface Feature {
+    float compute(State s, NextState n);
+}
 

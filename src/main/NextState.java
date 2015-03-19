@@ -11,7 +11,7 @@ public class NextState {
     public final int turn;
     public final int rowsCleared;
 
-    static int[][][] legalMoves = new int[State.N_PIECES][][];
+    public static int[][][] legalMoves = new int[State.N_PIECES][][];
     
     {
         //for each piece type

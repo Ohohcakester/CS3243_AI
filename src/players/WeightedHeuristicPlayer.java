@@ -30,8 +30,8 @@ public class WeightedHeuristicPlayer {
     protected void configure() {
         features = new Feature[]{
                 (s,n)->FeatureFunctions.lost(s,n),
-                (s,n)->FeatureFunctions.maximumColumnHeight(s,n),
-                (s,n)->FeatureFunctions.totalHoles(s,n),
+               // (s,n)->FeatureFunctions.maximumColumnHeight(s,n),
+                (s,n)->FeatureFunctions.totalHolePieces(s,n),
                 (s,n)->FeatureFunctions.totalColumnsHeight(s,n),
                 (s,n)->FeatureFunctions.bumpiness(s, n),
                 (s,n)->FeatureFunctions.completedLines(s, n),
@@ -44,8 +44,9 @@ public class WeightedHeuristicPlayer {
     
     protected void initialiseWeights() {
         weights = new float[features.length];
+        //weights = new float[]{-99999.0f, -5f, -5f};
         //weights = new float[]{-99999.0f, -0.0f, -72.27131f, -0.39263827f, -18.150364f, 1.9908575f, -4.523054f, 2.6717715f}; // <-- good weights.
-        weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, -1f, -1f}; // <-- good weights.
+        //weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, -1f, -1f}; // <-- good weights.
         //weights = new float[]{-99999.0f, -1, -4, -95};
     }
     
@@ -121,12 +122,12 @@ public class WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 0; // 0 to watch, 1 to learn.
+        int choice = 1; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
         WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
         adjuster.fixValue(0, -99999f);
-        adjuster.fixValue(1, -0f);
+        //adjuster.fixValue(1, -0f);
         //adjuster.fixValue(7, -0f);
         //adjuster.fixValue(2, -5f);
         //adjuster.fixValue(3, -1f);
@@ -147,8 +148,8 @@ public class WeightedHeuristicPlayer {
         new TFrame(s);
         while(!s.hasLost()) {
             s.makeMove(p.findBest(s,s.legalMoves()));
-            //s.draw();
-            //s.drawNext(0,0);
+            s.draw();
+            s.drawNext(0,0);
             try {
                 Thread.sleep(0);
             } catch (InterruptedException e) {

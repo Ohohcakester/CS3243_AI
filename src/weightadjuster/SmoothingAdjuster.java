@@ -146,15 +146,20 @@ public class SmoothingAdjuster implements WeightAdjuster {
                 peturb(positions[i]);
                 scores[i] = valueOf(positions[i]);
             });
-        
+
         float largest = Float.NEGATIVE_INFINITY;
+        float smallest = Float.POSITIVE_INFINITY;
         int largestIndex = -1;
         for (int i=0; i<scores.length; i++) {
             if (scores[i] >= largest) {
                 largest = scores[i];
                 largestIndex = i;
             }
+            if (scores[i] < smallest) {
+                smallest = scores[i];
+            }
         }
+        System.out.println(smallest + " | " + largest);
         try{
         System.out.println("Choose datapoint " + Arrays.toString(positions[largestIndex]) + " with value " + scores[largestIndex]);
         }catch(ArrayIndexOutOfBoundsException e) {
@@ -207,15 +212,19 @@ public class SmoothingAdjuster implements WeightAdjuster {
     }*/
     
     /**
-     * computes a^n for n >= 1.
+     * computes a^n for n >= 0.
      */
-    private int pow(int a, int n) {
+    public static int pow(int a, int n) {
+        int r = 1;
         int e = a;
-        while (n>1) {
-            a *= e;
-            n--;
+        while (n>0) {
+            if (n%2 == 1) {
+                r *= e;
+            }
+            e *= e;
+            n /= 2;
         }
-        return a;
+        return r;
     }
 
     private class DataPoint {
@@ -258,7 +267,7 @@ public class SmoothingAdjuster implements WeightAdjuster {
     }
 
     private double individualSize(float[] currentPosition, DataPoint dataPoint) {
-        return Math.abs(computeSize(currentPosition, dataPoint.weights));
+        return computeSize(currentPosition, dataPoint.weights);
     }
 
     private double computeValue(float[] currentPosition, DataPoint dataPoint) {
@@ -301,11 +310,13 @@ public class SmoothingAdjuster implements WeightAdjuster {
             float ri = (Math.abs(vector1[i]) + Math.abs(vector2[i]))/2 + 0.1f;
             float di = vector1[i] - vector2[i];
             
+            di = di*di;
             if (vector1[i] > 0 != vector2[i] > 0) {
-                di += 1;
+                di += 1000;
             }
             
-            sumSquares += di*di / Math.pow(ri, 0.3f);
+            sumSquares += di / Math.pow(ri, 0.2f);
+            //System.out.println(di + " " + (di / Math.pow(ri, 0.2f)));
         }
         return Math.sqrt(sumSquares);
     }
