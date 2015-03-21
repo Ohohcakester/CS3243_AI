@@ -160,6 +160,7 @@ public class WeightedHeuristicPlayer {
                 e.printStackTrace();
             }
             
+            counter--;
             if (counter <= 0) {
                 System.out.println("CURRENT SCORE: " + s.getRowsCleared());
                 counter = REPORT_INTERVAL;
