@@ -12,7 +12,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
     protected void configure() {
         features = new Feature[]{
                 (n)->FeatureFunctions.lost(n),
-                minMax((n)-> {
+                FeatureFunctions.minimax(3, (n)-> {
                     float total = 0;
                     total += FeatureFunctions.totalHoles(n);
                     total += 1f*FeatureFunctions.bumpiness(n);
@@ -46,7 +46,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
     }
 
     /**
-     * return the min max value of highest column height
+     * return the min max value of feature
      */
     public static Feature minMax(Feature feature) {
         return (NextState nextState) -> {
@@ -72,34 +72,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
             return worstPiece;
         };
     }
-    /**
-     * return the min max value of highest column height
-     */
-    public static Feature minMaxTwo(Feature feature) {
-        return (NextState nextState) -> {
-            float worstPiece = Float.POSITIVE_INFINITY;
-            for (int i = 0; i < State.N_PIECES; ++i) {
-                float bestMove = Float.NEGATIVE_INFINITY;
-                int[][] legalMoves = NextState.legalMoves[i];
-                for (int j=0; j<legalMoves.length; ++j) {
-                    NextState ns = NextState.generate(nextState,i,legalMoves[j]);
-                    float score = feature.compute(ns);
-                    if (score > bestMove) {
-                        bestMove = score;
-                        if (bestMove >= worstPiece) {
-                            j = legalMoves.length; // break;
-                            //break;
-                        }
-                    }
-                }
-                if (bestMove < worstPiece) {
-                    worstPiece = bestMove;
-                }
-            }
-            return worstPiece;
-        };
-    }
-    
+
 
     
     public static void main(String[] args) {

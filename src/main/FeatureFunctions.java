@@ -1,5 +1,7 @@
 package main;
 
+import players.Feature;
+
 /**
  * FeatureFunctions is only for Feature Functions that are well defined.
  * (The name must be descriptive)
@@ -201,10 +203,69 @@ public class FeatureFunctions {
         }
         return highestColumn - lowestColumn;
 	}
-}
+	
 
-
-interface Feature {
-    float compute(State s, NextState n);
+    
+    
+    private static final float minimaxRec(NextState ns, Feature feature, float alpha, float beta, int depth) {
+        if (ns.lost == true) {
+            return -99999f;
+        }
+        if (depth <= 0) {
+            return feature.compute(ns);
+        }
+        
+        // MIN PLAYER
+        for (int i = 0; i < State.N_PIECES; ++i) {
+            // MAX PLAYER
+            float newAlpha = alpha;
+            int[][] legalMoves = NextState.legalMoves[i];
+            for (int j=0; j<legalMoves.length; ++j) {
+                NextState nns = NextState.generate(ns,i,legalMoves[j]);
+                float score = minimaxRec(nns, feature, newAlpha, beta, depth-1);
+                if (score > newAlpha) {
+                    newAlpha = score;
+                    if (newAlpha >= beta) {
+                        break;
+                    }
+                }
+            }
+            if (newAlpha < beta) {
+                beta = newAlpha;
+                if (beta <= alpha) {
+                    break;
+                }
+            }
+        }
+        return beta;
+        
+    }
+    
+    public static Feature minimax(int depth, Feature feature) {
+        return (NextState nextState) -> {
+            // MIN PLAYER
+            float beta = Float.POSITIVE_INFINITY;
+            for (int i = 0; i < State.N_PIECES; ++i) {
+                // MAX PLAYER
+                float newAlpha = Float.NEGATIVE_INFINITY;
+                int[][] legalMoves = NextState.legalMoves[i];
+                for (int j=0; j<legalMoves.length; ++j) {
+                    NextState ns = NextState.generate(nextState,i,legalMoves[j]);
+                    float score = minimaxRec(ns, feature, newAlpha, beta, depth-1);
+                    if (score > newAlpha) {
+                        newAlpha = score;
+                        if (newAlpha >= beta) {
+                            break;
+                        }
+                    }
+                }
+                if (newAlpha < beta) {
+                    beta = newAlpha;
+                }
+            }
+            return beta;
+        };
+    }
+    
 }
 
