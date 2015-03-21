@@ -1,5 +1,16 @@
 I will be typing random notes here
 
+- Somehow we need to make the AI "aim" to clear misaligned holes. Two separate holes on the same row are really bad, I believe. I think the AI should be made aware of this.
+> a line with a single block and a hole under it is especially bad. e.g.
+|@|_|_|_|_|_|_|_|_|_|_| <-- this is bad.
+|_|@|@|@|@|@|@|@|@|@|@|    hard to fix.
+
+
+- I think we need to do a unit test on the minimax pruning to see whether it is pruning correctly (ensure that result is the same with or without prune)
+
+
+- I think we can do the learning process on a half-height tetris board to speed up the learning. As the game might last exponentially long on the height.
+
 
 ========================================
 Piece Ordering for Minimax.
@@ -27,6 +38,8 @@ match height with:
  | 13 - 18 => return 3
  |...
 
+Note: height 0 is given its own region to encourage the AI to clear the screen.
+ 
 Comments: This works well with minimax, I believe. Instead of the minimax algo just avoiding dying (hitting the top), it sets arbitrary horizontal bars in the middle of the field that we "should not cross unless we really can't help it".
 This directs minimax to search for move combinations that keep the tetris from going above a certain height limit.
 heightRegion = 7 seems to work well.
@@ -63,6 +76,7 @@ Thus I should add more weight to scattered holes than hole pieces.
 Comments: minimax seems to fare much better using totalHolePieces than totalHoles. I'm not sure how they compare without minimax.
 Note: I use these two feature functions together. totalHoles has a much smaller weight than totalHolePieces.
 
+it seems that a POSITIVE totalHoles weight along with a high negative totalHolePieces weight also works well.
 
 ===============================================
 
