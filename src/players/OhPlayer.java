@@ -15,12 +15,12 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 FeatureFunctions.minimax(2, (n)-> {
                     float total = 0;
                     int height = (int)FeatureFunctions.maximumColumnHeight(n);
-                    height /= 6;
-                    total -= 20f*height*height;
+                    height = ((height+1) / 7) - 1;
+                    total -= 50f*height;
                     total -= FeatureFunctions.totalHoles(n);
                     total -= 8f*FeatureFunctions.bumpiness(n);
                     total -= 12f*FeatureFunctions.totalColumnsHeight(n);
-                    total += 20f*FeatureFunctions.completedLines(n);
+                    total += 24f*FeatureFunctions.completedLines(n);
                     total -= 2f*FeatureFunctions.differenceHigh(n);
                     total -= 20f*FeatureFunctions.totalHolePieces(n);
                     total -= 3f*FeatureFunctions.totalHoles(n);
