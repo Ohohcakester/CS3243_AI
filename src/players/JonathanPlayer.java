@@ -10,13 +10,13 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
 
     protected void configure() {
         features = new Feature[]{
-                (s,n)->FeatureFunctions.lost(s,n),
-                (s,n)->FeatureFunctions.maximumColumnHeight(s,n),
-                (s,n)->FeatureFunctions.totalHoles(s,n),
-                (s,n)->FeatureFunctions.totalColumnsHeight(s,n),
-                (s,n)->FeatureFunctions.bumpiness(s, n),
-                (s,n)->FeatureFunctions.completedLines(s, n),
-                (s,n)->FeatureFunctions.totalFilledCells(s, n)
+                (n)->FeatureFunctions.lost(n),
+                (n)->FeatureFunctions.maximumColumnHeight(n),
+                (n)->FeatureFunctions.totalHoles(n),
+                (n)->FeatureFunctions.totalColumnsHeight(n),
+                (n)->FeatureFunctions.bumpiness(n),
+                (n)->FeatureFunctions.completedLines(n),
+                (n)->FeatureFunctions.totalFilledCells(n)
         };
     }
     

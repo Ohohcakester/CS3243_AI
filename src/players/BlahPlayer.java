@@ -9,14 +9,14 @@ public class BlahPlayer extends WeightedHeuristicPlayer {
 
     protected void configure() {
         features = new Feature[]{
-                (s,n)->FeatureFunctions.lost(s,n),
-                (s,n)->FeatureFunctions.maximumColumnHeight(s,n),
-                (s,n)->FeatureFunctions.totalHoles(s,n),
-                (s,n)->FeatureFunctions.totalColumnsHeight(s,n),
-                (s,n)->FeatureFunctions.bumpiness(s, n),
-                (s,n)->FeatureFunctions.completedLines(s, n),
-                (s,n)->FeatureFunctions.totalFilledCells(s, n)
-                //nextStateFeatureFunction((s,n)->FeatureFunctions.totalFilledCells(s, n)),
+                (n)->FeatureFunctions.lost(n),
+                (n)->FeatureFunctions.maximumColumnHeight(n),
+                (n)->FeatureFunctions.totalHoles(n),
+                (n)->FeatureFunctions.totalColumnsHeight(n),
+                (n)->FeatureFunctions.bumpiness(n),
+                (n)->FeatureFunctions.completedLines(n),
+                (n)->FeatureFunctions.totalFilledCells(n)
+                //nextStateFeatureFunction(n)->FeatureFunctions.totalFilledCells(n)),
                 //good
         };
     }
@@ -34,15 +34,15 @@ public class BlahPlayer extends WeightedHeuristicPlayer {
     
     private static Feature nextStateFeatureFunction(Feature feature) {
         
-        return (state,nextState) -> {
+        return (nextState) -> {
             int[] action = new int[]{0,3};
             NextState nextNextState = nextState.generate(nextState, 0, action);
             NextState nextNextNextState = nextNextState.generate(nextNextState, 0, action);
-            return feature.compute(state, nextNextNextState);
+            return feature.compute(nextNextNextState);
         };
     }
 
-    private static Feature good = (state, nextState) -> {
+    private static Feature good = (nextState) -> {
 
         int[] action = new int[]{0,3};
         NextState nextNextState = nextState.generate(nextState, 0, action);
@@ -51,7 +51,7 @@ public class BlahPlayer extends WeightedHeuristicPlayer {
         
     };
     
-    private static float good(State state, NextState nextState) {
+    private static float good(NextState nextState) {
         
         
         int[] action = new int[]{0,3};

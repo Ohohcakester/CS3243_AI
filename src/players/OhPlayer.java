@@ -11,29 +11,29 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
     protected void configure() {
         features = new Feature[]{
-                (s,n)->FeatureFunctions.lost(s,n),
-                minMax((s,n)-> {
+                (n)->FeatureFunctions.lost(n),
+                minMax((n)-> {
                     float total = 0;
-                    total += FeatureFunctions.totalHoles(s,n);
-                    total += 1f*FeatureFunctions.bumpiness(s,n);
-                    total += 8f*FeatureFunctions.totalColumnsHeight(s,n);
-                    total -= 10f*FeatureFunctions.completedLines(s,n);
-                    total += 2f*FeatureFunctions.differenceHigh(s,n);
-                    total += 20f*FeatureFunctions.totalHolePieces(s,n);
+                    total += FeatureFunctions.totalHoles(n);
+                    total += 1f*FeatureFunctions.bumpiness(n);
+                    total += 8f*FeatureFunctions.totalColumnsHeight(n);
+                    total -= 10f*FeatureFunctions.completedLines(n);
+                    total += 2f*FeatureFunctions.differenceHigh(n);
+                    total += 20f*FeatureFunctions.totalHolePieces(n);
                     
                     //System.out.println(FeatureFunctions.totalHoles(s,n) - FeatureFunctions.totalHolePieces(s,n));
                     
                     return total;
                 })
-                //(s,n)->FeatureFunctions.maximumColumnHeight(s,n),
-                //(s,n)->FeatureFunctions.totalHoles(s,n),
-                //(s,n)->FeatureFunctions.totalColumnsHeight(s,n),
-                //(s,n)->FeatureFunctions.bumpiness(s, n),
-                //(s,n)->FeatureFunctions.completedLines(s, n),
-                //(s,n)->FeatureFunctions.totalFilledCells(s, n),
-                //(s,n)->FeatureFunctions.minMaximumColumnHeight(s, n),
-                //(s,n)->FeatureFunctions.minMaxTotalHoles(s, n),
-                //(s,n)->FeatureFunctions.differenceHigh(s, n)
+                //(n)->FeatureFunctions.maximumColumnHeight(n),
+                //(n)->FeatureFunctions.totalHoles(n),
+                //(n)->FeatureFunctions.totalColumnsHeight(n),
+                //(n)->FeatureFunctions.bumpiness(n),
+                //(n)->FeatureFunctions.completedLines(n),
+                //(n)->FeatureFunctions.totalFilledCells(n),
+                //(n)->FeatureFunctions.minMaximumColumnHeight(n),
+                //(n)->FeatureFunctions.minMaxTotalHoles(n),
+                //(n)->FeatureFunctions.differenceHigh(n)
         };
     }
     
@@ -49,14 +49,14 @@ public class OhPlayer extends WeightedHeuristicPlayer {
      * return the min max value of highest column height
      */
     public static Feature minMax(Feature feature) {
-        return (State state, NextState nextState) -> {
+        return (NextState nextState) -> {
             float worstPiece = Float.POSITIVE_INFINITY;
             for (int i = 0; i < State.N_PIECES; ++i) {
                 float bestMove = Float.NEGATIVE_INFINITY;
                 int[][] legalMoves = NextState.legalMoves[i];
                 for (int j=0; j<legalMoves.length; ++j) {
                     NextState ns = NextState.generate(nextState,i,legalMoves[j]);
-                    float score = feature.compute(state,ns);
+                    float score = feature.compute(ns);
                     if (score > bestMove) {
                         bestMove = score;
                         if (bestMove >= worstPiece) {
@@ -76,14 +76,14 @@ public class OhPlayer extends WeightedHeuristicPlayer {
      * return the min max value of highest column height
      */
     public static Feature minMaxTwo(Feature feature) {
-        return (State state, NextState nextState) -> {
+        return (NextState nextState) -> {
             float worstPiece = Float.POSITIVE_INFINITY;
             for (int i = 0; i < State.N_PIECES; ++i) {
                 float bestMove = Float.NEGATIVE_INFINITY;
                 int[][] legalMoves = NextState.legalMoves[i];
                 for (int j=0; j<legalMoves.length; ++j) {
                     NextState ns = NextState.generate(nextState,i,legalMoves[j]);
-                    float score = feature.compute(state,ns);
+                    float score = feature.compute(ns);
                     if (score > bestMove) {
                         bestMove = score;
                         if (bestMove >= worstPiece) {

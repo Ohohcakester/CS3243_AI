@@ -29,16 +29,16 @@ public class WeightedHeuristicPlayer {
     
     protected void configure() {
         features = new Feature[]{
-                (s,n)->FeatureFunctions.lost(s,n),
-               // (s,n)->FeatureFunctions.maximumColumnHeight(s,n),
-                (s,n)->FeatureFunctions.totalHolePieces(s,n),
-                (s,n)->FeatureFunctions.totalColumnsHeight(s,n),
-                (s,n)->FeatureFunctions.bumpiness(s, n),
-                (s,n)->FeatureFunctions.completedLines(s, n),
-                (s,n)->FeatureFunctions.totalFilledCells(s, n),
-                //(s,n)->FeatureFunctions.minMaximumColumnHeight(s, n),
-                //(s,n)->FeatureFunctions.minMaxTotalHoles(s, n),
-                (s,n)->FeatureFunctions.differenceHigh(s, n)
+                (n)->FeatureFunctions.lost(n),
+               // (n)->FeatureFunctions.maximumColumnHeight(n),
+                (n)->FeatureFunctions.totalHolePieces(n),
+                (n)->FeatureFunctions.totalColumnsHeight(n),
+                (n)->FeatureFunctions.bumpiness(n),
+                (n)->FeatureFunctions.completedLines(n),
+                (n)->FeatureFunctions.totalFilledCells(n),
+                //(n)->FeatureFunctions.minMaximumColumnHeight(n),
+                //(n)->FeatureFunctions.minMaxTotalHoles(n),
+                (n)->FeatureFunctions.differenceHigh(n)
         };
     }
     
@@ -54,7 +54,7 @@ public class WeightedHeuristicPlayer {
         NextState nextState = NextState.generate(state, legalMove);
         float sum = 0;
         for (int i=0; i<features.length; i++) {
-            sum += weights[i] * features[i].compute(state, nextState);
+            sum += weights[i] * features[i].compute(nextState);
         }
         return sum;
     }
@@ -162,8 +162,4 @@ public class WeightedHeuristicPlayer {
     public static void learn(WeightedHeuristicPlayer p, WeightAdjuster adjuster) {
         p.learn(adjuster);
     }
-}
-
-interface Feature {
-    float compute(State s, NextState n);
 }

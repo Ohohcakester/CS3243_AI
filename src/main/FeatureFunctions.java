@@ -8,14 +8,14 @@ package main;
  */
 public class FeatureFunctions {
 
-	public static float exampleFeature(State s, NextState nextState) {
+	public static float exampleFeature(NextState nextState) {
 		return 4;
 	}
 
 	/**
 	 * returns the height of the tallest "skyscrapers"
 	 */
-	public static float maximumColumnHeight(State state, NextState nextState) {
+	public static float maximumColumnHeight(NextState nextState) {
 		int maximumHeight = Integer.MIN_VALUE;
 		int top[] = nextState.getTop();
 		for (int x:top) {
@@ -29,7 +29,7 @@ public class FeatureFunctions {
 	/**
 	 * returns the total height of all "skyscrapers"
 	 */
-	public static float totalColumnsHeight(State state, NextState nextState) {
+	public static float totalColumnsHeight(NextState nextState) {
 		int totalHeight = 0;
 		int top[] = nextState.getTop();
 		for (int x:top) {
@@ -42,14 +42,14 @@ public class FeatureFunctions {
 	/**
 	 * returns value 1 if lost, 0 if not lost
 	 */
-	public static float lost(State state, NextState nextState) {
+	public static float lost(NextState nextState) {
 		return nextState.hasLost() ? 1: 0;
 	}
 
     /**
      * returns the total number of holes
      */
-    public static float totalHoles(State state, NextState nextState) {
+    public static float totalHoles(NextState nextState) {
         int totalHoles = 0;
         int field[][] = nextState.getField();
         int top[] = nextState.getTop();
@@ -67,7 +67,7 @@ public class FeatureFunctions {
     /**
      * returns the total number of holes
      */
-    public static float totalHolePieces(State state, NextState nextState) {
+    public static float totalHolePieces(NextState nextState) {
         int totalHoles = 0;
         int field[][] = nextState.getField();
         int top[] = nextState.getTop();
@@ -91,7 +91,7 @@ public class FeatureFunctions {
 	 * returns the 'bumpiness of the top layer of 'skyscrapers'
 	 * minimize to ensure the top layer of the grid is as flat as possible to prevent deep 'wells'
 	 */
-	public static float bumpiness(State state, NextState nextState) {
+	public static float bumpiness(NextState nextState) {
 		int bumpValue = 0;
 		int field[][] = nextState.getField();
 		int top[] = nextState.getTop();
@@ -106,7 +106,7 @@ public class FeatureFunctions {
 	 * returns number of completed lines 
 	 * maximize to ensure continuity of the game
 	 */
-	public static float completedLines(State state, NextState nextState) {
+	public static float completedLines(NextState nextState) {
 		int numCompletedLines = 0;
 		int field[][] = nextState.getField();
 
@@ -127,7 +127,7 @@ public class FeatureFunctions {
 	/**
 	 * returns number of completed cells in the field
 	 **/
-	public static float totalFilledCells(State state, NextState nextState) {
+	public static float totalFilledCells(NextState nextState) {
 		int filledCells = 0;
 		int field[][] = nextState.getField();
 	
@@ -145,13 +145,13 @@ public class FeatureFunctions {
 	/**
 	 * return the min max value of highest column height
 	 */
-	public static float minMaximumColumnHeight(State state, NextState nextState) {
+	public static float minMaximumColumnHeight(NextState nextState) {
 	    float worstPiece = Float.POSITIVE_INFINITY;
 	    for (int i = 0; i < State.N_PIECES; ++i) {
 	        float bestMove = Float.NEGATIVE_INFINITY;
 	        for (int[] j:NextState.legalMoves[i]) {
 	            NextState ns = NextState.generate(nextState,i,j);
-	            float maxColumnHeight = maximumColumnHeight(state,ns);
+	            float maxColumnHeight = maximumColumnHeight(ns);
 	            if (maxColumnHeight > bestMove) {
 	                bestMove = maxColumnHeight;
 	            }
@@ -166,13 +166,13 @@ public class FeatureFunctions {
 	/**
      * return the min max value of the total number of holes
      */
-    public static float minMaxTotalHoles(State state, NextState nextState) {
+    public static float minMaxTotalHoles(NextState nextState) {
         float worstPiece = Float.POSITIVE_INFINITY;
         for (int i = 0; i < State.N_PIECES; ++i) {
             float bestMove = Float.NEGATIVE_INFINITY;
             for (int[] j:NextState.legalMoves[i]) {
                 NextState ns = NextState.generate(nextState,i,j);
-                float maxColumnHeight = totalHoles(state,ns);
+                float maxColumnHeight = totalHoles(ns);
                 if (maxColumnHeight > bestMove) {
                     bestMove = maxColumnHeight;
                 }
@@ -187,7 +187,7 @@ public class FeatureFunctions {
 	/*
 	 * return the difference of highest top and lowest top
 	 */
-	public static float differenceHigh(State state, NextState nextState) {
+	public static float differenceHigh(NextState nextState) {
 	    float highestColumn = Float.NEGATIVE_INFINITY;
 	    float lowestColumn = Float.POSITIVE_INFINITY;
 	    int top[] = nextState.getTop();

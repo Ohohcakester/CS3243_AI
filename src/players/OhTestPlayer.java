@@ -30,12 +30,12 @@ public class OhTestPlayer {
 			NextState nextState = NextState.generate(s, legalMove);
 			float sum = 0;
 
-			sum += -1f * FeatureFunctions.totalColumnsHeight(s, nextState);
-			//sum += -20f * FeatureFunctions.maximumColumnHeight(s, nextState);
-			sum += -3f * FeatureFunctions.totalHoles(s, nextState);
-			sum += FeatureFunctions.lost(s, nextState) > 0 ? Float.NEGATIVE_INFINITY : 0;
-			sum += -1f * FeatureFunctions.bumpiness(s, nextState);
-			sum += 1000f * FeatureFunctions.completedLines(s, nextState);
+			sum += -1f * FeatureFunctions.totalColumnsHeight(nextState);
+			//sum += -20f * FeatureFunctions.maximumColumnHeight(nextState);
+			sum += -3f * FeatureFunctions.totalHoles(nextState);
+			sum += FeatureFunctions.lost(nextState) > 0 ? Float.NEGATIVE_INFINITY : 0;
+			sum += -1f * FeatureFunctions.bumpiness(nextState);
+			sum += 1000f * FeatureFunctions.completedLines(nextState);
 
 			if (sum >= largest) {
 				bestMove = legalMove;
