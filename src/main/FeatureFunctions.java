@@ -1,5 +1,7 @@
 package main;
 
+import java.util.function.IntFunction;
+
 import players.Feature;
 
 /**
@@ -274,6 +276,136 @@ public class FeatureFunctions {
             return beta;
         };
     }
+
+    public interface IntegerFeature {
+        int compute(NextState n);
+    }
+    private static final int LOSE_SCORE_INT = -9999999;
+    private static final int minimaxRecInt(NextState ns, IntegerFeature feature, int alpha, int beta, int depth) {
+        if (ns.lost == true) {
+            return LOSE_SCORE_INT - depth;
+        }
+        if (depth <= 0) {
+            return feature.compute(ns);
+        }
+        
+        // MIN PLAYER
+        for (int i = 0; i < State.N_PIECES; ++i) {
+            // MAX PLAYER
+            int newAlpha = alpha;
+            int[][] legalMoves = NextState.legalMoves[i];
+            for (int j=0; j<legalMoves.length; ++j) {
+                NextState nns = NextState.generate(ns,i,legalMoves[j]);
+                int score = minimaxRecInt(nns, feature, newAlpha, beta, depth-1);
+                if (score > newAlpha) {
+                    newAlpha = score;
+                    if (newAlpha >= beta) {
+                        break;
+                    }
+                }
+            }
+            if (newAlpha < beta) {
+                beta = newAlpha;
+                if (beta <= alpha) {
+                    break;
+                }
+            }
+        }
+        return beta;
+        
+    }
     
+    public static Feature minimaxInt(int depth, IntegerFeature feature) {
+        return (NextState nextState) -> {
+            if (nextState.lost == true) {
+                return LOSE_SCORE - depth;
+            }
+            if (depth <= 0) {
+                return feature.compute(nextState);
+            }
+            
+            // MIN PLAYER
+            int beta = Integer.MAX_VALUE;
+            for (int i = 0; i < State.N_PIECES; ++i) {
+                // MAX PLAYER
+                int newAlpha = Integer.MIN_VALUE;
+                int[][] legalMoves = NextState.legalMoves[i];
+                for (int j=0; j<legalMoves.length; ++j) {
+                    NextState ns = NextState.generate(nextState,i,legalMoves[j]);
+                    int score = minimaxRecInt(ns, feature, newAlpha, beta, depth-1);
+                    if (score > newAlpha) {
+                        newAlpha = score;
+                        if (newAlpha >= beta) {
+                            break;
+                        }
+                    }
+                }
+                if (newAlpha < beta) {
+                    beta = newAlpha;
+                }
+            }
+            return beta;
+        };
+    }
+    
+    public static Feature variableHeightMinimaxInt(FunctionInt function, IntegerFeature feature) {
+        Feature[] minimaxes = new Feature[]{
+            minimaxInt(6, feature),
+            minimaxInt(4, feature),
+            minimaxInt(3, feature)
+        };
+        return (NextState ns) -> {
+            int choice = function.apply(height(ns));
+            //System.out.println(height(ns) + "|" + choice);
+            if (choice >= minimaxes.length) {
+                return 0;
+            }
+            if (choice >= minimaxes.length)
+                choice = minimaxes.length-1;
+            return minimaxes[choice].compute(ns);
+        };
+    }
+    
+    public interface FunctionInt {
+        public int apply(int input);
+    }
+
+    public static int height(NextState nextState) {
+        int maximumHeight = Integer.MIN_VALUE;
+        int top[] = nextState.getTop();
+        for (int x:top) {
+            if (x > maximumHeight) {
+                maximumHeight = x;
+            }
+        }
+        return maximumHeight;
+    }
+
+    /**
+     * We divide the playing field vertically into "height regions" of height = regionHeight each. <br>
+     * This feature returns which region it is in.
+     * e.g. regionHeight = 6:
+     * 
+     * match height with:
+     *  | 0 => return 0
+     *  | 1 to 6 => return 1
+     *  | 7 - 12 => return 2
+     *  | 13 - 18 => return 3
+     *  |...
+     */
+    public static IntegerFeature negHeightRegion(int regionHeight) {
+        return (NextState nextState) -> {
+            int maximumHeight = Integer.MIN_VALUE;
+            int top[] = nextState.getTop();
+            for (int x:top) {
+                if (x > maximumHeight) {
+                    maximumHeight = x;
+                }
+            }
+            
+            int heightRegion = ((maximumHeight-1) / regionHeight) + 1;
+            return -heightRegion;
+        };
+    }
 }
 

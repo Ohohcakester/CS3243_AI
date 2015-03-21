@@ -1,6 +1,5 @@
 package players;
 import java.util.Arrays;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 import main.FeatureFunctions;
@@ -30,7 +29,7 @@ public class WeightedHeuristicPlayer {
     protected void configure() {
         features = new Feature[]{
                 (n)->FeatureFunctions.lost(n),
-               // (n)->FeatureFunctions.maximumColumnHeight(n),
+                (n)->FeatureFunctions.maximumColumnHeight(n),
                 (n)->FeatureFunctions.totalHolePieces(n),
                 (n)->FeatureFunctions.totalColumnsHeight(n),
                 (n)->FeatureFunctions.bumpiness(n),
@@ -38,7 +37,13 @@ public class WeightedHeuristicPlayer {
                 (n)->FeatureFunctions.totalFilledCells(n),
                 //(n)->FeatureFunctions.minMaximumColumnHeight(n),
                 //(n)->FeatureFunctions.minMaxTotalHoles(n),
-                (n)->FeatureFunctions.differenceHigh(n)
+                (n)->FeatureFunctions.differenceHigh(n),
+                FeatureFunctions.variableHeightMinimaxInt(
+                        (h) -> State.ROWS-h,
+                        FeatureFunctions.negHeightRegion(1)
+                        ),
+                FeatureFunctions.minimaxInt(2, FeatureFunctions.negHeightRegion(10)),
+                FeatureFunctions.minimaxInt(2, FeatureFunctions.negHeightRegion(7))
         };
     }
     
@@ -46,7 +51,7 @@ public class WeightedHeuristicPlayer {
         weights = new float[features.length];
         //weights = new float[]{-99999.0f, -5f, -5f};
         //weights = new float[]{-99999.0f, -0.0f, -72.27131f, -0.39263827f, -18.150364f, 1.9908575f, -4.523054f, 2.6717715f}; // <-- good weights.
-        //weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, -1f, -1f}; // <-- good weights.
+        weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, 100f, 100f, 10f}; // <-- better weights.
         //weights = new float[]{-99999.0f, -1, -4, -95};
     }
     
@@ -123,7 +128,7 @@ public class WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 1; // 0 to watch, 1 to learn.
+        int choice = 0; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new WeightedHeuristicPlayer();
         WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
