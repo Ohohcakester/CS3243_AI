@@ -207,9 +207,10 @@ public class FeatureFunctions {
 
     
     
+	private static final float LOSE_SCORE = -9999999f;
     private static final float minimaxRec(NextState ns, Feature feature, float alpha, float beta, int depth) {
         if (ns.lost == true) {
-            return -99999f;
+            return LOSE_SCORE - depth;
         }
         if (depth <= 0) {
             return feature.compute(ns);
@@ -243,6 +244,13 @@ public class FeatureFunctions {
     
     public static Feature minimax(int depth, Feature feature) {
         return (NextState nextState) -> {
+            if (nextState.lost == true) {
+                return LOSE_SCORE - depth;
+            }
+            if (depth <= 0) {
+                return feature.compute(nextState);
+            }
+            
             // MIN PLAYER
             float beta = Float.POSITIVE_INFINITY;
             for (int i = 0; i < State.N_PIECES; ++i) {

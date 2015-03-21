@@ -11,15 +11,16 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
     protected void configure() {
         features = new Feature[]{
-                (n)->FeatureFunctions.lost(n),
-                FeatureFunctions.minimax(3, (n)-> {
+                //(n)->FeatureFunctions.lost(n),
+                FeatureFunctions.minimax(2, (n)-> {
                     float total = 0;
-                    total += FeatureFunctions.totalHoles(n);
-                    total += 1f*FeatureFunctions.bumpiness(n);
-                    total += 8f*FeatureFunctions.totalColumnsHeight(n);
-                    total -= 10f*FeatureFunctions.completedLines(n);
-                    total += 2f*FeatureFunctions.differenceHigh(n);
-                    total += 20f*FeatureFunctions.totalHolePieces(n);
+                    total -= FeatureFunctions.totalHoles(n);
+                    total -= 6f*FeatureFunctions.bumpiness(n);
+                    total -= 12f*FeatureFunctions.totalColumnsHeight(n);
+                    total += 100f*FeatureFunctions.completedLines(n);
+                    total -= 2f*FeatureFunctions.differenceHigh(n);
+                    total -= 15f*FeatureFunctions.totalHolePieces(n);
+                    total -= 8f*FeatureFunctions.totalHoles(n);
                     
                     //System.out.println(FeatureFunctions.totalHoles(s,n) - FeatureFunctions.totalHolePieces(s,n));
                     
@@ -39,7 +40,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
     
     protected void initialiseWeights() {
         weights = new float[features.length];
-        weights = new float[]{-99999.0f, -5f};
+        weights = new float[]{1f};
         //weights = new float[]{-99999.0f, -0.0f, -72.27131f, -0.39263827f, -18.150364f, 1.9908575f, -4.523054f, 2.6717715f}; // <-- good weights.
         //weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, -1f, -1f}; // <-- good weights.
         //weights = new float[]{-99999.0f, -1, -4, -95};
@@ -80,7 +81,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
         WeightedHeuristicPlayer p = new OhPlayer();
         WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
-        adjuster.fixValue(0, -99999f);
+        //adjuster.fixValue(0, -99999f);
         //adjuster.fixValue(1, -0f);
         //adjuster.fixValue(7, -0f);
         //adjuster.fixValue(2, -5f);

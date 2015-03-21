@@ -56,6 +56,7 @@ public class WeightedHeuristicPlayer {
         for (int i=0; i<features.length; i++) {
             sum += weights[i] * features[i].compute(nextState);
         }
+        //System.out.println(Arrays.toString(legalMove) + " = " + sum);
         return sum;
     }
     
@@ -65,7 +66,7 @@ public class WeightedHeuristicPlayer {
         IntStream.range(0, legalMoves.length)
             .parallel()
             .forEach(i -> scores[i] = heuristic(s, legalMoves[i]));
-
+        //System.out.println("----");
         float largest = Float.NEGATIVE_INFINITY;
         int best = -1;
         for (int i=0; i<scores.length; i++) {
@@ -144,8 +145,11 @@ public class WeightedHeuristicPlayer {
     }
     
     public static void watch(WeightedHeuristicPlayer p) {
+        final int REPORT_INTERVAL = 1000;
         State s = new State();
         new TFrame(s);
+
+        int counter = REPORT_INTERVAL;
         while(!s.hasLost()) {
             s.makeMove(p.findBest(s,s.legalMoves()));
             s.draw();
@@ -154,6 +158,11 @@ public class WeightedHeuristicPlayer {
                 Thread.sleep(0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+            
+            if (counter <= 0) {
+                System.out.println("CURRENT SCORE: " + s.getRowsCleared());
+                counter = REPORT_INTERVAL;
             }
         }
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
