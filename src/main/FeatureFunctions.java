@@ -315,6 +315,9 @@ public class FeatureFunctions {
         
     }
     
+    /**
+     * Minimax that uses an integer feature instead of a Feature.
+     */
     public static Feature minimaxInt(int depth, IntegerFeature feature) {
         return (NextState nextState) -> {
             if (nextState.lost == true) {
@@ -348,14 +351,17 @@ public class FeatureFunctions {
         };
     }
     
-    public static Feature variableHeightMinimaxInt(FunctionInt function, IntegerFeature feature) {
+    /**
+     * A minimax that deepens the search tree as you get closer to dying. (Based on heightTransform(height))
+     */
+    public static Feature variableHeightMinimaxInt(FunctionInt heightTransform, IntegerFeature feature) {
         Feature[] minimaxes = new Feature[]{
             minimaxInt(6, feature),
             minimaxInt(4, feature),
             minimaxInt(3, feature)
         };
         return (NextState ns) -> {
-            int choice = function.apply(height(ns));
+            int choice = heightTransform.apply(height(ns));
             //System.out.println(height(ns) + "|" + choice);
             if (choice >= minimaxes.length) {
                 return 0;
@@ -370,6 +376,9 @@ public class FeatureFunctions {
         public int apply(int input);
     }
 
+    /**
+     * Returns max height of state
+     */
     public static int height(NextState nextState) {
         int maximumHeight = Integer.MIN_VALUE;
         int top[] = nextState.getTop();
