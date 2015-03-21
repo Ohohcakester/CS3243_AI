@@ -219,7 +219,8 @@ public class FeatureFunctions {
         }
         
         // MIN PLAYER
-        for (int i = 0; i < State.N_PIECES; ++i) {
+        for (int i : NextState.minimaxPieceOrdering) {
+        //for (int i = 0; i < State.N_PIECES; ++i) {
             // MAX PLAYER
             float newAlpha = alpha;
             int[][] legalMoves = NextState.legalMoves[i];
@@ -255,7 +256,8 @@ public class FeatureFunctions {
             
             // MIN PLAYER
             float beta = Float.POSITIVE_INFINITY;
-            for (int i = 0; i < State.N_PIECES; ++i) {
+            for (int i : NextState.minimaxPieceOrdering) {
+            //for (int i = 0; i < State.N_PIECES; ++i) {
                 // MAX PLAYER
                 float newAlpha = Float.NEGATIVE_INFINITY;
                 int[][] legalMoves = NextState.legalMoves[i];
@@ -290,7 +292,8 @@ public class FeatureFunctions {
         }
         
         // MIN PLAYER
-        for (int i = 0; i < State.N_PIECES; ++i) {
+        for (int i : NextState.minimaxPieceOrdering) {
+        //for (int i = 0; i < State.N_PIECES; ++i) {
             // MAX PLAYER
             int newAlpha = alpha;
             int[][] legalMoves = NextState.legalMoves[i];
@@ -329,7 +332,8 @@ public class FeatureFunctions {
             
             // MIN PLAYER
             int beta = Integer.MAX_VALUE;
-            for (int i = 0; i < State.N_PIECES; ++i) {
+            for (int i : NextState.minimaxPieceOrdering) {
+            //for (int i = 0; i < State.N_PIECES; ++i) {
                 // MAX PLAYER
                 int newAlpha = Integer.MIN_VALUE;
                 int[][] legalMoves = NextState.legalMoves[i];

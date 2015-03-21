@@ -18,11 +18,11 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                     height = ((height+1) / 7) - 1;
                     total -= 50f*height;
                     total -= FeatureFunctions.totalHoles(n);
-                    total -= 8f*FeatureFunctions.bumpiness(n);
-                    total -= 12f*FeatureFunctions.totalColumnsHeight(n);
-                    total += 24f*FeatureFunctions.completedLines(n);
+                    total -= 10f*FeatureFunctions.bumpiness(n);
+                    total -= 20f*FeatureFunctions.totalColumnsHeight(n);
+                    total += 4f*FeatureFunctions.completedLines(n);
                     total -= 2f*FeatureFunctions.differenceHigh(n);
-                    total -= 20f*FeatureFunctions.totalHolePieces(n);
+                    total -= 26f*FeatureFunctions.totalHolePieces(n);
                     total -= 3f*FeatureFunctions.totalHoles(n);
                     
                     //System.out.println(FeatureFunctions.totalHoles(s,n) - FeatureFunctions.totalHolePieces(s,n));

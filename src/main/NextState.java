@@ -12,6 +12,13 @@ public class NextState {
     public final int rowsCleared;
 
     public static int[][][] legalMoves = new int[State.N_PIECES][][];
+    public static int[] minimaxPieceOrdering = new int[State.N_PIECES];
+    
+    {
+        // Worst to best:
+        // 5 6 2 3 4 0 1
+        minimaxPieceOrdering = new int[]{0,5,6,2,3,4,1};
+    }
     
     {
         //for each piece type

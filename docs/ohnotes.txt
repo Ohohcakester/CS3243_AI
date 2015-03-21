@@ -1,1 +1,74 @@
 I will be typing random notes here
+
+
+========================================
+Piece Ordering for Minimax.
+========================================
+The min player tries to select the worst piece to play.
+We want to select the worse pieces first to trim early.
+Least possibilities also goes first as they have smaller trees.
+
+Minimax Ordering: Worst to best, least moves to most moves.
+0 5 6 2 3 4 1
+
+========================================
+Some possibly good feature functions:
+========================================
+
+<< Height Region >>
+We divide the playing field vertically into "height regions" of height = regionHeight each.
+This feature returns which region it is in.
+e.g. regionHeight = 6:
+
+match height with:
+ | 0 => return 0
+ | 1 to 6 => return 1
+ | 7 - 12 => return 2
+ | 13 - 18 => return 3
+ |...
+
+Comments: This works well with minimax, I believe. Instead of the minimax algo just avoiding dying (hitting the top), it sets arbitrary horizontal bars in the middle of the field that we "should not cross unless we really can't help it".
+This directs minimax to search for move combinations that keep the tetris from going above a certain height limit.
+heightRegion = 7 seems to work well.
+
+========================================
+
+<< variableHeightMinimax >>
+Idea: we have smaller search trees as we go closer towards losing (less possible moves to make). So why not increase the search tree depth as we get closer to losing? (i.e. (State.ROWS - maxColumnHeight) is close to 0). This could also help the AI to 'worm' its way out of near-death situations to get back into a safe state.
+
+Comments: It didn't work as well as I hoped. The search tree is still large when you get close to the goal, so a search depth like 5 still takes quite some time. When the AI is this close to losing, it seems like it really may be impossible to get out of it. It delays the AI's death, but it seems to be not for long.
+Perhaps I'm not doing it right. I know there's one issue with how I am implementing it, and that is that I am using the height of nextState, not the current state to choose the minimax depth. But that's because I can't access the current state's height...
+
+
+===========================================
+
+
+<< TotalHolePieces vs TotalHoles >>
+Okay, first excuse my poor naming sense.
+
+Total Holes is the number of unfilled blocks that are underneath at least one filled block.
+
+Total Hole Pieces is similar, but each vertical column of unfilled blocks is regarded as one hole piece.
+
+|@|@|@|@|@|@|
+|@|_|@|@|_|@|  7 holes
+|@|_|@|@|@|@|  4 hole pieces
+|@|_|@|@|_|@|
+|@|@|@|_|_|@|
+
+This means that totalHolePieces <= totalHoles.
+Why do something like this? It seems that vertical hole columns aren't too bad compared to scattered holes. Scattered holes are much more difficult to fix than if the holes are all aligned in one column.
+Thus I should add more weight to scattered holes than hole pieces.
+
+Comments: minimax seems to fare much better using totalHolePieces than totalHoles. I'm not sure how they compare without minimax.
+Note: I use these two feature functions together. totalHoles has a much smaller weight than totalHolePieces.
+
+
+===============================================
+
+
+
+
+
+
+
