@@ -1,5 +1,6 @@
 package main;
 
+import java.util.Arrays;
 import java.util.function.IntFunction;
 
 import players.Feature;
@@ -223,9 +224,129 @@ public class FeatureFunctions {
         }
         return highestColumn - lowestColumn;
 	}
-	
-
     
+    
+    public static int medianHeight(NextState ns) {
+        int top[] = ns.getTop();
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int t : top) {
+            if (t < min) min = t;
+            if (t > max) max = t;
+        }
+        int[] count = new int[max-min+1];
+        for (int t : top) {
+            count[t - min]++;
+        }
+        int maxCount = Integer.MIN_VALUE;
+        int maxIndex = -1;
+        for (int i=0; i<count.length; ++i) {
+            if (count[i] > maxCount) {
+                maxCount = count[i];
+                maxIndex = i;
+            }
+        }
+        return maxIndex + min;
+    }
+    
+    
+    public static int maxHeight(NextState ns) {
+        int top[] = ns.getTop();
+        int max = Integer.MIN_VALUE;
+        for (int t : top) {
+            if (t > max) max = t;
+        }
+        return max;
+    }
+
+    /**
+     * For every hole "column", Adds the height of the column to the total.
+     */
+    public static float totalHoleCovers(NextState ns) {
+        int total = 0;
+        
+        int field[][] = ns.getField();
+        int top[] = ns.getTop();
+        for (int j = 0; j < State.COLS; ++j) {
+            boolean last = false;
+            for (int i = 0; i < top[j]; ++i) {
+                if (field[i][j] == 0) {
+                    if (!last) {
+                        total += top[j];
+                    }
+                    last = true;
+                } else {
+                    last = false;
+                }
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Counts the number of holes and pits by comparing with the heights of the neighbouring columns.
+     * Only gives score to columns and pits of height at least 3.
+     * Examples:
+     * 
+     * |_|_|@|@|                   |@|_|_|_|
+     * |@|@|@|@|                   |@|_|_|@|
+     * |@|@|_|@| <-- Hole Column   |@|@|_|@|
+     * |@|@|_|@|     Height 4      |@|@|_|@|  <--- Pit Column
+     * |@|@|_|@|                   |@|@|_|@|       Height 5
+     * |@|@|_|@|                   |@|@|_|@|
+     * |@|@|@|@|                   |@|@|@|@|
+     * 
+     * Columns are given quadratically increasing scores according to the height.
+     *   Height   Score
+     *     1        0
+     *     2        0
+     *     3        1
+     *     4        3
+     *     5        6
+     *     6       10
+     * 
+     */
+    public static float holeAndPitColumns(NextState ns) {
+        //int maxHeight = maxHeight(ns);
+        int total = 0;
+        
+        int field[][] = ns.getField();
+        int top[] = ns.getTop();
+        for (int j = 0; j < State.COLS; ++j) {
+            int count = 0;
+            int height = top[j];
+            if (j > 0 && top[j-1] > height) height = top[j-1];
+            if (j+1 < State.COLS && top[j+1] < height) height = top[j+1];
+            
+            for (int i = 0; i < height; ++i) {
+                if (field[i][j] == 0) {
+                    ++count;
+                    if (count > 2) {
+                        total += count - 2;
+                    }
+                } else {
+                    count = 0;
+                }
+            }
+        }
+        return total;
+    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
     
 	private static final float LOSE_SCORE = -9999999f;
     private static final float minimaxRec(NextState ns, Feature feature, float alpha, float beta, int depth) {

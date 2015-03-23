@@ -12,18 +12,20 @@ public class OhPlayer extends WeightedHeuristicPlayer {
     protected void configure() {
         features = new Feature[]{
                 //(n)->FeatureFunctions.lost(n),
-                FeatureFunctions.minimax(2, (n)-> {
+                FeatureFunctions.minimax(1, (n)-> {
                     float total = 0;
                     int height = (int)FeatureFunctions.maximumColumnHeight(n);
                     height = ((height+1) / 7) - 1;
-                    total -= 50f*height;
+                    //total -= 50f*height;
                     total -= FeatureFunctions.totalHoles(n);
-                    total -= 8f*FeatureFunctions.bumpiness(n);
-                    total -= 12f*FeatureFunctions.totalColumnsHeight(n);
+                    total -= 10f*FeatureFunctions.bumpiness(n);
+                    total -= 30f*FeatureFunctions.totalColumnsHeight(n);
                     total += 20f*FeatureFunctions.completedLines(n);
                     total -= 2f*FeatureFunctions.differenceHigh(n);
-                    total -= 30f*FeatureFunctions.totalHolePieces(n);
-                    total += 5f*FeatureFunctions.totalHoles(n);
+                    total -= 26f*FeatureFunctions.totalHolePieces(n);
+                    total -= 0f*FeatureFunctions.totalHoles(n);
+                    total -= 5f*FeatureFunctions.totalHoleCovers(n);
+                    total -= 50f*FeatureFunctions.holeAndPitColumns(n);
                     
                     //System.out.println(FeatureFunctions.totalHoles(s,n) - FeatureFunctions.totalHolePieces(s,n));
                     
