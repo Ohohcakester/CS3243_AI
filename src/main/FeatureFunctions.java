@@ -69,23 +69,22 @@ public class FeatureFunctions {
     }
     
     /**
-     * return the number of total weighted holes
+     * return the number of total weighted piece holes
      * for each hole at (x,y), the weight is top[y] - x.
      */
     public static float totalWeightedHoles(NextState nextState) {
         float totalWeightedHoles = 0;
         int field[][] = nextState.getField();
         int top[] = nextState.getTop();
-        for (int i = 0; i < State.ROWS; ++i) {
-            for (int j = 0; j < State.COLS; ++j) {
-                if (field[i][j] == 0 && i < top[j]) {
+        for (int j = 0; j < State.COLS; ++j) {
+            for (int i = State.ROWS - 2; i >= 0; --i) {
+                if (field[i][j] == 0 && i < top[j] && field[i+1][j] != 0) {
                     totalWeightedHoles += top[j] - i;
                 }
             }
         }
         return totalWeightedHoles;
     }
-
 
     /**
      * returns the total number of holes
@@ -131,20 +130,9 @@ public class FeatureFunctions {
 	 */
 	public static float completedLines(NextState nextState) {
 		int numCompletedLines = 0;
-		int field[][] = nextState.getField();
-
-		for (int i = 0; i < State.ROWS; ++i) {
-			boolean flag = true;
-			for (int j = 0; j < State.COLS; ++j) {
-				if (field[i][j] == 0) {
-					flag = false;
-				}
-			}
-			if(flag == true) {
-				numCompletedLines++;
-			}
-		}
-		return numCompletedLines;
+		numCompletedLines = nextState.rowsCleared;
+		//return numCompletedLines;
+		return (float)Math.pow(numCompletedLines,1);
 	}
 	
 	/**
