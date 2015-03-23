@@ -66,6 +66,24 @@ public class FeatureFunctions {
         }
         return totalHoles;
     }
+    
+    /**
+     * return the number of total weighted holes
+     * for each hole at (x,y), the weight is top[y] - x.
+     */
+    public static float totalWeightedHoles(NextState nextState) {
+        float totalWeightedHoles = 0;
+        int field[][] = nextState.getField();
+        int top[] = nextState.getTop();
+        for (int i = 0; i < State.ROWS; ++i) {
+            for (int j = 0; j < State.COLS; ++j) {
+                if (field[i][j] == 0 && i < top[j]) {
+                    totalWeightedHoles += top[j] - i;
+                }
+            }
+        }
+        return totalWeightedHoles;
+    }
 
 
     /**
