@@ -250,7 +250,7 @@ public class FeatureFunctions {
     /**
      * For every hole "column", Adds the height of the column to the total.
      */
-    public static float totalHoleCovers(NextState ns) {
+    public static float weightedTotalHolePieces(NextState ns) {
         int total = 0;
         
         int field[][] = ns.getField();

@@ -24,7 +24,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                     total -= 2f*FeatureFunctions.differenceHigh(n);
                     total -= 26f*FeatureFunctions.totalHolePieces(n);
                     total -= 0f*FeatureFunctions.totalHoles(n);
-                    total -= 5f*FeatureFunctions.totalHoleCovers(n);
+                    total -= 5f*FeatureFunctions.weightedTotalHolePieces(n);
                     total -= 50f*FeatureFunctions.holeAndPitColumns(n);
                     
                     //System.out.println(FeatureFunctions.totalHoles(s,n) - FeatureFunctions.totalHolePieces(s,n));
