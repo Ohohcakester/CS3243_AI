@@ -180,7 +180,7 @@ public class WeightedHeuristicPlayer {
     public static void checkScore(WeightedHeuristicPlayer p) {
         final int REPORT_INTERVAL = 1000;
         State s = new State();
-        new TFrame(s);
+        //new TFrame(s);
 
         int counter = REPORT_INTERVAL;
         while(!s.hasLost()) {

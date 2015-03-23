@@ -132,7 +132,7 @@ public class FeatureFunctions {
 		int numCompletedLines = 0;
 		numCompletedLines = nextState.rowsCleared;
 		//return numCompletedLines;
-		return (float)Math.pow(numCompletedLines,1);
+		return (float)Math.pow(numCompletedLines,4);
 	}
 	
 	/**
