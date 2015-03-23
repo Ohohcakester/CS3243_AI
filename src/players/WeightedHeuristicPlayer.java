@@ -174,6 +174,32 @@ public class WeightedHeuristicPlayer {
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
     }
     
+    /**
+     * watch, but without UI. much faster
+     */
+    public static void checkScore(WeightedHeuristicPlayer p) {
+        final int REPORT_INTERVAL = 1000;
+        State s = new State();
+        new TFrame(s);
+
+        int counter = REPORT_INTERVAL;
+        while(!s.hasLost()) {
+            s.makeMove(p.findBest(s,s.legalMoves()));
+            try {
+                Thread.sleep(0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            
+            counter--;
+            if (counter <= 0) {
+                System.out.println("CURRENT SCORE: " + s.getRowsCleared());
+                counter = REPORT_INTERVAL;
+            }
+        }
+        System.out.println("You have completed "+s.getRowsCleared()+" rows.");
+    }
+    
     public static void learn(WeightedHeuristicPlayer p, WeightAdjuster adjuster) {
         p.learn(adjuster);
     }
