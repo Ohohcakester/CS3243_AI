@@ -1,5 +1,7 @@
 package main;
 
+import java.util.Arrays;
+
 import players.Feature;
 
 /**
@@ -95,6 +97,144 @@ public class FeatureFunctions {
         }
 
         return bumpiness;
+    }
+
+    /**
+     * Starts from the top of the first column, and draws a line tracing the "shape"
+     * of the top row to the top of the last column.
+     */
+    public static float topPerimeter(NextState nextState) {
+        int perimeter = 0;
+        int[][] field = nextState.getField();
+        int top[] = nextState.getTop();
+
+        int rows = State.ROWS;
+        int y = top[0];
+        int x = 0;
+
+        //System.out.println(Arrays.deepToString(field) + "\n" + y);
+        boolean lastIsUpRight = true;
+        boolean tl, tr, bl, br;
+        while (x < State.COLS) {
+            tl = (y < rows && x <= 0 || field[y][x-1] != 0);
+            tr = (y < rows && field[y][x] != 0);
+            bl = (y <= 0 || x <= 0 || field[y-1][x-1] != 0);
+            br = (y <= 0 || field[y-1][x] != 0);
+            //System.out.println(tl + " | " + tr +  " | " + bl + " | " + br);
+            
+            if (tr) {
+                if (br) {
+                    if (tl) {
+                        /* @@
+                        \  ?@ */
+                        x--;
+                        lastIsUpRight = false;
+                    } else {
+                        /* _@
+                        \  ?@ */
+                        y++;
+                        lastIsUpRight = true;
+                    }
+                } else {
+                    if (tl) {
+                        if (bl) {
+                            /* @@
+                            \  @_ */
+                            y--;
+                            lastIsUpRight = false;
+                        } else {
+                            /* @@
+                            \  __ */
+                            x--;
+                            lastIsUpRight = false;
+                        }
+                    } else {
+                        if (bl) {
+                            /* _@
+                            \  @_ */
+                            if (lastIsUpRight) {
+                                y++;
+                                lastIsUpRight = true;
+                            } else {
+                                y--;
+                                lastIsUpRight = false;
+                            }
+                        } else {
+                            /* _@
+                            \  __ */
+                            y++;
+                            lastIsUpRight = true;
+                        }
+                    }
+                }
+            } else {
+                if (br) {
+                    if (tl) {
+                        if (bl) {
+                            /* @_
+                            \  @@ */
+                            x++;
+                            lastIsUpRight = true;
+                        } else {
+                            /* @_
+                            \  _@ */
+                            if (lastIsUpRight) {
+                                x--;
+                                lastIsUpRight = false;
+                            } else {
+                                x++;
+                                lastIsUpRight = true;
+                            }
+                        }
+                    } else {
+                        /* __
+                        \  ?@ */
+                        x++;
+                        lastIsUpRight = true;
+                    }
+                } else {
+                    if (bl) {
+                        /* ?_
+                        \  @_ */
+                        y--;
+                        lastIsUpRight = false;
+                    } else {
+                        /* ?_
+                        \  __ */
+                        x--;
+                        lastIsUpRight = false;
+                    }
+                }
+            }
+            
+            /*if (y<rows && field[y][x] != 0) {
+                // must go up.
+                if (y < rows-1 && x > 0&& field[y][x-1] != 0) {
+                    // must go left
+                    x--;
+                    lastIsUpRight = false;
+                } else {
+                    y++;
+                    lastIsUpRight = true;
+                }
+            } else if (y>0 && field[y-1][x] == 0) {
+                // can go down.
+                if (x> 0 && field[y][x-1] != 0 && field[y-1][x-1] == 0) {
+                    // can go left
+                    x--;
+                    lastIsUpRight = false;
+                } else {
+                    y--;
+                    lastIsUpRight = false;
+                }
+            } else {
+                x++;
+                lastIsUpRight = true;
+            }*/
+            perimeter++;
+        }
+        //System.out.println(Arrays.deepToString(field) + "\n" + perimeter);
+        return perimeter;
     }
 
     /**

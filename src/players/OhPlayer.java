@@ -19,7 +19,8 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 (n) -> FeatureFunctions.numHoles(n),
                 (n) -> FeatureFunctions.numEmptyCells(n),
                 (n) -> FeatureFunctions.sumHoleDistanceFromTop(n),
-                (n) -> FeatureFunctions.holeAndPitColumns(n)
+                (n) -> FeatureFunctions.holeAndPitColumns(n),
+                (n) -> FeatureFunctions.topPerimeter(n)
                 
                 //(n)->FeatureFunctions.lost(n),
                 /*FeatureFunctions.minimax(1, (n)-> {
@@ -55,7 +56,9 @@ public class OhPlayer extends WeightedHeuristicPlayer {
     
     protected void initialiseWeights() {
         weights = new float[features.length];
-        weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -5, -30};
+        //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -5, -30, 0};
+        //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -15, -5, -10};
+        weights = new float[]{-99999.0f, 0, 0, 0, 0, -50, 0, -30, -50, -50,};
         
         //weights = new float[]{-99999.0f, -0.0f, -72.27131f, -0.39263827f, -18.150364f, 1.9908575f, -4.523054f, 2.6717715f}; // <-- good weights.
         //weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, -1f, -1f}; // <-- good weights.
