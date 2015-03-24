@@ -10,12 +10,12 @@ public class BlahPlayer extends WeightedHeuristicPlayer {
     protected void configure() {
         features = new Feature[]{
                 (n)->FeatureFunctions.lost(n),
-                (n)->FeatureFunctions.maximumColumnHeight(n),
-                (n)->FeatureFunctions.totalHoles(n),
-                (n)->FeatureFunctions.totalColumnsHeight(n),
+                (n)->FeatureFunctions.maxHeight(n),
+                (n)->FeatureFunctions.numEmptyCells(n),
+                (n)->FeatureFunctions.sumHeight(n),
                 (n)->FeatureFunctions.bumpiness(n),
-                (n)->FeatureFunctions.completedLines(n),
-                (n)->FeatureFunctions.totalFilledCells(n)
+                (n)->FeatureFunctions.numRowsCleared(n),
+                (n)->FeatureFunctions.numFilledCells(n)
                 //nextStateFeatureFunction(n)->FeatureFunctions.totalFilledCells(n)),
                 //good
         };

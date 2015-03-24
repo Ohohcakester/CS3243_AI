@@ -29,15 +29,15 @@ public class WeightedHeuristicPlayer {
     protected void configure() {
         features = new Feature[]{
                 (n)->FeatureFunctions.lost(n),
-                (n)->FeatureFunctions.maximumColumnHeight(n),
-                (n)->FeatureFunctions.totalHolePieces(n),
-                (n)->FeatureFunctions.totalColumnsHeight(n),
+                (n)->FeatureFunctions.maxHeight(n),
+                (n)->FeatureFunctions.numHoles(n),
+                (n)->FeatureFunctions.sumHeight(n),
                 (n)->FeatureFunctions.bumpiness(n),
-                (n)->FeatureFunctions.completedLines(n),
-                (n)->FeatureFunctions.totalFilledCells(n),
+                (n)->FeatureFunctions.numRowsCleared(n),
+                (n)->FeatureFunctions.numFilledCells(n),
                 //(n)->FeatureFunctions.minMaximumColumnHeight(n),
                 //(n)->FeatureFunctions.minMaxTotalHoles(n),
-                (n)->FeatureFunctions.differenceHigh(n),
+                (n)->FeatureFunctions.maxHeightDifference(n),
                 FeatureFunctions.variableHeightMinimaxInt(
                         (h) -> State.ROWS-h,
                         FeatureFunctions.negHeightRegion(1)

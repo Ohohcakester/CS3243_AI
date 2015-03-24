@@ -14,17 +14,17 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
                 //(n)->FeatureFunctions.lost(n),
                 FeatureFunctions.minimax(1, (n)-> {
                     float total = 0;
-                    int height = (int)FeatureFunctions.maximumColumnHeight(n);
+                    int height = (int)FeatureFunctions.maxHeight(n);
                     height = ((height+1) / 7) - 1;
                     //total -= 50f*height;
-                    total -= FeatureFunctions.totalHoles(n);
+                    total -= FeatureFunctions.numEmptyCells(n);
                     total -= 8f*FeatureFunctions.bumpiness(n);
-                    total -= 12f*FeatureFunctions.totalColumnsHeight(n);
-                    total += 30f*FeatureFunctions.completedLines(n);
-                    total -= 2f*FeatureFunctions.differenceHigh(n);
-                    total -= 30f*FeatureFunctions.totalHolePieces(n);
+                    total -= 12f*FeatureFunctions.sumHeight(n);
+                    total += 30f*FeatureFunctions.numRowsCleared(n);
+                    total -= 2f*FeatureFunctions.maxHeightDifference(n);
+                    total -= 30f*FeatureFunctions.numHoles(n);
                     //total += 5f*FeatureFunctions.totalHoles(n);
-                    total -= 1f*FeatureFunctions.totalWeightedHoles(n);
+                    total -= 1f*FeatureFunctions.sumEmptyCellDistanceFromTop(n);
                     
                     //System.out.println(FeatureFunctions.totalHoles(s,n) - FeatureFunctions.totalHolePieces(s,n));
                     
