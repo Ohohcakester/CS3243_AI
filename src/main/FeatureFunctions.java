@@ -1,8 +1,5 @@
 package main;
 
-import java.util.Arrays;
-import java.util.function.IntFunction;
-
 import players.Feature;
 
 /**
@@ -13,246 +10,172 @@ import players.Feature;
  */
 public class FeatureFunctions {
 
-	public static float exampleFeature(NextState nextState) {
-		return 4;
-	}
-
-	/**
-	 * returns the height of the tallest "skyscrapers"
-	 */
-	public static float maximumColumnHeight(NextState nextState) {
-		int maximumHeight = Integer.MIN_VALUE;
-		int top[] = nextState.getTop();
-		for (int x:top) {
-			if (x > maximumHeight) {
-				maximumHeight = x;
-			}
-		}
-		return maximumHeight;
-	}
-
-	/**
-	 * returns the total height of all "skyscrapers"
-	 */
-	public static float totalColumnsHeight(NextState nextState) {
-		int totalHeight = 0;
-		int top[] = nextState.getTop();
-		for (int x:top) {
-			totalHeight += x;
-		}
-		return totalHeight;
-	}
-
-
-	/**
-	 * returns value 1 if lost, 0 if not lost
-	 */
-	public static float lost(NextState nextState) {
-		return nextState.hasLost() ? 1: 0;
-	}
+    public static float exampleFeature(NextState nextState) {
+        return 4;
+    }
 
     /**
-     * returns the total number of holes
+     * Returns 1 if state is lost, 0 otherwise
      */
-    public static float totalHoles(NextState nextState) {
-        int totalHoles = 0;
-        int field[][] = nextState.getField();
+    public static float lost(NextState nextState) {
+        return nextState.hasLost() ? 1 : 0;
+    }
+
+    /**
+     * Returns the number of rows cleared
+     * Maximize to ensure game continuity
+     */
+    public static float numRowsCleared(NextState nextState) {
+        int numRowsCleared = 0;
+        numRowsCleared = nextState.rowsCleared;
+
+        return (float) Math.pow(numRowsCleared, 4);
+    }
+
+    /**
+     * Returns the maximum column height
+     */
+    public static float maxHeight(NextState nextState) {
+        int maximumHeight = Integer.MIN_VALUE;
         int top[] = nextState.getTop();
+
+        for (int x : top) {
+            if (x > maximumHeight) {
+                maximumHeight = x;
+            }
+        }
+
+        return maximumHeight;
+    }
+
+    /**
+     * Returns the sum of all column heights
+     */
+    public static float sumHeight(NextState nextState) {
+        int totalHeight = 0;
+        int top[] = nextState.getTop();
+
+        for (int x : top) {
+            totalHeight += x;
+        }
+
+        return totalHeight;
+    }
+
+    /**
+     * Returns the difference between the maximum and minimum column heights
+     */
+    public static float maxHeightDifference(NextState nextState) {
+        int maxHeight = Integer.MIN_VALUE;
+        int minHeight = Integer.MAX_VALUE;
+        int top[] = nextState.getTop();
+
+        for (int x : top) {
+            if (x > maxHeight) {
+                maxHeight = x;
+            }
+            if (x < minHeight) {
+                minHeight = x;
+            }
+        }
+
+        return maxHeight - minHeight;
+    }
+
+    /**
+     * Returns the bumpiness of the column heights
+     * Minimize to ensure the top as flat as possible to avoid deep wells
+     */
+    public static float bumpiness(NextState nextState) {
+        int bumpiness = 0;
+        int top[] = nextState.getTop();
+
+        for (int i = 0; i < State.COLS - 1; i++) {
+            bumpiness += Math.abs(top[i] - top[i + 1]);
+        }
+
+        return bumpiness;
+    }
+
+    /**
+     * Returns the number of filled cells
+     */
+    public static float numFilledCells(NextState nextState) {
+        int filledCells = 0;
+        int field[][] = nextState.getField();
+
         for (int i = 0; i < State.ROWS; ++i) {
             for (int j = 0; j < State.COLS; ++j) {
-                if (field[i][j] == 0 && i < top[j]) {
-                    ++totalHoles;
+                if (field[i][j] != 0) {
+                    ++filledCells;
                 }
             }
         }
-        return totalHoles;
-    }
-    
-    /**
-     * return the number of total weighted piece holes
-     * for each hole at (x,y), the weight is top[y] - x.
-     */
-    public static float totalWeightedHoles(NextState nextState) {
-        float totalWeightedHoles = 0;
-        int field[][] = nextState.getField();
-        int top[] = nextState.getTop();
-        for (int j = 0; j < State.COLS; ++j) {
-            for (int i = State.ROWS - 2; i >= 0; --i) {
-                if (field[i][j] == 0 && i < top[j] && field[i+1][j] != 0) {
-                    totalWeightedHoles += top[j] - i;
-                }
-            }
-        }
-        return totalWeightedHoles;
+
+        return filledCells;
     }
 
     /**
-     * returns the total number of holes
+     * Returns the number of empty cells
      */
-    public static float totalHolePieces(NextState nextState) {
-        int totalHoles = 0;
+    public static float numEmptyCells(NextState nextState) {
+        int emptyCells = 0;
         int field[][] = nextState.getField();
         int top[] = nextState.getTop();
+
         for (int j = 0; j < State.COLS; ++j) {
-            boolean last = false;
             for (int i = 0; i < top[j]; ++i) {
                 if (field[i][j] == 0) {
-                    if (!last) {
-                        ++totalHoles;
-                    }
-                    last = true;
-                } else {
-                    last = false;
+                    ++emptyCells;
                 }
             }
         }
-        return totalHoles;
-    }
 
-	/**
-	 * returns the 'bumpiness of the top layer of 'skyscrapers'
-	 * minimize to ensure the top layer of the grid is as flat as possible to prevent deep 'wells'
-	 */
-	public static float bumpiness(NextState nextState) {
-		int bumpValue = 0;
-		int field[][] = nextState.getField();
-		int top[] = nextState.getTop();
-
-		for(int i=0; i<State.COLS-1; i++) {
-			bumpValue += Math.abs(top[i] - top[i+1]);
-		}
-		return bumpValue;
-	}
-
-	/**
-	 * returns number of completed lines 
-	 * maximize to ensure continuity of the game
-	 */
-	public static float completedLines(NextState nextState) {
-		int numCompletedLines = 0;
-		numCompletedLines = nextState.rowsCleared;
-		//return numCompletedLines;
-		return (float)Math.pow(numCompletedLines,4);
-	}
-	
-	/**
-	 * returns number of completed cells in the field
-	 **/
-	public static float totalFilledCells(NextState nextState) {
-		int filledCells = 0;
-		int field[][] = nextState.getField();
-	
-		for(int i = 0; i < State.ROWS; i++) {
-			for(int j = 0; j < State.COLS; j++) {
-				if(field[i][j] != 0) {
-					filledCells++;
-				}
-			}
-		}
-	
-		return filledCells;
-	}
-    
-	/**
-	 * return the min max value of highest column height
-	 */
-	public static float minMaximumColumnHeight(NextState nextState) {
-	    float worstPiece = Float.POSITIVE_INFINITY;
-	    for (int i = 0; i < State.N_PIECES; ++i) {
-	        float bestMove = Float.NEGATIVE_INFINITY;
-	        for (int[] j:NextState.legalMoves[i]) {
-	            NextState ns = NextState.generate(nextState,i,j);
-	            float maxColumnHeight = maximumColumnHeight(ns);
-	            if (maxColumnHeight > bestMove) {
-	                bestMove = maxColumnHeight;
-	            }
-	        }
-	        if (bestMove < worstPiece) {
-	            worstPiece = bestMove;
-	        }
-	    }
-	    return worstPiece;
-	}
-	
-	/**
-     * return the min max value of the total number of holes
-     */
-    public static float minMaxTotalHoles(NextState nextState) {
-        float worstPiece = Float.POSITIVE_INFINITY;
-        for (int i = 0; i < State.N_PIECES; ++i) {
-            float bestMove = Float.NEGATIVE_INFINITY;
-            for (int[] j:NextState.legalMoves[i]) {
-                NextState ns = NextState.generate(nextState,i,j);
-                float maxColumnHeight = totalHoles(ns);
-                if (maxColumnHeight > bestMove) {
-                    bestMove = maxColumnHeight;
-                }
-            }
-            if (bestMove < worstPiece) {
-                worstPiece = bestMove;
-            }
-        }
-        return worstPiece;
-    }
-	
-	/*
-	 * return the difference of highest top and lowest top
-	 */
-	public static float differenceHigh(NextState nextState) {
-	    float highestColumn = Float.NEGATIVE_INFINITY;
-	    float lowestColumn = Float.POSITIVE_INFINITY;
-	    int top[] = nextState.getTop();
-        for (int x:top) {
-            if (x > highestColumn) {
-                highestColumn = x;
-            }
-            if (x < lowestColumn) {
-                lowestColumn = x;
-            }
-        }
-        return highestColumn - lowestColumn;
-	}
-    
-    
-    public static int medianHeight(NextState ns) {
-        int top[] = ns.getTop();
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-        for (int t : top) {
-            if (t < min) min = t;
-            if (t > max) max = t;
-        }
-        int[] count = new int[max-min+1];
-        for (int t : top) {
-            count[t - min]++;
-        }
-        int maxCount = Integer.MIN_VALUE;
-        int maxIndex = -1;
-        for (int i=0; i<count.length; ++i) {
-            if (count[i] > maxCount) {
-                maxCount = count[i];
-                maxIndex = i;
-            }
-        }
-        return maxIndex + min;
-    }
-    
-    
-    public static int maxHeight(NextState ns) {
-        int top[] = ns.getTop();
-        int max = Integer.MIN_VALUE;
-        for (int t : top) {
-            if (t > max) max = t;
-        }
-        return max;
+        return emptyCells;
     }
 
     /**
-     * For every hole "column", Adds the height of the column to the total.
+     * Returns the number of holes
      */
-    public static float weightedTotalHolePieces(NextState ns) {
+    public static float numHoles(NextState nextState) {
+        int holes = 0;
+        int field[][] = nextState.getField();
+        int top[] = nextState.getTop();
+
+        for (int j = 0; j < State.COLS; ++j) {
+            for (int i = 0; i < top[j]; ++i) {
+                if (field[i][j] == 0 && field[i + 1][j] != 0) {
+                    ++holes;
+                }
+            }
+        }
+
+        return holes;
+    }
+
+    /**
+     * Returns the sum of empty cell distances from the top
+     */
+    public static float sumEmptyCellDistanceFromTop(NextState nextState) {
+        int sumDistance = 0;
+        int field[][] = nextState.getField();
+        int top[] = nextState.getTop();
+        for (int j = 0; j < State.COLS; ++j) {
+            for (int i = 0; i < top[j]; ++i) {
+                if (field[i][j] == 0 && field[i + 1][j] != 0) {
+                    sumDistance += top[j] - i;
+                }
+            }
+        }
+        return sumDistance;
+    }
+
+    /**
+     * Returns the sum of hole distances from the top
+     */
+    public static float sumHoleDistanceFromTop(NextState ns) {
         int total = 0;
-        
+
         int field[][] = ns.getField();
         int top[] = ns.getTop();
         for (int j = 0; j < State.COLS; ++j) {
@@ -269,6 +192,48 @@ public class FeatureFunctions {
             }
         }
         return total;
+    }
+
+    /**
+     * return the min max value of highest column height
+     */
+    public static float minMaximumColumnHeight(NextState nextState) {
+        float worstPiece = Float.POSITIVE_INFINITY;
+        for (int i = 0; i < State.N_PIECES; ++i) {
+            float bestMove = Float.NEGATIVE_INFINITY;
+            for (int[] j : NextState.legalMoves[i]) {
+                NextState ns = NextState.generate(nextState, i, j);
+                float maxColumnHeight = maxHeight(ns);
+                if (maxColumnHeight > bestMove) {
+                    bestMove = maxColumnHeight;
+                }
+            }
+            if (bestMove < worstPiece) {
+                worstPiece = bestMove;
+            }
+        }
+        return worstPiece;
+    }
+
+    /**
+     * return the min max value of the total number of holes
+     */
+    public static float minMaxTotalHoles(NextState nextState) {
+        float worstPiece = Float.POSITIVE_INFINITY;
+        for (int i = 0; i < State.N_PIECES; ++i) {
+            float bestMove = Float.NEGATIVE_INFINITY;
+            for (int[] j : NextState.legalMoves[i]) {
+                NextState ns = NextState.generate(nextState, i, j);
+                float maxColumnHeight = numEmptyCells(ns);
+                if (maxColumnHeight > bestMove) {
+                    bestMove = maxColumnHeight;
+                }
+            }
+            if (bestMove < worstPiece) {
+                worstPiece = bestMove;
+            }
+        }
+        return worstPiece;
     }
 
     /**
@@ -292,20 +257,21 @@ public class FeatureFunctions {
      *     4        3
      *     5        6
      *     6       10
-     * 
      */
     public static float holeAndPitColumns(NextState ns) {
-        //int maxHeight = maxHeight(ns);
+        // int maxHeight = maxHeight(ns);
         int total = 0;
-        
+
         int field[][] = ns.getField();
         int top[] = ns.getTop();
         for (int j = 0; j < State.COLS; ++j) {
             int count = 0;
             int height = top[j];
-            if (j > 0 && top[j-1] > height) height = top[j-1];
-            if (j+1 < State.COLS && top[j+1] < height) height = top[j+1];
-            
+            if (j > 0 && top[j - 1] > height)
+                height = top[j - 1];
+            if (j + 1 < State.COLS && top[j + 1] < height)
+                height = top[j + 1];
+
             for (int i = 0; i < height; ++i) {
                 if (field[i][j] == 0) {
                     ++count;
@@ -319,41 +285,28 @@ public class FeatureFunctions {
         }
         return total;
     }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-    
-	private static final float LOSE_SCORE = -9999999f;
-    private static final float minimaxRec(NextState ns, Feature feature, float alpha, float beta, int depth) {
+
+    private static final float LOSE_SCORE = -9999999f;
+
+    private static final float minimaxRec(NextState ns, Feature feature,
+            float alpha, float beta, int depth) {
         if (ns.lost == true) {
             return LOSE_SCORE - depth;
         }
         if (depth <= 0) {
             return feature.compute(ns);
         }
-        
+
         // MIN PLAYER
         for (int i : NextState.minimaxPieceOrdering) {
-        //for (int i = 0; i < State.N_PIECES; ++i) {
+            // for (int i = 0; i < State.N_PIECES; ++i) {
             // MAX PLAYER
             float newAlpha = alpha;
             int[][] legalMoves = NextState.legalMoves[i];
-            for (int j=0; j<legalMoves.length; ++j) {
-                NextState nns = NextState.generate(ns,i,legalMoves[j]);
-                float score = minimaxRec(nns, feature, newAlpha, beta, depth-1);
+            for (int j = 0; j < legalMoves.length; ++j) {
+                NextState nns = NextState.generate(ns, i, legalMoves[j]);
+                float score = minimaxRec(nns, feature, newAlpha, beta,
+                        depth - 1);
                 if (score > newAlpha) {
                     newAlpha = score;
                     if (newAlpha >= beta) {
@@ -369,9 +322,9 @@ public class FeatureFunctions {
             }
         }
         return beta;
-        
+
     }
-    
+
     public static Feature minimax(int depth, Feature feature) {
         return (NextState nextState) -> {
             if (nextState.lost == true) {
@@ -380,17 +333,19 @@ public class FeatureFunctions {
             if (depth <= 0) {
                 return feature.compute(nextState);
             }
-            
+
             // MIN PLAYER
             float beta = Float.POSITIVE_INFINITY;
             for (int i : NextState.minimaxPieceOrdering) {
-            //for (int i = 0; i < State.N_PIECES; ++i) {
+                // for (int i = 0; i < State.N_PIECES; ++i) {
                 // MAX PLAYER
                 float newAlpha = Float.NEGATIVE_INFINITY;
                 int[][] legalMoves = NextState.legalMoves[i];
-                for (int j=0; j<legalMoves.length; ++j) {
-                    NextState ns = NextState.generate(nextState,i,legalMoves[j]);
-                    float score = minimaxRec(ns, feature, newAlpha, beta, depth-1);
+                for (int j = 0; j < legalMoves.length; ++j) {
+                    NextState ns = NextState.generate(nextState, i,
+                            legalMoves[j]);
+                    float score = minimaxRec(ns, feature, newAlpha, beta,
+                            depth - 1);
                     if (score > newAlpha) {
                         newAlpha = score;
                         if (newAlpha >= beta) {
@@ -409,24 +364,28 @@ public class FeatureFunctions {
     public interface IntegerFeature {
         int compute(NextState n);
     }
+
     private static final int LOSE_SCORE_INT = -9999999;
-    private static final int minimaxRecInt(NextState ns, IntegerFeature feature, int alpha, int beta, int depth) {
+
+    private static final int minimaxRecInt(NextState ns,
+            IntegerFeature feature, int alpha, int beta, int depth) {
         if (ns.lost == true) {
             return LOSE_SCORE_INT - depth;
         }
         if (depth <= 0) {
             return feature.compute(ns);
         }
-        
+
         // MIN PLAYER
         for (int i : NextState.minimaxPieceOrdering) {
-        //for (int i = 0; i < State.N_PIECES; ++i) {
+            // for (int i = 0; i < State.N_PIECES; ++i) {
             // MAX PLAYER
             int newAlpha = alpha;
             int[][] legalMoves = NextState.legalMoves[i];
-            for (int j=0; j<legalMoves.length; ++j) {
-                NextState nns = NextState.generate(ns,i,legalMoves[j]);
-                int score = minimaxRecInt(nns, feature, newAlpha, beta, depth-1);
+            for (int j = 0; j < legalMoves.length; ++j) {
+                NextState nns = NextState.generate(ns, i, legalMoves[j]);
+                int score = minimaxRecInt(nns, feature, newAlpha, beta,
+                        depth - 1);
                 if (score > newAlpha) {
                     newAlpha = score;
                     if (newAlpha >= beta) {
@@ -442,9 +401,9 @@ public class FeatureFunctions {
             }
         }
         return beta;
-        
+
     }
-    
+
     /**
      * Minimax that uses an integer feature instead of a Feature.
      */
@@ -456,17 +415,19 @@ public class FeatureFunctions {
             if (depth <= 0) {
                 return feature.compute(nextState);
             }
-            
+
             // MIN PLAYER
             int beta = Integer.MAX_VALUE;
             for (int i : NextState.minimaxPieceOrdering) {
-            //for (int i = 0; i < State.N_PIECES; ++i) {
+                // for (int i = 0; i < State.N_PIECES; ++i) {
                 // MAX PLAYER
                 int newAlpha = Integer.MIN_VALUE;
                 int[][] legalMoves = NextState.legalMoves[i];
-                for (int j=0; j<legalMoves.length; ++j) {
-                    NextState ns = NextState.generate(nextState,i,legalMoves[j]);
-                    int score = minimaxRecInt(ns, feature, newAlpha, beta, depth-1);
+                for (int j = 0; j < legalMoves.length; ++j) {
+                    NextState ns = NextState.generate(nextState, i,
+                            legalMoves[j]);
+                    int score = minimaxRecInt(ns, feature, newAlpha, beta,
+                            depth - 1);
                     if (score > newAlpha) {
                         newAlpha = score;
                         if (newAlpha >= beta) {
@@ -481,48 +442,32 @@ public class FeatureFunctions {
             return beta;
         };
     }
-    
+
     /**
      * A minimax that deepens the search tree as you get closer to dying. (Based on heightTransform(height))
      */
-    public static Feature variableHeightMinimaxInt(FunctionInt heightTransform, IntegerFeature feature) {
-        Feature[] minimaxes = new Feature[]{
-            minimaxInt(6, feature),
-            minimaxInt(4, feature),
-            minimaxInt(3, feature)
-        };
+    public static Feature variableHeightMinimaxInt(FunctionInt heightTransform,
+            IntegerFeature feature) {
+        Feature[] minimaxes = new Feature[] { minimaxInt(6, feature),
+                minimaxInt(4, feature), minimaxInt(3, feature) };
         return (NextState ns) -> {
-            int choice = heightTransform.apply(height(ns));
-            //System.out.println(height(ns) + "|" + choice);
+            int choice = heightTransform.apply(Math.round(maxHeight(ns)));
+            // System.out.println(height(ns) + "|" + choice);
             if (choice >= minimaxes.length) {
                 return 0;
             }
             if (choice >= minimaxes.length)
-                choice = minimaxes.length-1;
+                choice = minimaxes.length - 1;
             return minimaxes[choice].compute(ns);
         };
     }
-    
+
     public interface FunctionInt {
         public int apply(int input);
     }
 
     /**
-     * Returns max height of state
-     */
-    public static int height(NextState nextState) {
-        int maximumHeight = Integer.MIN_VALUE;
-        int top[] = nextState.getTop();
-        for (int x:top) {
-            if (x > maximumHeight) {
-                maximumHeight = x;
-            }
-        }
-        return maximumHeight;
-    }
-
-    /**
-     * We divide the playing field vertically into "height regions" of height = regionHeight each. <br>
+     * We divide the playing field vertically into "height regions" of height = regionHeight each.
      * This feature returns which region it is in.
      * e.g. regionHeight = 6:
      * 
@@ -537,15 +482,14 @@ public class FeatureFunctions {
         return (NextState nextState) -> {
             int maximumHeight = Integer.MIN_VALUE;
             int top[] = nextState.getTop();
-            for (int x:top) {
+            for (int x : top) {
                 if (x > maximumHeight) {
                     maximumHeight = x;
                 }
             }
-            
-            int heightRegion = ((maximumHeight-1) / regionHeight) + 1;
+
+            int heightRegion = ((maximumHeight - 1) / regionHeight) + 1;
             return -heightRegion;
         };
     }
 }
-
