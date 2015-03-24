@@ -276,15 +276,17 @@ public class SmoothingAdjuster implements WeightAdjuster {
     }
 
     private double computeSize(float[] vector1, float[] vector2) {
-        //return dotProduct(vector1, vector2)/10000;
+        double dot = dotProduct(vector1, vector2);
+        if (dot < 1) return 1;
+        else return dot;
         
-        double distance = computeScaledDistance(vector1, vector2);
+        /*double distance = computeScaledDistance(vector1, vector2);
         double val = distance/weightRange; // e^-(x^4)
         val *= val;
         val *= val;
         val = Math.exp(-val);
         if (val < 0.1f) val = 0;
-        return val;
+        return val;*/
     }
     
     private double dotProduct(float[] vector1, float[] vector2) {

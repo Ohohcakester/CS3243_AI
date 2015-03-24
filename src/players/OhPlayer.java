@@ -93,7 +93,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = -1; // 0 to watch, 1 to learn.
+        int choice = 0; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new OhPlayer();
         WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
