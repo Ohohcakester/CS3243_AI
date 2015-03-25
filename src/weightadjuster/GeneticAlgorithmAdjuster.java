@@ -16,7 +16,7 @@ public class GeneticAlgorithmAdjuster {
     private double mutationProbability = 0.001;
     private HashMap<Integer,Float> fixedValue = new HashMap<>(); 
 
-    public static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 60f, 80f, 100f, 150f};
+    public static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
     public static final int WORD_SIZE = 5;
     
     public GeneticAlgorithmAdjuster(int _dim, int N) {
@@ -58,7 +58,6 @@ public class GeneticAlgorithmAdjuster {
             float[] realWeights = generateRealWeights(states[i]);
             float[] result = w.playWithWeights(realWeights);
             scores[i] = result[0];
-            //System.out.println(i + " " + scores[i]);
             totalScore += scores[i];
         }
         for (int i = 0; i < states.length; ++i) {
@@ -104,6 +103,34 @@ public class GeneticAlgorithmAdjuster {
         }
     }
 
+    public static void binToGray(boolean[] bin) {
+        int words = bin.length/WORD_SIZE;
+        for (int i=words-1; i>=0; --i) {
+            int offset = i*WORD_SIZE;
+            for (int j=0; j<WORD_SIZE-1; ++j) {
+                bin[offset+j] = bin[offset+j] ^ bin[offset+j+1];
+            }
+        }
+    }
+    
+    public static void grayToBin(boolean[] bin) {
+        int words = bin.length/WORD_SIZE;
+        for (int i=words-1; i>=0; --i) {
+            int offset = i*WORD_SIZE;
+            for (int j=WORD_SIZE-2; j>=0; --j) {
+                bin[offset+j] = bin[offset+j] ^ bin[offset+j+1];
+            }
+        }
+    }
+    
+    public static String bitString(boolean[] encoded) {
+        StringBuilder sb = new StringBuilder(encoded.length);
+        for (boolean b : encoded) {
+            sb.append(b ? "1" : "0");
+        }
+        return sb.toString();
+    }
+
     public static int encodeFloat(float f) {
         boolean neg = f < 0;
         if (neg) f = -f;
@@ -111,14 +138,13 @@ public class GeneticAlgorithmAdjuster {
         while (index+1 < conversionTable.length && f > conversionTable[index]) {
             index++;
         }
-        if (neg) return conversionTable.length-index;
+        if (neg) return conversionTable.length-index-1;
         else return conversionTable.length+index;
     }
 
     public static float decodeFloat(int v) {
-        System.out.println(v);
         boolean neg = v < 16;
-        if (neg) v = 16 - v;
+        if (neg) v = 16 - v - 1;
         else v -= 16;
         if (neg) return -conversionTable[v];
         else return conversionTable[v];
@@ -129,7 +155,6 @@ public class GeneticAlgorithmAdjuster {
         for (int i=0; i<array.length; ++i) {
             int offset = i*WORD_SIZE;
             int v = encodeFloat(array[i]);
-            System.out.println(v);
             int index = 0;
             while (v > 0) {
                 encoded[offset+index] = v%2 == 1;
@@ -137,13 +162,12 @@ public class GeneticAlgorithmAdjuster {
                 index++;
             }
         }
-
-
-        int index = 0;
+        binToGray(encoded);
         return encoded;
     }
 
     public static float[] decode(boolean[] encoded) {
+        grayToBin(encoded);
         float[] decoded = new float[encoded.length/WORD_SIZE];
         for (int i=0; i<decoded.length; ++i) {
             int offset = i*WORD_SIZE;
