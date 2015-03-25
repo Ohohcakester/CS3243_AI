@@ -94,7 +94,7 @@ public class WeightedHeuristicPlayer {
     }
     
     public void play(float[] results) {
-        final int tries = 3;
+        final int tries = 1;
         long sum = 0;
         long sumSquare = 0;
         

@@ -52,14 +52,27 @@ public class GeneticAlgorithmAdjuster {
         return realWeights;
     }
     
+    private void generateRandomStates() {
+        for (int i = 0; i < stateNumber; ++i) {
+            for (int j = 0; j < dim; ++j) {
+                states[i][j] = rand.nextFloat();
+            }
+        }
+    }
+    
     private void selection() {
         float totalScore = 0;
-        for (int i = 0; i < states.length; ++i) {
-            float[] realWeights = generateRealWeights(states[i]);
-            float[] result = w.playWithWeights(realWeights);
-            scores[i] = result[0];
-            //System.out.println(i + " " + scores[i]);
-            totalScore += scores[i];
+        while (totalScore == 0) {
+            for (int i = 0; i < states.length; ++i) {
+                float[] realWeights = generateRealWeights(states[i]);
+                float[] result = w.playWithWeights(realWeights);
+                scores[i] = result[0];
+                //System.out.println(i + " " + scores[i]);
+                totalScore += scores[i];
+            }
+            if (totalScore == 0) {
+                generateRandomStates();
+            }
         }
         for (int i = 0; i < states.length; ++i) {
             scores[i] /= totalScore;
@@ -116,9 +129,8 @@ public class GeneticAlgorithmAdjuster {
     }
 
     public static float decodeFloat(int v) {
-        System.out.println(v);
         boolean neg = v < 16;
-        if (neg) v = 16 - v;
+        if (neg) v = 16 - v - 1;
         else v -= 16;
         if (neg) return -conversionTable[v];
         else return conversionTable[v];
@@ -129,7 +141,6 @@ public class GeneticAlgorithmAdjuster {
         for (int i=0; i<array.length; ++i) {
             int offset = i*WORD_SIZE;
             int v = encodeFloat(array[i]);
-            System.out.println(v);
             int index = 0;
             while (v > 0) {
                 encoded[offset+index] = v%2 == 1;
@@ -158,11 +169,7 @@ public class GeneticAlgorithmAdjuster {
     }
 
     public void adjust() {
-        for (int i = 0; i < stateNumber; ++i) {
-            for (int j = 0; j < dim; ++j) {
-                states[i][j] = rand.nextFloat();
-            }
-        }
+        generateRandomStates();
         int iteration = 2;
         for (int i = 0; i < iteration; ++i) {
             System.out.println("Iteration " + i);
