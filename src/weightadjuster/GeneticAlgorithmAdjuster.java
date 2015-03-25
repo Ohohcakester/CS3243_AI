@@ -16,7 +16,7 @@ public class GeneticAlgorithmAdjuster {
     private double mutationProbability = 0.001;
     private HashMap<Integer,Float> fixedValue = new HashMap<>(); 
 
-    public static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
+    public static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 60f, 80f, 100f, 150f};
     public static final int WORD_SIZE = 5;
     
     public GeneticAlgorithmAdjuster(int _dim, int N) {
@@ -52,13 +52,27 @@ public class GeneticAlgorithmAdjuster {
         return realWeights;
     }
     
+    private void generateRandomStates() {
+        for (int i = 0; i < stateNumber; ++i) {
+            for (int j = 0; j < dim; ++j) {
+                states[i][j] = rand.nextFloat();
+            }
+        }
+    }
+    
     private void selection() {
         float totalScore = 0;
-        for (int i = 0; i < states.length; ++i) {
-            float[] realWeights = generateRealWeights(states[i]);
-            float[] result = w.playWithWeights(realWeights);
-            scores[i] = result[0];
-            totalScore += scores[i];
+        while (totalScore == 0) {
+            for (int i = 0; i < states.length; ++i) {
+                float[] realWeights = generateRealWeights(states[i]);
+                float[] result = w.playWithWeights(realWeights);
+                scores[i] = result[0];
+                //System.out.println(i + " " + scores[i]);
+                totalScore += scores[i];
+            }
+            if (totalScore == 0) {
+                generateRandomStates();
+            }
         }
         for (int i = 0; i < states.length; ++i) {
             scores[i] /= totalScore;
@@ -103,34 +117,6 @@ public class GeneticAlgorithmAdjuster {
         }
     }
 
-    public static void binToGray(boolean[] bin) {
-        int words = bin.length/WORD_SIZE;
-        for (int i=words-1; i>=0; --i) {
-            int offset = i*WORD_SIZE;
-            for (int j=0; j<WORD_SIZE-1; ++j) {
-                bin[offset+j] = bin[offset+j] ^ bin[offset+j+1];
-            }
-        }
-    }
-    
-    public static void grayToBin(boolean[] bin) {
-        int words = bin.length/WORD_SIZE;
-        for (int i=words-1; i>=0; --i) {
-            int offset = i*WORD_SIZE;
-            for (int j=WORD_SIZE-2; j>=0; --j) {
-                bin[offset+j] = bin[offset+j] ^ bin[offset+j+1];
-            }
-        }
-    }
-    
-    public static String bitString(boolean[] encoded) {
-        StringBuilder sb = new StringBuilder(encoded.length);
-        for (boolean b : encoded) {
-            sb.append(b ? "1" : "0");
-        }
-        return sb.toString();
-    }
-
     public static int encodeFloat(float f) {
         boolean neg = f < 0;
         if (neg) f = -f;
@@ -138,7 +124,7 @@ public class GeneticAlgorithmAdjuster {
         while (index+1 < conversionTable.length && f > conversionTable[index]) {
             index++;
         }
-        if (neg) return conversionTable.length-index-1;
+        if (neg) return conversionTable.length-index;
         else return conversionTable.length+index;
     }
 
@@ -162,12 +148,13 @@ public class GeneticAlgorithmAdjuster {
                 index++;
             }
         }
-        binToGray(encoded);
+
+
+        int index = 0;
         return encoded;
     }
 
     public static float[] decode(boolean[] encoded) {
-        grayToBin(encoded);
         float[] decoded = new float[encoded.length/WORD_SIZE];
         for (int i=0; i<decoded.length; ++i) {
             int offset = i*WORD_SIZE;
@@ -182,11 +169,7 @@ public class GeneticAlgorithmAdjuster {
     }
 
     public void adjust() {
-        for (int i = 0; i < stateNumber; ++i) {
-            for (int j = 0; j < dim; ++j) {
-                states[i][j] = rand.nextFloat();
-            }
-        }
+        generateRandomStates();
         int iteration = 2;
         for (int i = 0; i < iteration; ++i) {
             System.out.println("Iteration " + i);
