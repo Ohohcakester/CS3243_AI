@@ -1,12 +1,11 @@
 package players;
 
-import weightadjuster.SmoothingAdjuster;
-import weightadjuster.WeightAdjuster;
 import main.FeatureFunctions;
 import main.NextState;
 import main.State;
+import weightadjuster.GeneticAlgorithmAdjuster;
 
-public class OhPlayer extends WeightedHeuristicPlayer {
+public class JonathanPlayer extends WeightedHeuristicPlayer {
 
 
     protected void configure() {
@@ -99,7 +98,8 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         int choice = 0; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new OhPlayer();
-        WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
+        //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
+        GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmAdjuster(p.dim(), 100);
         adjuster.fixValue(0, -99999f);
         //adjuster.fixValue(1, -0f);
         //adjuster.fixValue(7, -0f);
@@ -115,7 +115,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
             case 0:
                 watch(p);break;
             case 1:
-                learn(p, adjuster);break;
+                learn(adjuster);break;
         }
     }
 }

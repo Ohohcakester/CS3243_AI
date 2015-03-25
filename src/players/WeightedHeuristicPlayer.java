@@ -56,6 +56,14 @@ public class WeightedHeuristicPlayer {
         //weights = new float[]{-99999.0f, -1, -4, -95};
     }
     
+    public float[] playWithWeights(float[] weights) {
+        for (int i = 0; i < weights.length; ++i) {
+            this.weights[i] = weights[i];
+        }
+        float[] results = new float[2];
+        return results;
+    }
+    
     private float heuristic(State state, int[] legalMove) {
         NextState nextState = NextState.generate(state, legalMove);
         float sum = 0;
@@ -201,18 +209,13 @@ public class WeightedHeuristicPlayer {
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
     }
     
-    public void learnWithGeneticAlgorithm(GeneticAlgorithmAdjuster adjuster) {
-        float[] results = new float[2];
-        int iteration = 0;
-        String adjusterReport = null;
-        while(true) {
-            play(results);
-            /*if (adjusterReport != null) {
-                report(iteration, results, weights, adjusterReport);
-            }*/
-            adjusterReport = adjuster.adjust(results, weights);
-            iteration++;
-        }
+    /*public void learnWithGeneticAlgorithm(GeneticAlgorithmAdjuster adjuster) {
+        adjuster.adjust();
+    }*/
+    
+    public static void learn(GeneticAlgorithmAdjuster adjuster) {
+        adjuster.adjust();
+        //p.learnWithGeneticAlgorithm(adjuster);
     }
     
     public static void learn(WeightedHeuristicPlayer p, WeightAdjuster adjuster) {
