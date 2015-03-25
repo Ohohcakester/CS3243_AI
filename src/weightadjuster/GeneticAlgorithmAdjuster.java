@@ -58,6 +58,7 @@ public class GeneticAlgorithmAdjuster {
             float[] realWeights = generateRealWeights(states[i]);
             float[] result = w.playWithWeights(realWeights);
             scores[i] = result[0];
+            //System.out.println(i + " " + scores[i]);
             totalScore += scores[i];
         }
         for (int i = 0; i < states.length; ++i) {
@@ -102,26 +103,6 @@ public class GeneticAlgorithmAdjuster {
             states[i] = decode(bitString);
         }
     }
-    
-    public void adjust() {
-        for (int i = 0; i < stateNumber; ++i) {
-            for (int j = 0; j < dim; ++j) {
-                states[i][j] = rand.nextFloat();
-            }
-        }
-        int iteration = 10000;
-        for (int i = 0; i < iteration; ++i) {
-            selection();
-            crossover();
-            mutation();
-        }
-        for (int j = 0; j < stateNumber; ++j) {
-            float[] realWeights = generateRealWeights(states[j]);
-            float[] result = w.playWithWeights(realWeights);
-            System.out.println("State #" + j + ". Score = " + result[0]);
-        }
-    }
-    
 
     public static int encodeFloat(float f) {
         boolean neg = f < 0;
@@ -176,4 +157,24 @@ public class GeneticAlgorithmAdjuster {
         return decoded;
     }
 
+    public void adjust() {
+        for (int i = 0; i < stateNumber; ++i) {
+            for (int j = 0; j < dim; ++j) {
+                states[i][j] = rand.nextFloat();
+            }
+        }
+        int iteration = 2;
+        for (int i = 0; i < iteration; ++i) {
+            System.out.println("Iteration " + i);
+            selection();
+            crossover();
+            mutation();
+        }
+        for (int j = 0; j < stateNumber; ++j) {
+            float[] realWeights = generateRealWeights(states[j]);
+            float[] result = w.playWithWeights(realWeights);
+            System.out.println("State #" + j + ". Score = " + result[0]);
+        }
+    }
+    
 }

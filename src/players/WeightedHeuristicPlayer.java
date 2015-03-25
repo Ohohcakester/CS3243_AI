@@ -61,6 +61,7 @@ public class WeightedHeuristicPlayer {
             this.weights[i] = weights[i];
         }
         float[] results = new float[2];
+        play(results);
         return results;
     }
     

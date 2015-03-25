@@ -99,7 +99,7 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
 
         WeightedHeuristicPlayer p = new OhPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
-        GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmAdjuster(p.dim(), 100);
+        GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmAdjuster(p.dim(), 4);
         //adjuster.fixValue(0, -99999f);
         //adjuster.fixValue(1, -0f);
         //adjuster.fixValue(7, -0f);
