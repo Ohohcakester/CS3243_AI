@@ -1,5 +1,6 @@
 package weightadjuster;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -13,17 +14,17 @@ public class GeneticAlgorithmAdjuster {
     private float[] scores;
     private WeightedHeuristicPlayer w;
     private int stateNumber;
-    private double mutationProbability = 0.001;
+    private double mutationProbability = 0.1;
     private HashMap<Integer,Float> fixedValue = new HashMap<>(); 
 
     public static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 60f, 80f, 100f, 150f};
     public static final int WORD_SIZE = 5;
     
-    public GeneticAlgorithmAdjuster(int _dim, int N) {
+    public GeneticAlgorithmAdjuster(WeightedHeuristicPlayer w, int _dim, int N) {
         dim = _dim;
         realDim = dim;
         stateNumber = N;
-        w = new WeightedHeuristicPlayer();
+        this.w = w;
         states = new float[stateNumber][];
         for (int i = 0; i < stateNumber; ++i) {
             states[i] = new float[dim];
@@ -52,11 +53,20 @@ public class GeneticAlgorithmAdjuster {
         return realWeights;
     }
     
+    float[] generateRandomState(int length) {
+        boolean[] encoded = new boolean[length*WORD_SIZE];
+        for (int i=0; i<encoded.length; ++i) {
+            encoded[i] = rand.nextBoolean();
+        }
+        return decode(encoded);
+    }
+    
     private void generateRandomStates() {
         for (int i = 0; i < stateNumber; ++i) {
-            for (int j = 0; j < dim; ++j) {
+            states[i] = generateRandomState(dim);
+            /*for (int j = 0; j < dim; ++j) {
                 states[i][j] = rand.nextFloat();
-            }
+            }*/
         }
     }
     
@@ -67,6 +77,7 @@ public class GeneticAlgorithmAdjuster {
                 float[] realWeights = generateRealWeights(states[i]);
                 float[] result = w.playWithWeights(realWeights);
                 scores[i] = result[0];
+                //scores[i] *= scores[i];
                 //System.out.println(i + " " + scores[i]);
                 totalScore += scores[i];
             }
@@ -97,7 +108,13 @@ public class GeneticAlgorithmAdjuster {
             boolean[] secondBitString = encode(states[i+1]);
             int position = rand.nextInt(firstBitString.length);
             for (int j = 0; j < position; ++j) {
-                firstBitString[j] ^= secondBitString[j] ^= firstBitString[j] ^= secondBitString[j];
+                boolean temp = firstBitString[j];
+                firstBitString[j] = secondBitString[j];
+                secondBitString[j] = temp;
+               
+//                firstBitString[j] ^= secondBitString[j];
+//                secondBitString[j] ^= firstBitString[j];
+//                firstBitString[j] ^= secondBitString[j];
                 //CP style of swapping. yeay
             }
             states[i] = decode(firstBitString);
@@ -170,17 +187,26 @@ public class GeneticAlgorithmAdjuster {
 
     public void adjust() {
         generateRandomStates();
-        int iteration = 2;
+        int iteration = Integer.MAX_VALUE;
+        int interval = 1;
         for (int i = 0; i < iteration; ++i) {
-            System.out.println("Iteration " + i);
+            //System.out.println("Iteration " + i);
             selection();
+//            crossover();
+//            mutation();
+            
+            if (i%interval == 0) {
+                System.out.println("Iteration " + i);
+                for (int j = 0; j < stateNumber; ++j) {
+                    float[] realWeights = generateRealWeights(states[j]);
+                    float[] result = w.playWithWeights(realWeights);
+                    System.out.println("State #" + j + ". Score = " + result[0] + "   " + 
+                            Arrays.toString(states[j]));
+                }
+            }
+            
             crossover();
             mutation();
-        }
-        for (int j = 0; j < stateNumber; ++j) {
-            float[] realWeights = generateRealWeights(states[j]);
-            float[] result = w.playWithWeights(realWeights);
-            System.out.println("State #" + j + ". Score = " + result[0]);
         }
     }
     
