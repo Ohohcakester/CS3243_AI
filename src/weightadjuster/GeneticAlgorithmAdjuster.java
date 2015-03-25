@@ -77,7 +77,6 @@ public class GeneticAlgorithmAdjuster {
                 float[] realWeights = generateRealWeights(states[i]);
                 float[] result = w.playWithWeights(realWeights);
                 scores[i] = result[0];
-                //scores[i] *= scores[i];
                 //System.out.println(i + " " + scores[i]);
                 totalScore += scores[i];
             }
@@ -107,6 +106,7 @@ public class GeneticAlgorithmAdjuster {
             boolean[] firstBitString = encode(states[i]);
             boolean[] secondBitString = encode(states[i+1]);
             int position = rand.nextInt(firstBitString.length);
+            int position2 = rand.nextInt(firstBitString.length);
             for (int j = 0; j < position; ++j) {
                 boolean temp = firstBitString[j];
                 firstBitString[j] = secondBitString[j];
@@ -134,6 +134,34 @@ public class GeneticAlgorithmAdjuster {
         }
     }
 
+    public static void binToGray(boolean[] bin) {
+        int words = bin.length/WORD_SIZE;
+        for (int i=words-1; i>=0; --i) {
+            int offset = i*WORD_SIZE;
+            for (int j=0; j<WORD_SIZE-1; ++j) {
+                bin[offset+j] = bin[offset+j] ^ bin[offset+j+1];
+            }
+        }
+    }
+    
+    public static void grayToBin(boolean[] bin) {
+        int words = bin.length/WORD_SIZE;
+        for (int i=words-1; i>=0; --i) {
+            int offset = i*WORD_SIZE;
+            for (int j=WORD_SIZE-2; j>=0; --j) {
+                bin[offset+j] = bin[offset+j] ^ bin[offset+j+1];
+            }
+        }
+    }
+    
+    public static String bitString(boolean[] encoded) {
+        StringBuilder sb = new StringBuilder(encoded.length);
+        for (boolean b : encoded) {
+            sb.append(b ? "1" : "0");
+        }
+        return sb.toString();
+    }
+
     public static int encodeFloat(float f) {
         boolean neg = f < 0;
         if (neg) f = -f;
@@ -141,7 +169,7 @@ public class GeneticAlgorithmAdjuster {
         while (index+1 < conversionTable.length && f > conversionTable[index]) {
             index++;
         }
-        if (neg) return conversionTable.length-index;
+        if (neg) return conversionTable.length-index-1;
         else return conversionTable.length+index;
     }
 
@@ -165,13 +193,12 @@ public class GeneticAlgorithmAdjuster {
                 index++;
             }
         }
-
-
-        int index = 0;
+        binToGray(encoded);
         return encoded;
     }
 
     public static float[] decode(boolean[] encoded) {
+        grayToBin(encoded);
         float[] decoded = new float[encoded.length/WORD_SIZE];
         for (int i=0; i<decoded.length; ++i) {
             int offset = i*WORD_SIZE;
@@ -185,6 +212,7 @@ public class GeneticAlgorithmAdjuster {
         return decoded;
     }
 
+    
     public void adjust() {
         generateRandomStates();
         int iteration = Integer.MAX_VALUE;
@@ -200,8 +228,9 @@ public class GeneticAlgorithmAdjuster {
                 for (int j = 0; j < stateNumber; ++j) {
                     float[] realWeights = generateRealWeights(states[j]);
                     float[] result = w.playWithWeights(realWeights);
-                    System.out.println("State #" + j + ". Score = " + result[0] + "   " + 
-                            Arrays.toString(states[j]));
+                    System.out.println(bitString(encode(states[j])) + "    " +
+                            "State #" + j + ". Score = " + result[0]);
+                            //Arrays.toString(states[j]));
                 }
             }
             

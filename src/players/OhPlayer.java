@@ -17,7 +17,6 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 (n) -> FeatureFunctions.numRowsCleared(n),
                 (n) -> FeatureFunctions.maxHeightDifference(n),
                 (n) -> FeatureFunctions.numHoles(n),
-                (n) -> FeatureFunctions.numEmptyCells(n),
                 (n) -> FeatureFunctions.sumHoleDistanceFromTop(n),
                 (n) -> FeatureFunctions.holeAndPitColumns(n),
                 (n) -> FeatureFunctions.topPerimeter(n)

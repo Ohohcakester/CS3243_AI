@@ -206,34 +206,8 @@ public class FeatureFunctions {
                     }
                 }
             }
-            
-            /*if (y<rows && field[y][x] != 0) {
-                // must go up.
-                if (y < rows-1 && x > 0&& field[y][x-1] != 0) {
-                    // must go left
-                    x--;
-                    lastIsUpRight = false;
-                } else {
-                    y++;
-                    lastIsUpRight = true;
-                }
-            } else if (y>0 && field[y-1][x] == 0) {
-                // can go down.
-                if (x> 0 && field[y][x-1] != 0 && field[y-1][x-1] == 0) {
-                    // can go left
-                    x--;
-                    lastIsUpRight = false;
-                } else {
-                    y--;
-                    lastIsUpRight = false;
-                }
-            } else {
-                x++;
-                lastIsUpRight = true;
-            }*/
             perimeter++;
         }
-        //System.out.println(Arrays.deepToString(field) + "\n" + perimeter);
         return perimeter;
     }
 
