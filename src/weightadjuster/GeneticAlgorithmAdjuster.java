@@ -15,6 +15,9 @@ public class GeneticAlgorithmAdjuster {
     private int stateNumber;
     private double mutationProbability = 0.001;
     private HashMap<Integer,Float> fixedValue = new HashMap<>(); 
+
+    public static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 60f, 80f, 100f, 150f};
+    public static final int WORD_SIZE = 5;
     
     public GeneticAlgorithmAdjuster(int _dim, int N) {
         dim = _dim;
@@ -118,4 +121,59 @@ public class GeneticAlgorithmAdjuster {
             System.out.println("State #" + j + ". Score = " + result[0]);
         }
     }
+    
+
+    public static int encodeFloat(float f) {
+        boolean neg = f < 0;
+        if (neg) f = -f;
+        int index = 0;
+        while (index+1 < conversionTable.length && f > conversionTable[index]) {
+            index++;
+        }
+        if (neg) return conversionTable.length-index;
+        else return conversionTable.length+index;
+    }
+
+    public static float decodeFloat(int v) {
+        System.out.println(v);
+        boolean neg = v < 16;
+        if (neg) v = 16 - v;
+        else v -= 16;
+        if (neg) return -conversionTable[v];
+        else return conversionTable[v];
+    }
+
+    public static boolean[] encode(float[] array) {
+        boolean[] encoded = new boolean[array.length*WORD_SIZE];
+        for (int i=0; i<array.length; ++i) {
+            int offset = i*WORD_SIZE;
+            int v = encodeFloat(array[i]);
+            System.out.println(v);
+            int index = 0;
+            while (v > 0) {
+                encoded[offset+index] = v%2 == 1;
+                v /= 2;
+                index++;
+            }
+        }
+
+
+        int index = 0;
+        return encoded;
+    }
+
+    public static float[] decode(boolean[] encoded) {
+        float[] decoded = new float[encoded.length/WORD_SIZE];
+        for (int i=0; i<decoded.length; ++i) {
+            int offset = i*WORD_SIZE;
+            int v = 0;
+            for (int j = WORD_SIZE-1; j>=0; --j) {
+                v *= 2;
+                if (encoded[offset+j]) v++;
+            }
+            decoded[i] = decodeFloat(v);
+        }
+        return decoded;
+    }
+
 }

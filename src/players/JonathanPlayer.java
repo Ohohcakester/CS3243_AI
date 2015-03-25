@@ -95,12 +95,12 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 0; // 0 to watch, 1 to learn.
+        int choice = 1; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new OhPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
         GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmAdjuster(p.dim(), 100);
-        adjuster.fixValue(0, -99999f);
+        //adjuster.fixValue(0, -99999f);
         //adjuster.fixValue(1, -0f);
         //adjuster.fixValue(7, -0f);
         //adjuster.fixValue(2, -5f);
