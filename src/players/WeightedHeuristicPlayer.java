@@ -6,6 +6,7 @@ import main.FeatureFunctions;
 import main.NextState;
 import main.State;
 import main.TFrame;
+import weightadjuster.GeneticAlgorithmAdjuster;
 import weightadjuster.SmoothingAdjuster;
 import weightadjuster.WeightAdjuster;
 
@@ -198,6 +199,20 @@ public class WeightedHeuristicPlayer {
             }
         }
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
+    }
+    
+    public void learnWithGeneticAlgorithm(GeneticAlgorithmAdjuster adjuster) {
+        float[] results = new float[2];
+        int iteration = 0;
+        String adjusterReport = null;
+        while(true) {
+            play(results);
+            /*if (adjusterReport != null) {
+                report(iteration, results, weights, adjusterReport);
+            }*/
+            adjusterReport = adjuster.adjust(results, weights);
+            iteration++;
+        }
     }
     
     public static void learn(WeightedHeuristicPlayer p, WeightAdjuster adjuster) {
