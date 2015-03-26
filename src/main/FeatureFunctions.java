@@ -20,7 +20,7 @@ public class FeatureFunctions {
      * Returns 1 if state is lost, 0 otherwise
      */
     public static float lost(NextState nextState) {
-        return nextState.hasLost() ? 1 : 0;
+        return nextState.lost ? 1 : 0;
     }
 
     /**
@@ -39,7 +39,7 @@ public class FeatureFunctions {
      */
     public static float maxHeight(NextState nextState) {
         int maximumHeight = Integer.MIN_VALUE;
-        int top[] = nextState.getTop();
+        int top[] = nextState.top;
 
         for (int x : top) {
             if (x > maximumHeight) {
@@ -55,7 +55,7 @@ public class FeatureFunctions {
      */
     public static float sumHeight(NextState nextState) {
         int totalHeight = 0;
-        int top[] = nextState.getTop();
+        int top[] = nextState.top;
 
         for (int x : top) {
             totalHeight += x;
@@ -70,7 +70,7 @@ public class FeatureFunctions {
     public static float maxHeightDifference(NextState nextState) {
         int maxHeight = Integer.MIN_VALUE;
         int minHeight = Integer.MAX_VALUE;
-        int top[] = nextState.getTop();
+        int top[] = nextState.top;
 
         for (int x : top) {
             if (x > maxHeight) {
@@ -90,7 +90,7 @@ public class FeatureFunctions {
      */
     public static float bumpiness(NextState nextState) {
         int bumpiness = 0;
-        int top[] = nextState.getTop();
+        int top[] = nextState.top;
 
         for (int i = 0; i < State.COLS - 1; i++) {
             bumpiness += Math.abs(top[i] - top[i + 1]);
@@ -105,8 +105,8 @@ public class FeatureFunctions {
      */
     public static float topPerimeter(NextState nextState) {
         int perimeter = 0;
-        int[][] field = nextState.getField();
-        int top[] = nextState.getTop();
+        int[][] field = nextState.field;
+        int top[] = nextState.top;
 
         int rows = State.ROWS;
         int y = top[0];
@@ -216,7 +216,7 @@ public class FeatureFunctions {
      */
     public static float numFilledCells(NextState nextState) {
         int filledCells = 0;
-        int field[][] = nextState.getField();
+        int field[][] = nextState.field;
 
         for (int i = 0; i < State.ROWS; ++i) {
             for (int j = 0; j < State.COLS; ++j) {
@@ -234,8 +234,8 @@ public class FeatureFunctions {
      */
     public static float numEmptyCells(NextState nextState) {
         int emptyCells = 0;
-        int field[][] = nextState.getField();
-        int top[] = nextState.getTop();
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
 
         for (int j = 0; j < State.COLS; ++j) {
             for (int i = 0; i < top[j]; ++i) {
@@ -253,8 +253,8 @@ public class FeatureFunctions {
      */
     public static float numHoles(NextState nextState) {
         int holes = 0;
-        int field[][] = nextState.getField();
-        int top[] = nextState.getTop();
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
 
         for (int j = 0; j < State.COLS; ++j) {
             for (int i = 0; i < top[j]; ++i) {
@@ -272,8 +272,8 @@ public class FeatureFunctions {
      */
     public static float sumEmptyCellDistanceFromTop(NextState nextState) {
         int sumDistance = 0;
-        int field[][] = nextState.getField();
-        int top[] = nextState.getTop();
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
         for (int j = 0; j < State.COLS; ++j) {
             for (int i = 0; i < top[j]; ++i) {
                 if (field[i][j] == 0 && field[i + 1][j] != 0) {
@@ -290,8 +290,8 @@ public class FeatureFunctions {
     public static float sumHoleDistanceFromTop(NextState ns) {
         int total = 0;
 
-        int field[][] = ns.getField();
-        int top[] = ns.getTop();
+        int field[][] = ns.field;
+        int top[] = ns.top;
         for (int j = 0; j < State.COLS; ++j) {
             boolean last = false;
             for (int i = 0; i < top[j]; ++i) {
@@ -376,8 +376,8 @@ public class FeatureFunctions {
         // int maxHeight = maxHeight(ns);
         int total = 0;
 
-        int field[][] = ns.getField();
-        int top[] = ns.getTop();
+        int field[][] = ns.field;
+        int top[] = ns.top;
         for (int j = 0; j < State.COLS; ++j) {
             int count = 0;
             int height = top[j];
@@ -595,7 +595,7 @@ public class FeatureFunctions {
     public static IntegerFeature negHeightRegion(int regionHeight) {
         return (NextState nextState) -> {
             int maximumHeight = Integer.MIN_VALUE;
-            int top[] = nextState.getTop();
+            int top[] = nextState.top;
             for (int x : top) {
                 if (x > maximumHeight) {
                     maximumHeight = x;
