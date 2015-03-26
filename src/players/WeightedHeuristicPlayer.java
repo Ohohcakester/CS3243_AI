@@ -56,13 +56,17 @@ public class WeightedHeuristicPlayer {
         //weights = new float[]{-99999.0f, -1, -4, -95};
     }
     
-    public float[] playWithWeights(float[] weights) {
+    public float playWithWeights(float[] weights, int times) {
         for (int i = 0; i < weights.length; ++i) {
             this.weights[i] = weights[i];
         }
+        float total = 0;
         float[] results = new float[2];
-        play(results);
-        return results;
+        for (int i=0; i<times; ++i) {
+            play(results);
+            total += results[0];
+        }
+        return (total/times);
     }
     
     private float heuristic(State state, int[] legalMove) {
@@ -170,7 +174,7 @@ public class WeightedHeuristicPlayer {
             s.draw();
             s.drawNext(0,0);
             try {
-                Thread.sleep(500);
+                Thread.sleep(0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
