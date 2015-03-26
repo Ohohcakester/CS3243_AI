@@ -78,7 +78,21 @@ public class WeightedHeuristicPlayer {
         //System.out.println(Arrays.toString(legalMove) + " = " + sum);
         return sum;
     }
+
+    public void switchToMinimax(int levels) {
+        features = new Feature[]{FeatureFunctions.minimax(levels, weightedFeature(features, weights))};
+        weights = new float[]{1};
+    }
     
+    public static Feature weightedFeature(Feature[] features, float[] weights) {
+        return (ns) -> {
+            float sum = 0;
+            for (int i=0; i<features.length; ++i) {
+                sum += features[i].compute(ns)*weights[i];
+            }
+            return sum;
+        };              
+    }
     
     public int[] findBest(State s, int[][] legalMoves) {
         float[] scores = new float[legalMoves.length];

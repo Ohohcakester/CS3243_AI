@@ -81,7 +81,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         //weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, -1f, -1f}; // <-- good weights.
         //weights = new float[]{-99999.0f, -1, -4, -95};
     }
-
+    
     /**
      * return the min max value of feature
      */
@@ -126,6 +126,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         //adjuster.fixValue(5, 1000f);
         //adjuster.fixValue(6, 0f);
         
+        //p.switchToMinimax(1);
         switch(choice) {
             case -1:
                 checkScore(p);break;
