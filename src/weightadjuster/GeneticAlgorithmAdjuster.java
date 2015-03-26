@@ -142,10 +142,6 @@ public class GeneticAlgorithmAdjuster {
                 firstBitString[j] = secondBitString[j];
                 secondBitString[j] = temp;
                
-//                firstBitString[j] ^= secondBitString[j];
-//                secondBitString[j] ^= firstBitString[j];
-//                firstBitString[j] ^= secondBitString[j];
-                //CP style of swapping. yeay
             }
             states[i] = decode(firstBitString);
             states[i+1] = decode(secondBitString);

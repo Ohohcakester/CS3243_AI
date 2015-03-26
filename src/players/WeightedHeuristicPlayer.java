@@ -7,6 +7,7 @@ import main.NextState;
 import main.State;
 import main.TFrame;
 import weightadjuster.GeneticAlgorithmAdjuster;
+import weightadjuster.GeneticAlgorithmAdjuster2;
 import weightadjuster.SmoothingAdjuster;
 import weightadjuster.WeightAdjuster;
 
@@ -57,6 +58,7 @@ public class WeightedHeuristicPlayer {
     }
     
     public float playWithWeights(float[] weights, int times) {
+        this.weights = new float[weights.length];
         for (int i = 0; i < weights.length; ++i) {
             this.weights[i] = weights[i];
         }
@@ -98,7 +100,7 @@ public class WeightedHeuristicPlayer {
     }
     
     public void play(float[] results) {
-        final int tries = 1;
+        final int tries = 3;
         long sum = 0;
         long sumSquare = 0;
         
@@ -217,6 +219,11 @@ public class WeightedHeuristicPlayer {
     /*public void learnWithGeneticAlgorithm(GeneticAlgorithmAdjuster adjuster) {
         adjuster.adjust();
     }*/
+    
+    public static void learn(GeneticAlgorithmAdjuster2 adjuster) {
+        adjuster.adjust();
+        //p.learnWithGeneticAlgorithm(adjuster);
+    }
     
     public static void learn(GeneticAlgorithmAdjuster adjuster) {
         adjuster.adjust();
