@@ -49,6 +49,22 @@ public class FeatureFunctions {
 
         return maximumHeight;
     }
+    
+    /**
+     * Returns the (maximum column height) ^ 3
+     */
+    public static float maxHeightCube(NextState nextState) {
+        int maximumHeight = Integer.MIN_VALUE;
+        int top[] = nextState.top;
+
+        for (int x : top) {
+            if (x > maximumHeight) {
+                maximumHeight = x;
+            }
+        }
+
+        return (float)Math.pow(maximumHeight,3);
+    }
 
     /**
      * Returns the sum of all column heights
@@ -385,6 +401,61 @@ public class FeatureFunctions {
                 height = top[j - 1];
             if (j + 1 < State.COLS && top[j + 1] < height)
                 height = top[j + 1];
+
+            for (int i = 0; i < height; ++i) {
+                if (field[i][j] == 0) {
+                    ++count;
+                    if (count > 2) {
+                        total += count - 2;
+                    }
+                } else {
+                    count = 0;
+                }
+            }
+        }
+        return total;
+    }
+    
+    /**
+     * Counts the number of holes and pits by comparing with the heights of the neighbouring columns.
+     * Only gives score to columns and pits of height at least 3.
+     * Examples:
+     * 
+     * |_|_|@|@|                   |@|_|_|_|
+     * |@|@|@|@|                   |@|_|_|@|
+     * |@|@|_|@| <-- Hole Column   |@|@|_|@|
+     * |@|@|_|@|     Height 4      |@|@|_|@|  <--- Pit Column
+     * |@|@|_|@|                   |@|@|_|@|       Height 5
+     * |@|@|_|@|                   |@|@|_|@|
+     * |@|@|@|@|                   |@|@|@|@|
+     * 
+     * Columns are given quadratically increasing scores according to the height.
+     *   Height   Score
+     *     1        0
+     *     2        0
+     *     3        1
+     *     4        3
+     *     5        6
+     *     6       10
+     */
+    public static float holeAndPitColumnsModified(NextState ns) {
+        // int maxHeight = maxHeight(ns);
+        int total = 0;
+
+        int field[][] = ns.field;
+        int top[] = ns.top;
+        for (int j = 0; j < State.COLS; ++j) {
+            int count = 0;
+            int height = Integer.MAX_VALUE;
+            if (j > 0 && top[j - 1] > height)
+                height = Math.min(height,top[j - 1]);
+            if (j + 1 < State.COLS && top[j + 1] < height)
+                height = Math.min(height,top[j + 1]);
+            if (height == Integer.MAX_VALUE) {
+                height = top[j];
+            } else {
+                height = Math.max(height,top[j]);
+            }
 
             for (int i = 0; i < height; ++i) {
                 if (field[i][j] == 0) {
