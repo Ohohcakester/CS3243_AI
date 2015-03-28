@@ -4,3 +4,5 @@
 /SmoothingAdjuster.class
 /WeightAdjuster.class
 /GeneticAlgorithmAdjuster2.class
+/PartialGamePlayer.class
+/WeightedHeuristicPlayer.class

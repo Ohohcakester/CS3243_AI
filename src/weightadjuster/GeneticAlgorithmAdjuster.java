@@ -13,6 +13,7 @@ public class GeneticAlgorithmAdjuster {
     private float[][] states;
     private float[] scores;
     private WeightedHeuristicPlayer w;
+    private PartialGamePlayer p;
     private int stateNumber;
     private int INITIAL_GOOD_STATES = 5;
     
@@ -104,7 +105,8 @@ public class GeneticAlgorithmAdjuster {
         while (totalScore == 0) {
             for (int i = 0; i < states.length; ++i) {
                 float[] realWeights = generateRealWeights(states[i]);
-                float result = w.playWithWeights(realWeights, 15);
+                float result = w.playPartialWithWeights(realWeights, 20);
+                //float result = w.playWithWeights(realWeights, 15);
                 scores[i] = result;
                 //System.out.println(i + " " + scores[i]);
                 totalScore += scores[i];
@@ -179,7 +181,7 @@ public class GeneticAlgorithmAdjuster {
             int position = rand.nextInt(bitString.length);
             double prob = rand.nextDouble();
             if (prob < mutationProbability) {
-                System.out.println("MUTATION!");
+                //System.out.println("MUTATION!");
                 bitString[position] ^= true;
             }
             states[i] = decode(bitString);
@@ -271,25 +273,26 @@ public class GeneticAlgorithmAdjuster {
     public void adjust() {
         generateRandomStates();
         int iteration = Integer.MAX_VALUE;
-        int interval = 1;
+        int interval = 5;
         for (int i = 0; i < iteration; ++i) {
-            //System.out.println("Iteration " + i);
+            System.out.println("Iteration " + i);
             selection();
             crossover();
             mutation();
             
             if (i%interval == 0) {
-                System.out.println("Iteration " + i);
+                //System.out.println("Iteration " + i);
                 float total = 0;
                 for (int j = 0; j < stateNumber; ++j) {
                     float[] realWeights = generateRealWeights(states[j]);
-                    float result = w.playWithWeights(realWeights, 4);
+                    float result = w.playWithWeights(realWeights, 2);
+                    float resultPartial = w.playPartialWithWeights(realWeights, 6);
                     /*System.out.println(
                             //bitString(encode(states[j])) + "    " +
                             "State #" + j + ". Score = " + result + "   " +
                             Arrays.toString(states[j]));
                             //Arrays.toString(states[j]));*/
-                    System.out.printf("State #%2d. Score = %10.3f [",j,result);
+                    System.out.printf("State #%2d. Score = %10.3f - %4.3f [",j,result,resultPartial);
                     for (int k = 0; k < states[j].length; ++k) {
                         System.out.printf("%9.2f", states[j][k]);
                         if (k + 1 < states[j].length) {

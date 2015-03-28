@@ -8,6 +8,7 @@ import main.State;
 import main.TFrame;
 import weightadjuster.GeneticAlgorithmAdjuster;
 import weightadjuster.GeneticAlgorithmAdjuster2;
+import weightadjuster.PartialGamePlayer;
 import weightadjuster.SmoothingAdjuster;
 import weightadjuster.WeightAdjuster;
 
@@ -75,12 +76,29 @@ public class WeightedHeuristicPlayer {
         for (float result : resultArray) {
             total += result;
         }
-        /*
-        float[] results = new float[2];
-        for (int i=0; i<times; ++i) {
-            play(results, 1);
-            total += results[0];
-        }*/
+        return (total/times);
+    }
+    
+    public float playPartialWithWeights(float[] weights, int times) {
+        this.weights = new float[weights.length];
+        for (int i = 0; i < weights.length; ++i) {
+            this.weights[i] = weights[i];
+        }
+
+        float total = 0;
+        float[] resultArray = new float[times];
+
+        IntStream.range(0, times)
+            .parallel()
+            .forEach(i -> {
+                float[] results = new float[2];
+                PartialGamePlayer.play(this, results, 1);
+                resultArray[i] = results[0];
+            });
+        for (float result : resultArray) {
+            total += result;
+        }
+
         return (total/times);
     }
     

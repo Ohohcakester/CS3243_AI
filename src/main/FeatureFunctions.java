@@ -29,10 +29,6 @@ public class FeatureFunctions {
      */
     public static float numRowsCleared(NextState nextState) {
         return nextState.cleared;
-        /*int numRowsCleared = 0;
-        numRowsCleared = nextState.rowsCleared;
-
-        return (float) Math.pow(numRowsCleared, 4);*/
     }
 
     /**
@@ -418,7 +414,7 @@ public class FeatureFunctions {
     }
     
     /**
-     * Counts the number of holes and pits by comparing with the heights of the neighbouring columns.
+     * Counts the number of holes and pits by comparing with the heights of the neighbouring columns, whichever is minimum.
      * Only gives score to columns and pits of height at least 3.
      * Examples:
      * 
@@ -467,6 +463,78 @@ public class FeatureFunctions {
                 } else {
                     count = 0;
                 }
+            }
+        }
+        return total;
+    }
+    
+    /*
+     * Returns number of columns that has at least one hole
+     * Minimize this value
+     */
+    public static float numColumnsThatHasHole(NextState ns) {
+    	int total = 0;
+    	int field[][] = ns.field;
+    	int top[] = ns.top;
+    	
+    	for (int col=0; col<State.COLS ; col++) {
+    		for (int row=0; row<top[col]-1; row++) {
+    			if (field[row][col] == 0) {
+    				total++;
+    				break;
+    			}
+    		}
+    	}
+    	return total;
+    }
+    
+    /*
+     * Returns number of rows that at least one hole (empty hole considered 
+     * Minimize this value
+     */
+    public static float numRowsThatHasHole(NextState ns) {
+    	int total = 0;
+    	int field[][] = ns.field;
+    	int top[] = ns.top;
+    	
+    	for (int row=0; row<State.ROWS ; row++) {
+    		for(int col=0; col<State.COLS; col++) {
+    			if(row >= top[col]) {
+    				continue;
+    			}
+    			
+    			if(field[row][col] == 0) {
+    				total++;
+    				break;
+    			}
+    		}
+    	}
+    	return total;
+    }
+
+    /*
+     * Returns number of rows that more than one hole
+     * Minimize this value
+     */
+    public static float numRowsThatHasMoreThanOneHole(NextState ns) {
+        int total = 0;
+        int field[][] = ns.field;
+        int top[] = ns.top;
+        
+        for (int row=0; row<State.ROWS ; row++) {
+            int numHoles = 0;
+            for(int col=0; col<State.COLS; col++) {
+                if(row >= top[col]) {
+                    continue;
+                }
+                
+                if(field[row][col] == 0) {
+                    ++numHoles;
+                    break;
+                }
+            }
+            if (numHoles > 1) {
+                ++total;
             }
         }
         return total;

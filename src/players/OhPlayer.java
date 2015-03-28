@@ -139,7 +139,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         //adjuster.fixValue(4, -1f);
         //adjuster.fixValue(5, 1000f);
         //adjuster.fixValue(6, 0f);
-        
+       
         //p.switchToMinimax(2);
         switch(choice) {
             case -1:

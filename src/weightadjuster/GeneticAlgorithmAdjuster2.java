@@ -38,7 +38,7 @@ public class GeneticAlgorithmAdjuster2 {
     }
     
     private float randomWeight(int position) {
-        float res = (float)Math.pow(rand.nextInt(20), 3);
+        float res = (float)Math.pow(rand.nextInt(16), 5) / 100;
         if (fixedSign.containsKey(position)) {
             res = res * fixedSign.get(position);
         } else if (rand.nextDouble() < 0.5) {
@@ -113,7 +113,7 @@ public class GeneticAlgorithmAdjuster2 {
                 }
             }
             chosen[maxIndex] = true;
-            newStates[i] = states[maxIndex];
+            newStates[i] = states[maxIndex].clone();
         }
         
         states = newStates;
