@@ -23,7 +23,9 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
                         (n)->FeatureFunctions.holeAndPitColumns(n),
                         (n)->FeatureFunctions.topPerimeter(n),
                         (n)->FeatureFunctions.maxHeightCube(n),
-                        (n)->FeatureFunctions.holeAndPitColumnsMin(n)/*,
+                        (n)->FeatureFunctions.holeAndPitColumnsMin(n),
+                        (n)->FeatureFunctions.numRowsThatHasMoreThanOneHole(n),
+                        (n)->FeatureFunctions.holeCoverEmptyCells(n)/*,
                         FeatureFunctions.variableHeightMinimaxInt(
                                 (h) -> State.ROWS-h,
                                 FeatureFunctions.negHeightRegion(1)
@@ -81,8 +83,8 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
 
         WeightedHeuristicPlayer p = new JonathanPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
-        GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmAdjuster(p, p.dim(), 30);
-        adjuster.fixValue(0, -99999f);
+        GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmAdjuster(p, p.dim(), 20);
+        adjuster.fixValue(0, -9999999f);
         /*adjuster.fixSign(0,-1);
         adjuster.fixSign(1,-1);
         adjuster.fixSign(2,-1);

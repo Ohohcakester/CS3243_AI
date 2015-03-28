@@ -80,7 +80,7 @@ public class GeneticAlgorithmAdjuster {
         while (totalScore == 0) {
             for (int i = 0; i < states.length; ++i) {
                 float[] realWeights = generateRealWeights(states[i]);
-                float result = w.playPartialWithWeights(realWeights, 20);
+                float result = w.playPartialWithWeights(realWeights, 10);
                 //float result = w.playWithWeights(realWeights, 15);
                 scores[i] = result;
                 //System.out.println(i + " " + scores[i]);
@@ -261,13 +261,13 @@ public class GeneticAlgorithmAdjuster {
                 for (int j = 0; j < stateNumber; ++j) {
                     float[] realWeights = generateRealWeights(states[j]);
                     float result = w.playWithWeights(realWeights, 2);
-                    float resultPartial = w.playPartialWithWeights(realWeights, 6);
+                    float resultPartial = w.playPartialWithWeights(realWeights, 10);
                     /*System.out.println(
                             //bitString(encode(states[j])) + "    " +
                             "State #" + j + ". Score = " + result + "   " +
                             Arrays.toString(states[j]));
                             //Arrays.toString(states[j]));*/
-                    System.out.printf("State #%2d. Score = %10.3f - %4.3f [",j,result,resultPartial);
+                    System.out.printf("State #%2d. Score = %10.3f - %8.3f [",j,result,resultPartial);
                     for (int k = 0; k < states[j].length; ++k) {
                         System.out.printf("%9.2f", states[j][k]);
                         if (k + 1 < states[j].length) {

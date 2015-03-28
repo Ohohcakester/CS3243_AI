@@ -6,24 +6,14 @@ import players.WeightedHeuristicPlayer;
  * A configure, extensible weighted heuristic player.
  * Override the functions "configure" and "initialiseWeights" with your own.
  */
-public class PartialGamePlayer {
-
-    private static int maxHeight(State s) {
-        int top[] = s.getTop();
-        int maxHeight = 0;
-        for (int i = 0; i < State.COLS; ++i) {
-            maxHeight = Math.max(maxHeight, top[i]);
-        }
-        return maxHeight;
-    }
-    
+public class PartialGamePlayer {    
     
     public static void play(WeightedHeuristicPlayer p, float[] results, int tries) {
         long sum = 0;
         long sumSquare = 0;
-        final int CONST_ADD = 30;
+        final int CONST_ADD = 200;
         final int INITIAL_HEIGHT = 5;
-        final int STOP_HEIGHT = 1;
+        final int STOP_HEIGHT = 2;
         int losses = 0;
         
         for (int i=0; i<tries; i++) {
@@ -31,12 +21,12 @@ public class PartialGamePlayer {
             int score = 0;
             State s = new State();
             s.makeMove(p.findBest(s,s.legalMoves()));
-            while(!s.hasLost() && maxHeight(s) < INITIAL_HEIGHT) {
-                maxHeight = Math.max(maxHeight,maxHeight(s));
+            while(!s.hasLost() && p.maxHeight(s) < INITIAL_HEIGHT) {
+                maxHeight = Math.max(maxHeight,p.maxHeight(s));
                 s.makeMove(p.findBest(s,s.legalMoves()));
             }
-            while(!s.hasLost() && maxHeight(s) > STOP_HEIGHT) {
-                maxHeight = Math.max(maxHeight,maxHeight(s));
+            while(!s.hasLost() && p.maxHeight(s) > STOP_HEIGHT) {
+                maxHeight = Math.max(maxHeight,p.maxHeight(s));
                 s.makeMove(p.findBest(s,s.legalMoves()));
             }
             if (s.hasLost()) {

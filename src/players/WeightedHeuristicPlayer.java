@@ -1,4 +1,5 @@
 package players;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
@@ -174,6 +175,28 @@ public class WeightedHeuristicPlayer {
             adjusterReport = adjuster.adjust(results, weights);
             iteration++;
         }
+    }
+    
+    public static int maxHeight(State s) {
+        int top[] = s.getTop();
+        int maxHeight = 0;
+        for (int i = 0; i < State.COLS; ++i) {
+            maxHeight = Math.max(maxHeight, top[i]);
+        }
+        return maxHeight;
+    }
+    
+    public void record() {
+        ArrayList<Integer> pieces = new ArrayList<>();
+        State s = new State();
+        while(!s.hasLost()) {
+            if (maxHeight(s) == 0) {
+                pieces.clear();
+            }
+            pieces.add(s.getNextPiece());
+            s.makeMove(findBest(s,s.legalMoves()));
+        }
+        System.out.println("PIECES = [ " + s.toString() + "]");
     }
 
     
