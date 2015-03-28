@@ -28,10 +28,7 @@ public class FeatureFunctions {
      * Maximize to ensure game continuity
      */
     public static float numRowsCleared(NextState nextState) {
-        int numRowsCleared = 0;
-        numRowsCleared = nextState.rowsCleared;
-
-        return (float) Math.pow(numRowsCleared, 4);
+        return nextState.cleared;
     }
 
     /**
