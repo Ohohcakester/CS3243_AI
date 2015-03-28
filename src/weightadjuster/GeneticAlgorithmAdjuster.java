@@ -15,7 +15,7 @@ public class GeneticAlgorithmAdjuster {
     private WeightedHeuristicPlayer w;
     private int stateNumber;
     //private double mutationProbability = 0.1;
-    private double mutationProbability = 0.1;
+    private double mutationProbability = 0.5;
     private HashMap<Integer,Float> fixedValue = new HashMap<>(); 
     
     private float[] highScoreWeights;
@@ -79,7 +79,7 @@ public class GeneticAlgorithmAdjuster {
         while (totalScore == 0) {
             for (int i = 0; i < states.length; ++i) {
                 float[] realWeights = generateRealWeights(states[i]);
-                float result = w.playWithWeights(realWeights, 6);
+                float result = w.playWithWeights(realWeights, 15);
                 scores[i] = result;
                 //System.out.println(i + " " + scores[i]);
                 totalScore += scores[i];
@@ -258,7 +258,7 @@ public class GeneticAlgorithmAdjuster {
                 float total = 0;
                 for (int j = 0; j < stateNumber; ++j) {
                     float[] realWeights = generateRealWeights(states[j]);
-                    float result = w.playWithWeights(realWeights, 2);
+                    float result = w.playWithWeights(realWeights, 4);
                     System.out.println(
                             //bitString(encode(states[j])) + "    " +
                             "State #" + j + ". Score = " + result + "   " +

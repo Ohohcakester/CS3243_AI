@@ -28,10 +28,11 @@ public class FeatureFunctions {
      * Maximize to ensure game continuity
      */
     public static float numRowsCleared(NextState nextState) {
-        int numRowsCleared = 0;
+        return nextState.cleared;
+        /*int numRowsCleared = 0;
         numRowsCleared = nextState.rowsCleared;
 
-        return (float) Math.pow(numRowsCleared, 4);
+        return (float) Math.pow(numRowsCleared, 4);*/
     }
 
     /**
@@ -438,7 +439,7 @@ public class FeatureFunctions {
      *     5        6
      *     6       10
      */
-    public static float holeAndPitColumnsModified(NextState ns) {
+    public static float holeAndPitColumnsMin(NextState ns) {
         // int maxHeight = maxHeight(ns);
         int total = 0;
 

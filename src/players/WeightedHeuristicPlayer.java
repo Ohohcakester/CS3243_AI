@@ -63,11 +63,24 @@ public class WeightedHeuristicPlayer {
             this.weights[i] = weights[i];
         }
         float total = 0;
+        float[] resultArray = new float[times];
+
+        IntStream.range(0, times)
+            .parallel()
+            .forEach(i -> {
+                float[] results = new float[2];
+                play(results, 1);
+                resultArray[i] = results[0];
+            });
+        for (float result : resultArray) {
+            total += result;
+        }
+        /*
         float[] results = new float[2];
         for (int i=0; i<times; ++i) {
-            play(results);
+            play(results, 1);
             total += results[0];
-        }
+        }*/
         return (total/times);
     }
     
@@ -113,8 +126,7 @@ public class WeightedHeuristicPlayer {
         return legalMoves[best];
     }
     
-    public void play(float[] results) {
-        final int tries = 3;
+    public void play(float[] results, int tries) {
         long sum = 0;
         long sumSquare = 0;
         
@@ -137,7 +149,7 @@ public class WeightedHeuristicPlayer {
         int iteration = 0;
         String adjusterReport = null;
         while(true) {
-            play(results);
+            play(results, 3);
             if (adjusterReport != null) {
                 report(iteration, results, weights, adjusterReport);
             }
