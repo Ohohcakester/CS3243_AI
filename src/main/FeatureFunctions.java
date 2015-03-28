@@ -539,6 +539,49 @@ public class FeatureFunctions {
         }
         return total;
     }
+    
+    /**
+     * For every holes in position (i,j) and blocks in position (k,j) where k>=i
+     * Then we add rowScore[k] to the result
+     * for all holes length x at row-k, add ceil(x/2) to rowScore[k] 
+     */
+    public static float holeCoverEmptyCells(NextState ns) {
+        int result = 0;
+        int field[][] = ns.field;
+        int top[] = ns.top;
+        
+        int rowScore[] = new int[State.ROWS];
+        
+        for (int i = 0; i < State.ROWS; ++i) {
+            rowScore[i] = 0;
+            int consecutiveHoles = 0;
+            for (int j = 0; j < State.COLS; ++j) {
+                if (field[i][j] == 0) {
+                    if (j == 0 || field[i][j-1] != 0) {
+                        consecutiveHoles = 1;
+                    } else {
+                        ++consecutiveHoles;
+                    }
+                } else {
+                    rowScore[i] += (consecutiveHoles + 1) / 2;
+                }
+            }
+        }
+
+        for (int j = 0; j < State.COLS; ++j) {
+            for (int i = 0; i < top[j]; ++i) {
+                if (field[i][j] == 0 && field[i + 1][j] != 0) {
+                    for (int k = i; k < top[j]; ++k) {
+                        if (field[k][j] != 0) {
+                            result += rowScore[k];
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
 
     private static final float LOSE_SCORE = -9999999f;
 
