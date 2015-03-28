@@ -500,7 +500,7 @@ public class FeatureFunctions {
     	for (int row=0; row<State.ROWS ; row++) {
     		for(int col=0; col<State.COLS; col++) {
     			if(row >= top[col]) {
-    				break;
+    				continue;
     			}
     			
     			if(field[row][col] == 0) {
@@ -512,6 +512,33 @@ public class FeatureFunctions {
     	return total;
     }
 
+    /*
+     * Returns number of rows that more than one hole
+     * Minimize this value
+     */
+    public static float numRowsThatHasMoreThanOneHole(NextState ns) {
+        int total = 0;
+        int field[][] = ns.field;
+        int top[] = ns.top;
+        
+        for (int row=0; row<State.ROWS ; row++) {
+            int numHoles = 0;
+            for(int col=0; col<State.COLS; col++) {
+                if(row >= top[col]) {
+                    continue;
+                }
+                
+                if(field[row][col] == 0) {
+                    ++numHoles;
+                    break;
+                }
+            }
+            if (numHoles > 1) {
+                ++total;
+            }
+        }
+        return total;
+    }
 
     private static final float LOSE_SCORE = -9999999f;
 
