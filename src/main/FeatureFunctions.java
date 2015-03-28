@@ -438,7 +438,7 @@ public class FeatureFunctions {
      *     5        6
      *     6       10
      */
-    public static float holeAndPitColumnsModified(NextState ns) {
+    public static float holeAndPitColumnsMin(NextState ns) {
         // int maxHeight = maxHeight(ns);
         int total = 0;
 
@@ -470,6 +470,51 @@ public class FeatureFunctions {
         }
         return total;
     }
+    
+    /*
+     * Returns number of columns that has at least one hole
+     * Minimize this value
+     */
+    public static float numColumnsThatHasHole(NextState ns) {
+    	int total = 0;
+    	int field[][] = ns.field;
+    	int top[] = ns.top;
+    	
+    	for (int col=0; col<State.COLS ; col++) {
+    		for (int row=0; row<top[col]-1; row++) {
+    			if (field[row][col] == 0) {
+    				total++;
+    				break;
+    			}
+    		}
+    	}
+    	return total;
+    }
+    
+    /*
+     * Returns number of rows that at least one hole (empty hole considered 
+     * Minimize this value
+     */
+    public static float numRowsThatHasHole(NextState ns) {
+    	int total = 0;
+    	int field[][] = ns.field;
+    	int top[] = ns.top;
+    	
+    	for (int row=0; row<State.ROWS ; row++) {
+    		for(int col=0; col<State.COLS; col++) {
+    			if(row >= top[col]) {
+    				break;
+    			}
+    			
+    			if(field[row][col] == 0) {
+    				total++;
+    				break;
+    			}
+    		}
+    	}
+    	return total;
+    }
+
 
     private static final float LOSE_SCORE = -9999999f;
 

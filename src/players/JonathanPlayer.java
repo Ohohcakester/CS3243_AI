@@ -23,7 +23,7 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
                         (n)->FeatureFunctions.holeAndPitColumns(n),
                         (n)->FeatureFunctions.topPerimeter(n),
                         (n)->FeatureFunctions.maxHeightCube(n),
-                        (n)->FeatureFunctions.holeAndPitColumnsModified(n)/*,
+                        (n)->FeatureFunctions.holeAndPitColumnsMin(n)/*,
                         FeatureFunctions.variableHeightMinimaxInt(
                                 (h) -> State.ROWS-h,
                                 FeatureFunctions.negHeightRegion(1)

@@ -16,7 +16,7 @@ public class GeneticAlgorithmAdjuster {
     private PartialGamePlayer p;
     private int stateNumber;
     //private double mutationProbability = 0.1;
-    private double mutationProbability = 0.1;
+    private double mutationProbability = 0.5;
     private HashMap<Integer,Float> fixedValue = new HashMap<>(); 
     
     private float[] highScoreWeights;
@@ -81,6 +81,7 @@ public class GeneticAlgorithmAdjuster {
             for (int i = 0; i < states.length; ++i) {
                 float[] realWeights = generateRealWeights(states[i]);
                 float result = w.playPartialWithWeights(realWeights, 20);
+                //float result = w.playWithWeights(realWeights, 15);
                 scores[i] = result;
                 //System.out.println(i + " " + scores[i]);
                 totalScore += scores[i];
