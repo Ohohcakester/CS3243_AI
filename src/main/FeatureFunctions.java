@@ -417,7 +417,7 @@ public class FeatureFunctions {
     }
     
     /**
-     * Counts the number of holes and pits by comparing with the heights of the neighbouring columns.
+     * Counts the number of holes and pits by comparing with the heights of the neighbouring columns, whichever is minimum.
      * Only gives score to columns and pits of height at least 3.
      * Examples:
      * 
