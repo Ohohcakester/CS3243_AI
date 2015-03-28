@@ -14,8 +14,11 @@ public class GeneticAlgorithmAdjuster {
     private float[] scores;
     private WeightedHeuristicPlayer w;
     private int stateNumber;
+    private int INITIAL_GOOD_STATES = 5;
+    
+    
     //private double mutationProbability = 0.1;
-    private double mutationProbability = 0.5;
+    private double mutationProbability = 0.2;
     private HashMap<Integer,Float> fixedValue = new HashMap<>(); 
     
     private float[] highScoreWeights;
@@ -66,12 +69,34 @@ public class GeneticAlgorithmAdjuster {
     }
     
     private void generateRandomStates() {
+        generateMostlyRandomStates();
+    }
+    
+    private void generateTotallyRandomStates() {
         for (int i = 0; i < stateNumber; ++i) {
             states[i] = generateRandomState(dim);
-            /*for (int j = 0; j < dim; ++j) {
-                states[i][j] = rand.nextFloat();
-            }*/
         }
+    }
+    
+    private void generateMostlyRandomStates() {
+        for (int i=0; i<INITIAL_GOOD_STATES; ++i) {
+            states[i] = generateInitialGoodState();
+        }
+        for (int i = INITIAL_GOOD_STATES; i < stateNumber; ++i) {
+            states[i] = generateRandomState(dim);
+        }
+    }
+    
+    private float[] generateInitialGoodState() {
+        float[][] goodWeights = new float[][] {
+            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, 0f, -3.0f}
+        };
+        int choice = rand.nextInt(goodWeights.length);
+        float[] weights = goodWeights[choice];
+        if (weights.length != dim) {
+            throw new UnsupportedOperationException("ERROR!!! WRONG DIM!");
+        }
+        return weights;
     }
     
     private void selection() {
