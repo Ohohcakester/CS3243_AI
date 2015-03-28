@@ -259,11 +259,20 @@ public class GeneticAlgorithmAdjuster {
                 for (int j = 0; j < stateNumber; ++j) {
                     float[] realWeights = generateRealWeights(states[j]);
                     float result = w.playWithWeights(realWeights, 2);
-                    System.out.println(
+                    /*System.out.println(
                             //bitString(encode(states[j])) + "    " +
                             "State #" + j + ". Score = " + result + "   " +
                             Arrays.toString(states[j]));
-                            //Arrays.toString(states[j]));
+                            //Arrays.toString(states[j]));*/
+                    System.out.printf("State #%2d. Score = %10.3f [",j,result);
+                    for (int k = 0; k < states[j].length; ++k) {
+                        System.out.printf("%9.2f", states[j][k]);
+                        if (k + 1 < states[j].length) {
+                            System.out.printf(",");
+                        } else {
+                            System.out.println("]");
+                        }
+                    }
                     total += result;
                     
                     if (result > highScore) {
