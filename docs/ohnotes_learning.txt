@@ -1,0 +1,116 @@
+Notes on learning tools.
+
+Note: The increases in scores are not only from the learning tools, but also the gradual introduction of newer, better feature functions.
+
+
+Minimax - not a learning tool
+Implemented minimax for general feature functions with alpha-beta pruning.
+The MIN player tries select the "worst piece" for the AI (the MAX player) in the minimax algorithm. Thus the minimax algorith plays according to the "worst-case scenario". This was inspired by successful minimax algorithms for 2048.
+To increase the effectiveness of pruning, pieces selected by the MIN player are ordered from worst to best, and from least moves to the most, in order to prune larger subtrees earlier.
+These is the order chosen: 0,5,6,2,3,4,1
+
+Turns out minimax is extremely slow, and does a lot less to help than good feature functions.
+1-level minimax is already too slow for learning, even when parallelised. However, it still plays at an extremely fast rate.
+2-level minimax takes about half a second per move. Pruning helps it make obvious decisions very quickly. However the slowdown is clearly visible.
+3-level minimax takes a long time (about 3-5 seconds per move, even with pruning). We rarely use this.
+Anothing above that is infeasible.
+
+Current idea: Run learning tools on features + weights without minimax. After we get a good set of weights, attach a 1-level or 2-level minimax to the final algorithm for a much smarter algorithm.
+
+
+Vector space model.
+Description of algorithm:
+Every set of weights is a vector. Suppose there are n weights, so the vector is of dimension n. Every time we play a game with a certain set of weights, we save the weights / score pair as a data point. Thus each data point is a vector pointing in a certain direction in the vector space, with a certain score value associated with it.
+We normalise each vector to length 100 to aid calculation. (because scalar multiples of existing vectors do not change the weight distribution)
+We fix the weights for certain features, like "lost", which is fixed to a -99999999 weight or something.
+
+So the learning algorithm does this in a loop:
+For the first 19 games, it randomly generates an n-dimensional vector (each value random between -100 and 100, then the entire vector is normalised to length 100), and plays a set of games with it. The mean score is recorded down as a data point. (thus 19 data points are generated)
+
+On the 20th game, a "good" vector is chosen for an actual play, by selecting each known vector, peturbing it, then computing its score by averaging the scores of nearby vectors (i.e. smoothing out the curve). The vector with the highest score is chosen for the 20th game.
+The game is played, a data point is created as usual, but this time the results are printed to the console for the user.
+
+Then it loops back again.
+
+A few things of note:
+1) Improvement should only be seen on each 20th game. The other games are random.
+2) We only pick data points from those picked before (though peturbed)
+3) The number of data points increases with time - thus the score computation gets slower and slower as time passes.
+
+Results: Not very successful. It failed to converge in most cases. Adjusting the parameters for the computation of scores for the 20th games helped at bit to make it converge. However, it wasn't good enough for our purposes.
+Best scores obtained by this method were about 400-500.
+
+
+
+
+
+Genetic Algorithm:
+We convert between weights and a binary encoding through a table (binary -> table index -> floating point value).
+The binary encoding seems to fare better than a non-binary encoding.
+We tried encoding the indices both in grey code and in normal binary encoding (BCD). BCD seems to fare better than gray code.
+-> idea for gray code was to reduce the impact of mutation - a flip in a single bit means a small change in value.
+-> However perhaps small changes were not desired as they cause the genetic algorithm to converge to local maxima too quickly.
+
+Initial implementations of genetic algorithm yielded scores of about 1000-2000. A significant improvement.
+
+> First issue with genetic algorithm we faced: Too quick convergence to local maxima.
+Changing to gray code, increasing mutation rate from 0.001 to 0.1 helped things a lot.
+Also, for selection, we changed from a "roulette-based selection" to a "rank-based selection"
+Roulette-based selection: Each of the k states have a score. We total up the scores, and normalise each score so that they sum up to 100%. Then we use that normalised score as the probability of picking the state for the crossover part of the algorithm.
+Rank-based selection: We disregard the actual scores for the k states, and care only about the ranking of the states by score. Let the sum of 1+2+3+...+k be L. Then the probability of the top state being chosen is k/L, the second being (k-1)/L, until the kth state, with probability 1/L.
+
+Finally, to increase the number of "genes" in our gene pool, the lowest-scoring state is replaced by a randomly-generated state before the crossover step. This new state has a pretty low probability of mixing into the gene pool though. (and being a randomly generated state, it is usually bad)
+
+Score results from this: A set of weights that averages scores about 4000. Top score earned by this set of weights is about 14,000, and about 17,000 with 1-level minimax.
+
+
+> Second issue we faced: As our algorithms get better, it takes a longer and longer time to finish a round of testing.
+
+First solution: Start the genetic algorithm with some states coming from a set of weights known to be good (instead of randomly generated) and continue from there.
+This lets it converge to a good solution (with new features) a lot faster.
+
+Score results from this: An algorithm with an original average score 24,000, and scored 64,000 with 1-level minimax.
+
+Next solution: Partial games.
+A partial game starts from an empty board, until the next empty board state. This is because a tetris game is episodic between "all-clears".
+Thus we say a partial game is "won" when the AI manages to clear the full board before failing, and "lost" of the AI fails before it clears the full board. We then test the AI over a large number of partial games to calculate its win rate. When a game is won, the game is scored based on how high the tetris reached before the AI could manage to clear the board (lower has better score). Failing gives a score of 0.
+This turned out to still be too slow, as it is very difficult to actually clear the board. Thus we redefined the partial game, to a game which "starts" when the AI reaches a height of 5, and "ends" when the AI reaches a height of 2 or less.
+
+With this, good AIs will take roughly the same time (or faster) to clear the board as compared to slow AIs, so the training time does not increase as the AI gets better.
+However, the distinciton of this objective from the original objective (scoring) makes it a less effective method, often yielding lower scores than the original, though it generates scores much more quickly.
+
+Possible improvement: Change the scoring of partial games from "height reached" to "total column height", the sum of the heights of each column. The latter is generally a better indicator of success than the height reached.
+
+
+Next solution: Multiple learning processes at once ("distributed" learning).
+First, we note that the genetic algorithm is already parallelised. When a state has to play 15 games to compute its score, the games are played simultaneously.
+The computer is already using 100% of its processing power due to this parallelisation. Thus the objective of this "distributed" learning is not for speed.
+
+The objective is to avoid local maxima.
+The idea is this:
+On multiple PCs, we spawn multiple learning processes on each. Each process regularly updates us with its average score of the current iteration, and the best scoring set of weights (average over 4 games) it has obtained so far.
+Once every few minutes or so, we look through each process, pick the worst process (lowest average, low worst score, and no current improvement), terminate it, and restart it with a new process. This allows good processes to continue and processes that hit low local maxima to be replaced with a new learning processes with all new weights.
+
+The best weights generated using this method together with partial games have an average score of 44,000. It has not been properly tested yet, though.
+
+Currently this process management process is executed by a human operator (me or jonathan).
+
+
+>> Scenario Database
+Not implemented yet.
+Idea:
+1) As shown before, the game in between all-clears is episodic. Even our best AI's eventually lose. As our AI's are all deterministic, the "last" sequence of pieces, from the last all-clear to the time the AI loses, must be a "difficult" sequence of pieces that causes the AI to lose.
+
+e.g. The sequences of pieces from the last all-clear to the time the AI fails may be something like:
+(0, 4, 5, 6, 1, 0, 2, 3, 4, 3, 1, 2, ...., 4). The AI fails when the last piece, 4 is called. Then, if we used the same AI and gave the game this same, predetermined set of pieces from the start, the AI will fail the game on the last piece of this sequence again.
+
+2) Good AIs will play very well in random situations. They last very long and repeatedly clear the screen. Only when the game decides to be evil and summon horrible combinations of pieces for the AI, will the AI fail. Thus a good AI plays until such a horrible combination is given to it. (it is very probabilistic). Better AIs last longer as the set of possible "failing combinations" is lower (thus it has a lower possibility of failing partial games).
+
+Thus, we will record down such "difficult" sequences of pieces to test our stronger AIs against. Every time a good AI fails, we save the failing sequence of pieces to a database. Then, using the previously mentioned partial game system, new AIs in training can randomly be given a partial game that starts using that sequence of pieces (that killed a previous good AI).
+If the AI survives till the end of the sequence, the rest of the pieces given to the AI are random until the AI clears the board (or gets below height 2). The AI is not considered to have cleared the partial game if it goes below height 2 before the given sequence of pieces is finished.
+
+To prevent "poor" sequences of pieces from flooding the database, the sequences of pieces are ranked. Each sequence of pieces is given a score according to the quality of the AI it killed. This is done by taking the final score of the AI killed by the sequence and assigning it to the sequence of pieces.
+e.g.
+AI_1 scores 4,012 lines before dying. The final sequence of pieces that killed it is given a score of 4,012.
+AI_2 scores 61,754 lines before dying. The final sequence of pieces that killed it is given a score of 61,754. Thus this sequence is ranked higher than the previous one.
+In partial games, we have a preference for choosing higher-scoring piece sequences to test AIs against.

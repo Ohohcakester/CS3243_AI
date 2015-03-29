@@ -10,6 +10,27 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
     protected void configure() {
         features = new Feature[]{
+                (n)->FeatureFunctions.lost(n),
+                (n)->FeatureFunctions.bumpiness(n),
+                (n)->FeatureFunctions.sumHeight(n),
+                (n)->FeatureFunctions.numRowsCleared(n),
+                (n)->FeatureFunctions.maxHeightDifference(n),
+                (n)->FeatureFunctions.numHoles(n),
+                (n)->FeatureFunctions.sumHoleDistanceFromTop(n),
+                (n)->FeatureFunctions.holeAndPitColumns(n),
+                (n)->FeatureFunctions.holeAndPitColumnsMin(n),
+                (n)->FeatureFunctions.topPerimeter(n),
+                (n)->FeatureFunctions.maxHeight(n),
+                (n)->FeatureFunctions.maxHeightCube(n),
+                (n)->FeatureFunctions.sumEmptyCellDistanceFromTop(n),
+                (n)->FeatureFunctions.numFilledCells(n),
+                (n)->FeatureFunctions.numRowsThatHasMoreThanOneHole(n),
+                (n)->FeatureFunctions.holeCoverEmptyCells(n)
+                
+                
+                
+                
+                /*
                 (n) -> FeatureFunctions.lost(n),
                 (n) -> FeatureFunctions.bumpiness(n),
                 (n) -> FeatureFunctions.sumHeight(n),
@@ -19,37 +40,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 (n) -> FeatureFunctions.sumHoleDistanceFromTop(n),
                 (n) -> FeatureFunctions.holeAndPitColumns(n),
                 (n) -> FeatureFunctions.holeAndPitColumnsMin(n),
-                (n) -> FeatureFunctions.topPerimeter(n)
-                
-                //(n)->FeatureFunctions.lost(n),
-                /*FeatureFunctions.minimax(1, (n)-> {
-                    float total = 0;
-                    int height = (int)FeatureFunctions.maximumColumnHeight(n);
-                    height = ((height+1) / 7) - 1;
-                    //total -= 50f*height;
-                    total -= FeatureFunctions.totalHoles(n);
-                    total -= 10f*FeatureFunctions.bumpiness(n);
-                    total -= 30f*FeatureFunctions.totalColumnsHeight(n);
-                    total += 20f*FeatureFunctions.completedLines(n);
-                    total -= 2f*FeatureFunctions.differenceHigh(n);
-                    total -= 26f*FeatureFunctions.totalHolePieces(n);
-                    total -= 0f*FeatureFunctions.totalHoles(n);
-                    total -= 5f*FeatureFunctions.weightedTotalHolePieces(n);
-                    total -= 50f*FeatureFunctions.holeAndPitColumns(n);
-                    
-                    //System.out.println(FeatureFunctions.totalHoles(s,n) - FeatureFunctions.totalHolePieces(s,n));
-                    
-                    return total;
-                })*/
-                //(n)->FeatureFunctions.maximumColumnHeight(n),
-                //(n)->FeatureFunctions.totalHoles(n),
-                //(n)->FeatureFunctions.totalColumnsHeight(n),
-                //(n)->FeatureFunctions.bumpiness(n),
-                //(n)->FeatureFunctions.completedLines(n),
-                //(n)->FeatureFunctions.totalFilledCells(n),
-                //(n)->FeatureFunctions.minMaximumColumnHeight(n),
-                //(n)->FeatureFunctions.minMaxTotalHoles(n),
-                //(n)->FeatureFunctions.differenceHigh(n)
+                (n) -> FeatureFunctions.topPerimeter(n)*/
         };
     }
     
@@ -74,6 +65,26 @@ public class OhPlayer extends WeightedHeuristicPlayer {
      *  Hi-Score: 4496.5 | [-0.01, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -3.0]
      *  
      *  
+     *  
+                (n) -> FeatureFunctions.lost(n),
+                (n) -> FeatureFunctions.bumpiness(n),
+                (n) -> FeatureFunctions.sumHeight(n),
+                (n) -> FeatureFunctions.numRowsCleared(n),
+                (n) -> FeatureFunctions.maxHeightDifference(n),
+                (n) -> FeatureFunctions.numHoles(n),
+                (n) -> FeatureFunctions.sumHoleDistanceFromTop(n),
+                (n) -> FeatureFunctions.holeAndPitColumns(n),
+                (n) -> FeatureFunctions.holeAndPitColumnsMin(n),
+                (n) -> FeatureFunctions.topPerimeter(n)
+     *  Hi-Score: 8299.5 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, 0.01, 0.5]
+     *  Hi-Score: 7358.25 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -0.1, 2.0]
+     *  Score =   6870.500 [  -100.00,    -2.00,    -0.50,     5.00,  -500.00,   -40.00,   -70.00,     0.01,    -3.00]
+     *  Hi-Score: 12067.75 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -0.1, -3.0]
+     *  Hi-Score: 13924.0 | [-99999.0, -100.0, -2.0, -0.01, 5.0, -500.0, -40.0, -70.0, -40.0, -3.0]
+     *  Hi-Score: 18838.75 | [-99999.0, -100.0, -2.0, -0.01, 5.0, -500.0, -40.0, -70.0, -40.0, -1.0]
+     *  Hi-Score: 24683.75 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -40.0, -3.0]
+     *
+     *  new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f};
      */
     protected void initialiseWeights() {
         weights = new float[features.length];
@@ -86,7 +97,8 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         
 
         //weights = new float[]{-99999.0f, -10.0f, -500.0f, -500.0f, 0.01f, -70.0f, -2.0f, -40.0f, 0.02f, -70.0f};
-        weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, 0f, -3.0f};
+        //weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, 0f, -3.0f};
+        //weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f};
         
         //weights = new float[]{-8000.0f, 0.01f, -3.0f, -0.05f, -0.05f, -100.0f, -20.0f, -70.0f, -20.0f};
         
@@ -140,7 +152,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         //adjuster.fixValue(5, 1000f);
         //adjuster.fixValue(6, 0f);
        
-        //p.switchToMinimax(2);
+        //p.switchToMinimax(1);
         switch(choice) {
             case -1:
                 checkScore(p);break;

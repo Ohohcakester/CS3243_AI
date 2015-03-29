@@ -15,11 +15,11 @@ public class GeneticAlgorithmAdjuster {
     private WeightedHeuristicPlayer w;
     private PartialGamePlayer p;
     private int stateNumber;
-    private int INITIAL_GOOD_STATES = 5;
+    private int INITIAL_GOOD_STATES = 12;
     
     
     //private double mutationProbability = 0.1;
-    private double mutationProbability = 0.2;
+    private double mutationProbability = 0.4;
     private HashMap<Integer,Float> fixedValue = new HashMap<>(); 
     
     private float[] highScoreWeights;
@@ -90,7 +90,9 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, 0f, -3.0f}
+            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f,0,0,0,0,0,0},
+            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f},
+            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
@@ -105,7 +107,7 @@ public class GeneticAlgorithmAdjuster {
         while (totalScore == 0) {
             for (int i = 0; i < states.length; ++i) {
                 float[] realWeights = generateRealWeights(states[i]);
-                float result = w.playPartialWithWeights(realWeights, 10);
+                float result = w.playPartialWithWeights(realWeights,50);
                 //float result = w.playWithWeights(realWeights, 15);
                 scores[i] = result;
                 //System.out.println(i + " " + scores[i]);
