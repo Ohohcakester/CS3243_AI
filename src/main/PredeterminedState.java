@@ -15,8 +15,8 @@ public class PredeterminedState extends State {
     
     public void makeMove(int[] move) {
         super.makeMove(move);
-        if (pieceIndex < pieces.length) {
-            nextPiece = randomPiece();
+        if (pieceIndex >= pieces.length) {
+            //nextPiece = randomPiece();
         } else {
             nextPiece = pieces[pieceIndex++];
         }
