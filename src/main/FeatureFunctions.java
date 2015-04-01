@@ -279,6 +279,22 @@ public class FeatureFunctions {
 
         return holes;
     }
+    
+    public static float numHolesPow(NextState nextState, int power) {
+        int holes = 0;
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
+
+        for (int j = 0; j < State.COLS; ++j) {
+            for (int i = 0; i < top[j]; ++i) {
+                if (field[i][j] == 0 && field[i + 1][j] != 0) {
+                    ++holes;
+                }
+            }
+        }
+
+        return (float)Math.pow(holes,power);
+    }
 
     /**
      * Returns the sum of empty cell distances from the top
