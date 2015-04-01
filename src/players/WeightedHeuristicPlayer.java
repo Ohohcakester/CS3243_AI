@@ -5,6 +5,7 @@ import java.util.stream.IntStream;
 
 import main.FeatureFunctions;
 import main.NextState;
+import main.PredeterminedState;
 import main.State;
 import main.TFrame;
 import weightadjuster.GeneticAlgorithmAdjuster;
@@ -186,7 +187,7 @@ public class WeightedHeuristicPlayer {
         return maxHeight;
     }
     
-    public void record() {
+    public static void record(WeightedHeuristicPlayer p) {
         ArrayList<Integer> pieces = new ArrayList<>();
         State s = new State();
         while(!s.hasLost()) {
@@ -194,9 +195,10 @@ public class WeightedHeuristicPlayer {
                 pieces.clear();
             }
             pieces.add(s.getNextPiece());
-            s.makeMove(findBest(s,s.legalMoves()));
+            s.makeMove(p.findBest(s,s.legalMoves()));
         }
-        System.out.println("PIECES = [ " + s.toString() + "]");
+        System.out.println("PIECES = " + pieces.toString());
+        System.out.println("You have completed "+s.getRowsCleared()+" rows.");
     }
 
     
@@ -235,6 +237,31 @@ public class WeightedHeuristicPlayer {
     public static void watch(WeightedHeuristicPlayer p) {
         final int REPORT_INTERVAL = 1000;
         State s = new State();
+        new TFrame(s);
+
+        int counter = REPORT_INTERVAL;
+        while(!s.hasLost()) {
+            s.makeMove(p.findBest(s,s.legalMoves()));
+            s.draw();
+            s.drawNext(0,0);
+            try {
+                Thread.sleep(0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            
+            counter--;
+            if (counter <= 0) {
+                System.out.println("CURRENT SCORE: " + s.getRowsCleared());
+                counter = REPORT_INTERVAL;
+            }
+        }
+        System.out.println("You have completed "+s.getRowsCleared()+" rows.");
+    }
+    
+    public static void watchWithPredeterminedState(WeightedHeuristicPlayer p, int[] sequence) {
+        final int REPORT_INTERVAL = 1000;
+        PredeterminedState s = new PredeterminedState(sequence);
         new TFrame(s);
 
         int counter = REPORT_INTERVAL;
