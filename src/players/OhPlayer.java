@@ -4,6 +4,7 @@ import main.FeatureFunctions;
 import main.NextState;
 import main.State;
 import weightadjuster.GeneticAlgorithmAdjuster;
+import weightadjuster.GeneticAlgorithmSD;
 
 public class OhPlayer extends WeightedHeuristicPlayer {
 
@@ -99,6 +100,8 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         //weights = new float[]{-99999.0f, -10.0f, -500.0f, -500.0f, 0.01f, -70.0f, -2.0f, -40.0f, 0.02f, -70.0f};
         //weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, 0f, -3.0f};
         //weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f};
+
+        weights = new float[]{-99999, -100, -2, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f};
         
         //weights = new float[]{-8000.0f, 0.01f, -3.0f, -0.05f, -0.05f, -100.0f, -20.0f, -70.0f, -20.0f};
         
@@ -142,7 +145,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
         WeightedHeuristicPlayer p = new OhPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
-        GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmAdjuster(p, p.dim(), 20);
+        GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmSD(p, p.dim(), 20);
         adjuster.fixValue(0, -99999f);
         //adjuster.fixValue(1, -0f);
         //adjuster.fixValue(7, -0f);
@@ -161,6 +164,8 @@ public class OhPlayer extends WeightedHeuristicPlayer {
             case 1:
                 learn(adjuster);break;
                 //learn(p, adjuster);break;
+            case 2:
+                record(p);break;
         }
     }
 }

@@ -7,26 +7,27 @@ import java.util.Random;
 import players.WeightedHeuristicPlayer;
 
 public class GeneticAlgorithmAdjuster {
-    private static Random rand = new Random();
-    private int dim;
-    private int realDim;
-    private float[][] states;
-    private float[] scores;
-    private WeightedHeuristicPlayer w;
-    private PartialGamePlayer p;
-    private int stateNumber;
-    private int INITIAL_GOOD_STATES = 12;
+    protected static Random rand = new Random();
+    protected int dim;
+    protected int realDim;
+    protected float[][] states;
+    protected float[] scores;
+    protected WeightedHeuristicPlayer w;
+    protected PartialGamePlayer p;
+    protected int stateNumber;
+    protected final int INITIAL_GOOD_STATES = 0;
+    protected final int PRINT_INTERVAL = 10;
     
     
-    //private double mutationProbability = 0.1;
-    private double mutationProbability = 0.4;
-    private HashMap<Integer,Float> fixedValue = new HashMap<>(); 
+    protected double mutationProbability = 0.15;
+    //protected double mutationProbability = 0.4;
+    protected HashMap<Integer,Float> fixedValue = new HashMap<>(); 
     
-    private float[] highScoreWeights;
-    private float highScore;
+    protected float[] highScoreWeights;
+    protected float highScore;
 
-    private static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
-    private static final int WORD_SIZE = 5;
+    protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
+    protected static final int WORD_SIZE = 5;
     
     public GeneticAlgorithmAdjuster(WeightedHeuristicPlayer w, int _dim, int N) {
         dim = _dim;
@@ -61,7 +62,7 @@ public class GeneticAlgorithmAdjuster {
         return realWeights;
     }
     
-    private float[] generateRandomState(int length) {
+    protected float[] generateRandomState(int length) {
         boolean[] encoded = new boolean[length*WORD_SIZE];
         for (int i=0; i<encoded.length; ++i) {
             encoded[i] = rand.nextBoolean();
@@ -69,7 +70,7 @@ public class GeneticAlgorithmAdjuster {
         return decode(encoded);
     }
     
-    private void generateRandomStates() {
+    protected void generateRandomStates() {
         generateMostlyRandomStates();
     }
     
@@ -102,7 +103,7 @@ public class GeneticAlgorithmAdjuster {
         return weights;
     }
     
-    private void selection() {
+    protected void selection() {
         float totalScore = 0;
         while (totalScore == 0) {
             for (int i = 0; i < states.length; ++i) {
@@ -272,22 +273,28 @@ public class GeneticAlgorithmAdjuster {
     }
 
     
+    protected void maybeSave(int iteration) {
+    }
+    
+    protected float playWithWeights(float[] realWeights, int times) {
+        return w.playWithWeights(realWeights, 2);
+    }
+    
     public void adjust() {
         generateRandomStates();
         int iteration = Integer.MAX_VALUE;
-        int interval = 5;
         for (int i = 0; i < iteration; ++i) {
             System.out.println("Iteration " + i);
             selection();
             crossover();
             mutation();
             
-            if (i%interval == 0) {
+            if ((i+1)%PRINT_INTERVAL == 0) {
                 //System.out.println("Iteration " + i);
                 float total = 0;
                 for (int j = 0; j < stateNumber; ++j) {
                     float[] realWeights = generateRealWeights(states[j]);
-                    float result = w.playWithWeights(realWeights, 2);
+                    float result = playWithWeights(realWeights, 2);
                     float resultPartial = w.playPartialWithWeights(realWeights, 10);
                     /*System.out.println(
                             //bitString(encode(states[j])) + "    " +
@@ -314,6 +321,8 @@ public class GeneticAlgorithmAdjuster {
                 System.out.println("Average Score: " + (total/stateNumber));
                 System.out.println("Hi-Score: " + highScore + " | " + Arrays.toString(highScoreWeights));
             }
+
+            maybeSave(i);
         }
     }
     

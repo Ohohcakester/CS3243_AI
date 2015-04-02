@@ -6,8 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.TreeSet;
 
@@ -26,14 +25,25 @@ public class SequenceStore {
     
     public static final String PATH = "SequenceData\\";
     public static final String FILE_MAIN = "main.txt";
+    public static final String FILE_MAIN_TRIM = "main_trim.txt";
     public static final String FILE_AUX_PREFIX = "aux";
     public static final Random rand = new Random();
     public final String auxiliaryFile = randomAuxiliaryFile();
 
     private final TreeSet<Sequence> sequenceSet;
     
+    private double[] probabilities = new double[0];
+    private double probabilitySum;
+    float lastHardBias = -1;
+    private boolean sequenceSetChanged;
+    
     private SequenceStore() {
         sequenceSet = new TreeSet<>();
+        dirty();
+    }
+    
+    private void dirty() {
+        sequenceSetChanged = true;
     }
     
     public static SequenceStore empty() {
@@ -42,7 +52,13 @@ public class SequenceStore {
     
     public static SequenceStore load() {
         SequenceStore store = new SequenceStore();
-        store.loadSequences();
+        store.loadSequences(false);
+        return store;
+    }
+    
+    public static SequenceStore loadTrimmed() {
+        SequenceStore store = new SequenceStore();
+        store.loadSequences(true);
         return store;
     }
     
@@ -53,10 +69,88 @@ public class SequenceStore {
     
     public void addSequence(int score, int[] pieces) {
         sequenceSet.add(new Sequence(score, pieces));
+        dirty();
     }
+    
+    public void addSequence(Sequence sequence) {
+        sequenceSet.add(sequence);
+        dirty();
+    }
+
+    
+    public void addSequence(int score, ArrayList<Integer> pieces) {
+        sequenceSet.add(new Sequence(score, pieces));
+        dirty();
+    }
+    
+    
+    public Sequence getRandomSequence(float hardBias) {
+        if (sequenceSet.isEmpty()) return null;
+        
+        regenerateProbabilityArray(hardBias);
+        
+        double pos = rand.nextDouble()*probabilitySum;
+        Iterator<Sequence> itr = sequenceSet.iterator();
+        int maxIndex = probabilities.length-1;
+        
+        int index = 0;
+        while (index < maxIndex && pos >= probabilities[index]) {
+            pos -= probabilities[index];
+            index++;
+            itr.next();
+        }
+        return itr.next();
+    }
+
+    public void regenerateProbabilityArray(float hardBias) {
+        if (!sequenceSetChanged && hardBias == lastHardBias) return;
+
+        probabilitySum = 0;
+        int size = sequenceSet.size();
+        if (probabilities.length != size) {
+            probabilities = new double[size];
+        }
+        
+        for (int i=0; i<probabilities.length; ++i) {
+            double prob = probability(hardBias, (float)i/size);
+            probabilities[i] = prob;
+            probabilitySum += prob;
+        }
+        
+        lastHardBias = hardBias;
+        sequenceSetChanged = false;
+    }
+    
+    /**
+     * x = 0 is the probability of the first element in the array
+     * x = 1 is the probability of the last element in the array
+     * 
+     * y = e^(-(1/(1-a)-1)*(x)^2)
+     * => y = e^(-a/(1-a)) * (x)^2
+     * 
+     * a = hardBias
+     * x = position
+     */
+    public double probability(float a, float x) {
+        return Math.exp(-a/(1-a)*x*x);
+    }
+    
     
     public void saveSequences() {
         System.out.println("Saving sequences to " + auxiliaryFile);
+
+        String backupFile = PATH + auxiliaryFile + ".backup";
+        
+        try {
+            PrintWriter pw = new PrintWriter(backupFile);
+            for (Sequence seq : sequenceSet) {
+                pw.print(seq);
+                pw.print(SEPARATOR_ROW);
+            }
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         
         try {
             PrintWriter pw = new PrintWriter(PATH + auxiliaryFile);
@@ -68,17 +162,25 @@ public class SequenceStore {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        File file = new File(backupFile);
+        file.delete();
     }
     
     
-    public void loadSequences() {
+    public void loadSequences(boolean trimmed) {
         sequenceSet.clear();
-        loadSequencesWithoutClearing();
+        loadSequencesWithoutClearing(trimmed);
     }
     
-    public void loadSequencesWithoutClearing() {
+    public void loadSequencesWithoutClearing(boolean trimmed) {
+        dirty();
+        String fileName;
+        if (trimmed) fileName = PATH + FILE_MAIN_TRIM;
+        else fileName = PATH + FILE_MAIN;
+        
         try {
-            FileReader fr = new FileReader(PATH + FILE_MAIN);
+            FileReader fr = new FileReader(fileName);
             BufferedReader br = new BufferedReader(fr);
             String s = br.readLine();
             while (s != null) {
@@ -93,7 +195,7 @@ public class SequenceStore {
     }
         
     public static void combine() {
-        HashSet<String> lines = new HashSet<>();
+        TreeSet<TempSequence> lines = new TreeSet<>();
         
         File dir = new File(PATH);
         File[] files = dir.listFiles((file, name) -> name.endsWith(".txt"));
@@ -104,7 +206,7 @@ public class SequenceStore {
                 BufferedReader br = new BufferedReader(fr);
                 String s = br.readLine();
                 while (s != null) {
-                    lines.add(s);
+                    lines.add(new TempSequence(s));
                     s = br.readLine();
                 }
                 br.close();
@@ -115,21 +217,49 @@ public class SequenceStore {
         
         try {
             PrintWriter pw = new PrintWriter(PATH + FILE_MAIN);
-            for (String line : lines) {
+            for (TempSequence line : lines) {
                 pw.print(line);
                 pw.print(SEPARATOR_ROW);
             }
             pw.close();
+            System.out.println("Written to file " + FILE_MAIN);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        try {
+            PrintWriter pw = new PrintWriter(PATH + FILE_MAIN_TRIM);
+            int trimLimit = 100;
+            for (TempSequence line : lines) {
+                pw.print(line);
+                pw.print(SEPARATOR_ROW);
+                
+                if (--trimLimit <= 0) break;
+            }
+            pw.close();
+            System.out.println("Written to file " + FILE_MAIN_TRIM);
         } catch (IOException e) {
             e.printStackTrace();
         }
         
         for (File file : files) {
-            if (!file.getName().equals(FILE_MAIN)) {
+            String getName = file.getName();
+            if (!getName.equals(FILE_MAIN) && !getName.equals(FILE_MAIN_TRIM)) {
                 System.out.println("Delete file " + file.getName());
                 file.delete();
             }
         }
+    }
+    
+    @Override
+    public String toString() {
+        String line1 = "SequenceStore: save to file " + auxiliaryFile + " | " +
+                    sequenceSet.size() + " sequences loaded from main.";
+        String line2 = "First item : ";
+        if (sequenceSet.isEmpty()) line2 += "null";
+        else line2 += sequenceSet.first().toStringShort();
+
+        return line1 + "\n" + line2;
     }
     
     private static boolean makeDirs(String path) {
@@ -190,91 +320,29 @@ public class SequenceStore {
 }
 
 
-
-class Sequence implements Comparable<Sequence> {
+class TempSequence implements Comparable<TempSequence> {
     public final int score;
-    public final int[] pieces;
+    public final String seqStr;
     
-    public Sequence(int score, int[] pieces) {
-        this.score = score;
-        this.pieces = pieces;
-    }
-    
-    public Sequence(String encoded) {
+    public TempSequence(String encoded) {
         int space = encoded.indexOf(' ');
         score = Integer.parseInt(encoded.substring(0, space));
-
-        ArrayList<Integer> pieceList = new ArrayList<>();
-        for (int i = space+1; i < encoded.length(); ++i) {
-            int piece = pieceNo(encoded.charAt(i));
-            if (piece != -1) {
-                pieceList.add(piece);
-            }
-        }
-
-        pieces = new int[pieceList.size()];
-        for (int i=0; i<pieces.length; ++i) {
-            pieces[i] = pieceList.get(i);
-        }
-    }
-    
-    private static int pieceNo(char c) {
-        int piece =  c - '0';
-        if (piece >= 0 && piece < State.N_PIECES) {
-            return piece;
-        } else {
-            return -1;
-        }
+        seqStr = encoded.substring(space+1);
     }
 
     @Override
-    public int compareTo(Sequence o) {
-        int cmp = score - o.score;
-        if (cmp != 0) return -cmp;
+    public int compareTo(TempSequence o) {
+        int cmp = o.score - score;
+        if (cmp != 0) return cmp;
         
-        int i = 0;
-        while (i < pieces.length && i < o.pieces.length) {
-            cmp = pieces[i] - o.pieces[i];
-            if (cmp != 0) return -cmp;
-            i++;
-        }
-        return 0;
+        cmp = seqStr.length() - o.seqStr.length();
+        if (cmp != 0) return cmp;
+        
+        return seqStr.compareTo(o.seqStr);
     }
     
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + Arrays.hashCode(pieces);
-        result = prime * result + score;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Sequence other = (Sequence) obj;
-        if (!Arrays.equals(pieces, other.pieces))
-            return false;
-        if (score != other.score)
-            return false;
-        return true;
-    }
-
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(score);
-        sb.append(" ");
-        for (int piece : pieces) {
-            sb.append(piece);
-        }
-        return sb.toString();
+        return score + " " + seqStr;
     }
-    
 }

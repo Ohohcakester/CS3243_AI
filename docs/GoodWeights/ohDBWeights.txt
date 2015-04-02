@@ -1,0 +1,22 @@
+
+                (n)->FeatureFunctions.lost(n),
+                (n)->FeatureFunctions.bumpiness(n),
+                (n)->FeatureFunctions.sumHeight(n),
+                (n)->FeatureFunctions.numRowsCleared(n),
+                (n)->FeatureFunctions.maxHeightDifference(n),
+                (n)->FeatureFunctions.numHoles(n),
+                (n)->FeatureFunctions.sumHoleDistanceFromTop(n),
+                (n)->FeatureFunctions.holeAndPitColumns(n),
+                (n)->FeatureFunctions.holeAndPitColumnsMin(n),
+                (n)->FeatureFunctions.topPerimeter(n),
+                (n)->FeatureFunctions.maxHeight(n),
+                (n)->FeatureFunctions.maxHeightCube(n),
+                (n)->FeatureFunctions.sumEmptyCellDistanceFromTop(n),
+                (n)->FeatureFunctions.numFilledCells(n),
+                (n)->FeatureFunctions.numRowsThatHasMoreThanOneHole(n),
+                (n)->FeatureFunctions.holeCoverEmptyCells(n)
+
+Hi-Score: 9181.5 | [-99999.0, -500.0, 2.0, 0.05, 40.0, -8000.0, -40.0, -500.0, -0.02, -500.0, -0.5, -2.0, 1.0, 0.02, 0.02, -40.0]
+
+Hi-Score: 6582.5 | [-99999.0, -2.0, -0.05, -10.0, 0.1, -8000.0, -0.02, -500.0, -10.0, -100.0, -0.1, -0.05, -5.0, -0.02, 0.05, -5.0]
+Saving
