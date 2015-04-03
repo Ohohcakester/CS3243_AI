@@ -31,6 +31,7 @@ public class SequenceStore {
     public final String auxiliaryFile = randomAuxiliaryFile();
 
     private final TreeSet<Sequence> sequenceSet;
+    private final int SEQUENCE_LIMIT = 500;
     
     private double[] probabilities = new double[0];
     private double probabilitySum;
@@ -67,22 +68,25 @@ public class SequenceStore {
         return FILE_AUX_PREFIX + randFileNo + ".txt";
     }
     
-    public void addSequence(int score, int[] pieces) {
-        sequenceSet.add(new Sequence(score, pieces));
-        dirty();
+    public void addSequence(int gameScore, int[] pieces) {
+        addSequence(new Sequence(gameScore, pieces));
+    }
+    
+    public void addSequence(int gameScore, ArrayList<Integer> pieces) {
+        addSequence(new Sequence(gameScore, pieces));
     }
     
     public void addSequence(Sequence sequence) {
         sequenceSet.add(sequence);
-        dirty();
-    }
-
-    
-    public void addSequence(int score, ArrayList<Integer> pieces) {
-        sequenceSet.add(new Sequence(score, pieces));
+        trimExcessSequences();
         dirty();
     }
     
+    private void trimExcessSequences() {
+        while (sequenceSet.size() > SEQUENCE_LIMIT) {
+            sequenceSet.pollLast();
+        }
+    }
     
     public Sequence getRandomSequence(float hardBias) {
         if (sequenceSet.isEmpty()) return null;
@@ -229,7 +233,7 @@ public class SequenceStore {
         
         try {
             PrintWriter pw = new PrintWriter(PATH + FILE_MAIN_TRIM);
-            int trimLimit = 100;
+            int trimLimit = 200;
             for (TempSequence line : lines) {
                 pw.print(line);
                 pw.print(SEPARATOR_ROW);

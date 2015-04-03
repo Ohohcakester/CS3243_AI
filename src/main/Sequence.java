@@ -9,14 +9,18 @@ public class Sequence implements Comparable<Sequence> {
     public final int score;
     public final int[] pieces;
     
-    public Sequence(int score, int[] pieces) {
-        this.score = score;
+    public Sequence(int gameScore, int[] pieces) {
+        this.score = computeScore(gameScore, pieces.length);
         this.pieces = pieces;
     }
     
-    public Sequence(int score, ArrayList<Integer> pieceList) {
-        this.score = score;
-        this.pieces = toArray(pieceList);;
+    public Sequence(int gameScore, ArrayList<Integer> pieceList) {
+        this.score = computeScore(gameScore, pieceList.size());
+        this.pieces = toArray(pieceList);
+    }
+    
+    private int computeScore(int gameScore, int seqLength) {
+        return gameScore / (int)(Math.sqrt(seqLength));
     }
     
     public Sequence(String encoded) {

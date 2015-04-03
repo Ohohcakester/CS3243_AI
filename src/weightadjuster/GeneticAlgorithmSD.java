@@ -8,9 +8,15 @@ import players.WeightedHeuristicPlayer;
 
 public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     //private static int SAVE_INTERVAL = 1;
-    private static final double DATABASE_SEQUENCE_PROBABILTY = 0.8f;
-    private static final float HARD_BIAS = 0.8f; // HARD_BIAS of 1 is 100% hardest sequence. HARD_BIAS of 0 is even distribution.
-    private static final int TRIES = 20;
+    private static final double DATABASE_SEQUENCE_PROBABILTY = 1f;
+    private static final float HARD_BIAS = 0.4f; // HARD_BIAS of 1 is 100% hardest sequence. HARD_BIAS of 0 is even distribution.
+    
+    private static final int PARTIAL_TRIES = 20;
+    private static final int REAL_TRIES = 5;
+    
+    private static final float WEIGHT_REAL = 0.8f; // between 0 and 1.
+    
+    
     private Sequence[] sequences;
     
     private SequenceStore store;
@@ -18,8 +24,10 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     public GeneticAlgorithmSD(WeightedHeuristicPlayer w, int dim, int N) {
         super(w, dim, N);
         store = SequenceStore.loadTrimmed();
-        sequences = new Sequence[TRIES];
+        sequences = new Sequence[PARTIAL_TRIES];
         System.out.println(store);
+        
+        PRINT_INTERVAL = 3;
     }
     
 
@@ -28,10 +36,9 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
         float totalScore = 0;
         while (totalScore == 0) {
 
-            for (int i=0; i<TRIES; ++i) {
-                if (rand.nextFloat() < DATABASE_SEQUENCE_PROBABILTY) {
+            for (int i=0; i<PARTIAL_TRIES; ++i) {
+                if (rand.nextFloat() <= DATABASE_SEQUENCE_PROBABILTY) {
                     sequences[i] = store.getRandomSequence(HARD_BIAS);
-                    //System.out.println("Use sequence " + sequence);
                 } else {
                     sequences[i] = null;
                 }
@@ -40,10 +47,12 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
             for (int i = 0; i < states.length; ++i) {
                 float[] realWeights = generateRealWeights(states[i]);
                 
-                
-                float result = w.playPartialWithWeights(realWeights, TRIES, sequences);
+                float resultP = w.playPartialWithWeights(realWeights, PARTIAL_TRIES, sequences);
+                float resultR = w.playWithWeights(realWeights, REAL_TRIES);
 
-                scores[i] = result;
+                scores[i] = weightedMean(resultP, resultR);
+
+                //System.out.println(resultR + " | " + resultP + " | " + scores[i]);
                 //System.out.println(i + " " + scores[i]);
                 totalScore += scores[i];
             }
@@ -94,6 +103,30 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
         states = newStates;
     }
     
+    /**
+     * Both resultP and resultR must be nonnegative!!!
+     */
+    private float weightedMean(float resultP, float resultR) {
+        
+        // Note: both must be nonnegative!
+        
+        double p = Math.pow(resultP, 1 - WEIGHT_REAL);
+        double r = Math.pow(resultR, WEIGHT_REAL);
+
+        // Currently: Geometric Mean
+        return (float)(p*r);
+        
+        
+        /*// Harmonic Mean
+        float sum = resultP + resultR;
+        float product = resultP*resultR;
+        
+        if (sum == 0)
+            return 0;
+        return product/sum;*/
+    }
+
+
     @Override
     protected float playWithWeights(float[] realWeights, int times) {
         return w.playWithWeights(realWeights, times, store);
@@ -104,6 +137,25 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
         if ((iteration+1)%PRINT_INTERVAL == 0) {
             store.saveSequences();
         }
+    }
+    
+
+    @Override
+    protected float printAndReturnResult(int j, float[] realWeights) {
+        float result = playWithWeights(realWeights, 2);
+        float resultPartial = w.playPartialWithWeights(realWeights, 10);
+        float weightedMean = weightedMean(resultPartial, result);
+
+        System.out.printf("State #%2d. Score = %10.3f - %8.3f - %8.3f [",j,result,resultPartial,weightedMean);
+        for (int k = 0; k < states[j].length; ++k) {
+            System.out.printf("%9.2f", states[j][k]);
+            if (k + 1 < states[j].length) {
+                System.out.printf(",");
+            } else {
+                System.out.println("]");
+            }
+        }
+        return result;
     }
     
     

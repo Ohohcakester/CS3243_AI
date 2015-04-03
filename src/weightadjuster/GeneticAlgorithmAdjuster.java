@@ -15,8 +15,8 @@ public class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 0;
-    protected final int PRINT_INTERVAL = 10;
+    protected final int INITIAL_GOOD_STATES = 12;
+    protected int PRINT_INTERVAL = 10;
     
     
     protected double mutationProbability = 0.15;
@@ -91,9 +91,9 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f,0,0,0,0,0,0},
-            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f},
-            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f}
+            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f},
+            new float[]{-40.0f, -8000.0f, 100.0f, 10.0f, 0.5f, -5.0f, 0.5f, -8000.0f, -40.0f, 0.01f, -5.0f, -2.0f, -0.1f, -40.0f, -1.0f},
+            new float[]{0.05f, 2.0f, -2.0f, -0.05f, -8000.0f, -500.0f, -8000.0f, -500.0f, -500.0f, -0.01f, -10.0f, 40.0f, 20.0f, -3.0f, -1.0f}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
@@ -294,22 +294,9 @@ public class GeneticAlgorithmAdjuster {
                 float total = 0;
                 for (int j = 0; j < stateNumber; ++j) {
                     float[] realWeights = generateRealWeights(states[j]);
-                    float result = playWithWeights(realWeights, 2);
-                    float resultPartial = w.playPartialWithWeights(realWeights, 10);
-                    /*System.out.println(
-                            //bitString(encode(states[j])) + "    " +
-                            "State #" + j + ". Score = " + result + "   " +
-                            Arrays.toString(states[j]));
-                            //Arrays.toString(states[j]));*/
-                    System.out.printf("State #%2d. Score = %10.3f - %8.3f [",j,result,resultPartial);
-                    for (int k = 0; k < states[j].length; ++k) {
-                        System.out.printf("%9.2f", states[j][k]);
-                        if (k + 1 < states[j].length) {
-                            System.out.printf(",");
-                        } else {
-                            System.out.println("]");
-                        }
-                    }
+                    
+                    float result = printAndReturnResult(j, realWeights);
+                    
                     total += result;
                     
                     if (result > highScore) {
@@ -324,6 +311,22 @@ public class GeneticAlgorithmAdjuster {
 
             maybeSave(i);
         }
+    }
+
+    protected float printAndReturnResult(int j, float[] realWeights) {
+        float result = playWithWeights(realWeights, 2);
+        float resultPartial = w.playPartialWithWeights(realWeights, 10);
+
+        System.out.printf("State #%2d. Score = %10.3f - %8.3f [",j,result,resultPartial);
+        for (int k = 0; k < states[j].length; ++k) {
+            System.out.printf("%9.2f", states[j][k]);
+            if (k + 1 < states[j].length) {
+                System.out.printf(",");
+            } else {
+                System.out.println("]");
+            }
+        }
+        return result;
     }
     
 }
