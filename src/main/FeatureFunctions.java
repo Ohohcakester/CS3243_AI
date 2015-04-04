@@ -17,78 +17,72 @@ public class FeatureFunctions {
     }
 
     /**
-     * Returns 1 if state is lost, 0 otherwise
+     * Returns 1 if state is lost, 0 otherwise.
      */
     public static float lost(NextState nextState) {
         return nextState.lost ? 1 : 0;
     }
 
     /**
-     * Returns the number of rows cleared
-     * Maximize to ensure game continuity
+     * Returns the number of rows cleared.
+     * Maximize to ensure game continuity.
      */
     public static float numRowsCleared(NextState nextState) {
         return nextState.cleared;
     }
 
     /**
-     * Returns the maximum column height
+     * Returns the maximum column height.
      */
     public static float maxHeight(NextState nextState) {
-        int maximumHeight = Integer.MIN_VALUE;
-        int top[] = nextState.top;
-
-        for (int x : top) {
-            if (x > maximumHeight) {
-                maximumHeight = x;
-            }
-        }
-
-        return maximumHeight;
-    }
-    
-    /**
-     * Returns the (maximum column height) ^ 3
-     */
-    public static float maxHeightCube(NextState nextState) {
-        int maximumHeight = Integer.MIN_VALUE;
-        int top[] = nextState.top;
-
-        for (int x : top) {
-            if (x > maximumHeight) {
-                maximumHeight = x;
-            }
-        }
-
-        return (float)Math.pow(maximumHeight,3);
-    }
-
-    /**
-     * Returns the sum of all column heights
-     */
-    public static float sumHeight(NextState nextState) {
-        int totalHeight = 0;
-        int top[] = nextState.top;
-
-        for (int x : top) {
-            totalHeight += x;
-        }
-
-        return totalHeight;
-    }
-
-    /**
-     * Returns the difference between the maximum and minimum column heights
-     */
-    public static float maxHeightDifference(NextState nextState) {
         int maxHeight = Integer.MIN_VALUE;
-        int minHeight = Integer.MAX_VALUE;
-        int top[] = nextState.top;
 
+        int top[] = nextState.top;
         for (int x : top) {
             if (x > maxHeight) {
                 maxHeight = x;
             }
+        }
+
+        return maxHeight;
+    }
+
+    /**
+     * Returns the (maximum column height) ^ 3.
+     */
+    public static float maxHeightCubed(NextState nextState) {
+        float maxHeight = maxHeight(nextState);
+
+        return (float) Math.pow(maxHeight, 3);
+    }
+
+    /**
+     * Returns the sum of all column heights.
+     */
+    public static float sumHeight(NextState nextState) {
+        int sumHeight = 0;
+
+        int top[] = nextState.top;
+        for (int x : top) {
+            sumHeight += x;
+        }
+
+        return sumHeight;
+    }
+
+    /**
+     * Returns the difference between the maximum and minimum column heights.
+     */
+    public static float maxHeightDifference(NextState nextState) {
+        int maxHeight = Integer.MIN_VALUE;
+        int minHeight = Integer.MAX_VALUE;
+
+        int top[] = nextState.top;
+        for (int x : top) {
+            if (x > maxHeight) {
+                maxHeight = x;
+            }
+
             if (x < minHeight) {
                 minHeight = x;
             }
@@ -98,13 +92,13 @@ public class FeatureFunctions {
     }
 
     /**
-     * Returns the bumpiness of the column heights
-     * Minimize to ensure the top as flat as possible to avoid deep wells
+     * Returns the bumpiness of the column heights.
+     * Minimize to ensure the top as flat as possible to avoid deep wells.
      */
     public static float bumpiness(NextState nextState) {
         int bumpiness = 0;
-        int top[] = nextState.top;
 
+        int top[] = nextState.top;
         for (int i = 0; i < State.COLS - 1; i++) {
             bumpiness += Math.abs(top[i] - top[i + 1]);
         }
@@ -225,21 +219,39 @@ public class FeatureFunctions {
     }
 
     /**
-     * Returns the number of filled cells
+     * Returns the number of filled cells.
      */
     public static float numFilledCells(NextState nextState) {
-        int filledCells = 0;
-        int field[][] = nextState.field;
+        int numFilledCells = 0;
 
-        for (int i = 0; i < State.ROWS; ++i) {
-            for (int j = 0; j < State.COLS; ++j) {
+        int field[][] = nextState.field;
+        for (int i = 0; i < State.ROWS; i++) {
+            for (int j = 0; j < State.COLS; j++) {
                 if (field[i][j] != 0) {
-                    ++filledCells;
+                    numFilledCells++;
                 }
             }
         }
 
-        return filledCells;
+        return numFilledCells;
+    }
+    
+    /**
+     * Returns the sum of all filled cell heights.
+     */
+    public static float sumFilledCellHeight(NextState nextState) {
+        int sumFilledCellHeight = 0;
+
+        int field[][] = nextState.field;
+        for (int i = 0; i < State.ROWS; i++) {
+            for (int j = 0; j < State.COLS; j++) {
+                if (field[i][j] != 0) {
+                    sumFilledCellHeight += i;
+                }
+            }
+        }
+
+        return sumFilledCellHeight;
     }
 
     /**
