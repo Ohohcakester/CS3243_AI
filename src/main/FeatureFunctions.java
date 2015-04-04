@@ -301,7 +301,7 @@ public class FeatureFunctions {
     }
 
     /**
-     * Returns the sum of empty cell distances from the top
+     * Returns the sum of empty cell distances from the top.
      */
     public static float sumEmptyCellDistanceFromTop(NextState nextState) {
         int sumDistance = 0;
@@ -320,27 +320,22 @@ public class FeatureFunctions {
     }
 
     /**
-     * Returns the sum of hole distances from the top
+     * Returns the sum of hole distances from the top.
      */
-    public static float sumHoleDistanceFromTop(NextState ns) {
-        int total = 0;
+    public static float sumHoleDistanceFromTop(NextState nextState) {
+        int sumDistance = 0;
 
-        int field[][] = ns.field;
-        int top[] = ns.top;
-        for (int j = 0; j < State.COLS; ++j) {
-            boolean last = false;
-            for (int i = 0; i < top[j]; ++i) {
-                if (field[i][j] == 0) {
-                    if (!last) {
-                        total += top[j];
-                    }
-                    last = true;
-                } else {
-                    last = false;
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
+        for (int j = 0; j < State.COLS; j++) {
+            for (int i = 0; i < top[j]; i++) {
+                if (field[i][j] == 0 && field[i + 1][j] != 0) {
+                    sumDistance += top[j] - i;
                 }
             }
         }
-        return total;
+
+        return sumDistance;
     }
 
     /**
