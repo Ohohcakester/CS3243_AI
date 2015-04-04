@@ -485,78 +485,82 @@ public class FeatureFunctions {
         return total;
     }
     
-    /*
-     * Returns number of columns that has at least one hole
-     * Minimize this value
+    /**
+     * Returns the number of columns that has at least one empty cell.
+     * Minimize this value.
      */
-    public static float numColumnsThatHasHole(NextState ns) {
-    	int total = 0;
-    	int field[][] = ns.field;
-    	int top[] = ns.top;
-    	
-    	for (int col=0; col<State.COLS ; col++) {
-    		for (int row=0; row<top[col]-1; row++) {
-    			if (field[row][col] == 0) {
-    				total++;
-    				break;
-    			}
-    		}
-    	}
-    	return total;
-    }
-    
-    /*
-     * Returns number of rows that at least one hole (empty hole considered 
-     * Minimize this value
-     */
-    public static float numRowsThatHasHole(NextState ns) {
-    	int total = 0;
-    	int field[][] = ns.field;
-    	int top[] = ns.top;
-    	
-    	for (int row=0; row<State.ROWS ; row++) {
-    		for(int col=0; col<State.COLS; col++) {
-    			if(row >= top[col]) {
-    				continue;
-    			}
-    			
-    			if(field[row][col] == 0) {
-    				total++;
-    				break;
-    			}
-    		}
-    	}
-    	return total;
-    }
-
-    /*
-     * Returns number of rows that more than one hole
-     * Minimize this value
-     */
-    public static float numRowsThatHasMoreThanOneHole(NextState ns) {
+    public static float numColumnsWithEmptyCell(NextState nextState) {
         int total = 0;
-        int field[][] = ns.field;
-        int top[] = ns.top;
-        
-        for (int row=0; row<State.ROWS ; row++) {
-            int numHoles = 0;
-            for(int col=0; col<State.COLS; col++) {
-                if(row >= top[col]) {
-                    continue;
-                }
-                
-                if(field[row][col] == 0) {
-                    ++numHoles;
+
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
+        for (int j = 0; j < State.COLS; j++) {
+            for (int i = 0; i < top[j]; i++) {
+                if (field[i][j] == 0) {
+                    total++;
                     break;
                 }
             }
-            if (numHoles > 1) {
-                ++total;
-            }
         }
+
         return total;
     }
-    
+
+    /**
+     * Returns the number of rows that has at least one empty cell. 
+     * Minimize this value.
+     */
+    public static float numRowsWithEmptyCell(NextState nextState) {
+        int total = 0;
+
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
+        for (int i = 0; i < State.ROWS; i++) {
+            for (int j = 0; j < State.COLS; j++) {
+                if (i >= top[j]) {
+                    continue;
+                }
+
+                if (field[i][j] == 0) {
+                    total++;
+                    break;
+                }
+            }
+        }
+
+        return total;
+    }
+
+    /**
+     * Returns the number of rows that has more than one empty cell.
+     * Minimize this value.
+     */
+    public static float numRowsWithMoreThanOneEmptyCell(NextState nextState) {
+        int total = 0;
+
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
+        for (int i = 0; i < State.ROWS; i++) {
+            int numHoles = 0;
+
+            for (int j = 0; j < State.COLS; j++) {
+                if (i >= top[j]) {
+                    continue;
+                }
+
+                if (field[i][j] == 0) {
+                    numHoles++;
+                }
+            }
+
+            if (numHoles > 1) {
+                total++;
+            }
+        }
+
+        return total;
+    }
+
     /**
      * For every holes in position (i,j) and blocks in position (k,j) where k>=i
      * Then we add rowScore[k] to the result
