@@ -255,57 +255,49 @@ public class FeatureFunctions {
     }
 
     /**
-     * Returns the number of empty cells
+     * Returns the number of empty cells.
      */
     public static float numEmptyCells(NextState nextState) {
-        int emptyCells = 0;
+        int numEmptyCells = 0;
+
         int field[][] = nextState.field;
         int top[] = nextState.top;
-
-        for (int j = 0; j < State.COLS; ++j) {
-            for (int i = 0; i < top[j]; ++i) {
+        for (int j = 0; j < State.COLS; j++) {
+            for (int i = 0; i < top[j]; i++) {
                 if (field[i][j] == 0) {
-                    ++emptyCells;
+                    numEmptyCells++;
                 }
             }
         }
 
-        return emptyCells;
+        return numEmptyCells;
     }
 
     /**
-     * Returns the number of holes
+     * Returns the number of holes.
      */
     public static float numHoles(NextState nextState) {
-        int holes = 0;
+        int numHoles = 0;
+
         int field[][] = nextState.field;
         int top[] = nextState.top;
-
-        for (int j = 0; j < State.COLS; ++j) {
-            for (int i = 0; i < top[j]; ++i) {
+        for (int j = 0; j < State.COLS; j++) {
+            for (int i = 0; i < top[j]; i++) {
                 if (field[i][j] == 0 && field[i + 1][j] != 0) {
-                    ++holes;
+                    numHoles++;
                 }
             }
         }
 
-        return holes;
+        return numHoles;
     }
-    
+    /**
+     * Returns the number of holes, to a given power.
+     */
     public static float numHolesPow(NextState nextState, int power) {
-        int holes = 0;
-        int field[][] = nextState.field;
-        int top[] = nextState.top;
+        float numHoles = numHoles(nextState);
 
-        for (int j = 0; j < State.COLS; ++j) {
-            for (int i = 0; i < top[j]; ++i) {
-                if (field[i][j] == 0 && field[i + 1][j] != 0) {
-                    ++holes;
-                }
-            }
-        }
-
-        return (float)Math.pow(holes,power);
+        return (float) Math.pow(numHoles, power);
     }
 
     /**
@@ -313,15 +305,17 @@ public class FeatureFunctions {
      */
     public static float sumEmptyCellDistanceFromTop(NextState nextState) {
         int sumDistance = 0;
+
         int field[][] = nextState.field;
         int top[] = nextState.top;
-        for (int j = 0; j < State.COLS; ++j) {
-            for (int i = 0; i < top[j]; ++i) {
-                if (field[i][j] == 0 && field[i + 1][j] != 0) {
+        for (int j = 0; j < State.COLS; j++) {
+            for (int i = 0; i < top[j]; i++) {
+                if (field[i][j] == 0) {
                     sumDistance += top[j] - i;
                 }
             }
         }
+
         return sumDistance;
     }
 
