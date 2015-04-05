@@ -19,14 +19,15 @@ public class GeneticAlgorithmAdjuster {
     protected int PRINT_INTERVAL = 10;
     
     
-    protected double mutationProbability = 0.15;
+    protected double mutationProbability = 0.08;
     //protected double mutationProbability = 0.4;
     protected HashMap<Integer,Float> fixedValue = new HashMap<>(); 
     
     protected float[] highScoreWeights;
     protected float highScore;
 
-    protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
+    //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
+    protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 25f, 45f, 70f, 100, 150, 200, 500, 1000, 1500, 6000};
     protected static final int WORD_SIZE = 5;
     
     public GeneticAlgorithmAdjuster(WeightedHeuristicPlayer w, int _dim, int N) {
@@ -91,9 +92,18 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f},
-            new float[]{-40.0f, -8000.0f, 100.0f, 10.0f, 0.5f, -5.0f, 0.5f, -8000.0f, -40.0f, 0.01f, -5.0f, -2.0f, -0.1f, -40.0f, -1.0f},
-            new float[]{0.05f, 2.0f, -2.0f, -0.05f, -8000.0f, -500.0f, -8000.0f, -500.0f, -500.0f, -0.01f, -10.0f, 40.0f, 20.0f, -3.0f, -1.0f}
+            //new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f},
+            //new float[]{-40.0f, -8000.0f, 100.0f, 10.0f, 0.5f, -5.0f, 0.5f, -8000.0f, -40.0f, 0.01f, -5.0f, -2.0f, -0.1f, -40.0f, -1.0f},
+            //new float[]{0.05f, 2.0f, -2.0f, -0.05f, -8000.0f, -500.0f, -8000.0f, -500.0f, -500.0f, -0.01f, -10.0f, 40.0f, 20.0f, -3.0f, -1.0f},
+            new float[]{0.01f, -200f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f},
+            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 150f, -1.5f},
+            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f},
+            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f},
+            new float[]{10f, -1000f, -1000f, -1000f, -1000f, -200f, 1000f, 25f, -1.5f},
+            new float[]{10f, -150f, -1000f, -1500f, -150f, -500f, 1000f, -25f, -0.05f},
+            new float[]{10f, -150f, -1000f, -1500f, -150f, -200f, 1000f, -100f, -0.05f}
+
+
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
@@ -181,11 +191,13 @@ public class GeneticAlgorithmAdjuster {
     private void mutation() {
         for (int i = 0; i < states.length; ++i) {
             boolean[] bitString = encode(states[i]);
-            int position = rand.nextInt(bitString.length);
-            double prob = rand.nextDouble();
-            if (prob < mutationProbability) {
-                //System.out.println("MUTATION!");
-                bitString[position] ^= true;
+            for (int j=0; j<3; ++j) {
+                int position = rand.nextInt(bitString.length);
+                double prob = rand.nextDouble();
+                if (prob < mutationProbability) {
+                    //System.out.println("MUTATION!");
+                    bitString[position] ^= true;
+                }
             }
             states[i] = decode(bitString);
         }
@@ -254,11 +266,12 @@ public class GeneticAlgorithmAdjuster {
                 index++;
             }
         }
-        return encoded;//binToGray(encoded);
+        //return encoded;
+        return binToGray(encoded);
     }
 
     public static float[] decode(boolean[] encoded) {
-        //encoded = grayToBin(encoded);
+        encoded = grayToBin(encoded);
         float[] decoded = new float[encoded.length/WORD_SIZE];
         for (int i=0; i<decoded.length; ++i) {
             int offset = i*WORD_SIZE;

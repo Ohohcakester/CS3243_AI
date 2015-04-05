@@ -13,18 +13,18 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         features = new Feature[]{
                 (n)->FeatureFunctions.lost(n),
                 (n)->FeatureFunctions.bumpiness(n),
-                (n)->FeatureFunctions.sumHeight(n),
-                (n)->FeatureFunctions.numRowsCleared(n),
-                (n)->FeatureFunctions.maxHeightDifference(n),
+                //(n)->FeatureFunctions.sumHeight(n), //
+                //(n)->FeatureFunctions.numRowsCleared(n), //
+                //(n)->FeatureFunctions.maxHeightDifference(n), //
                 (n)->FeatureFunctions.numHoles(n),
                 (n)->FeatureFunctions.sumHoleDistanceFromTop(n),
                 (n)->FeatureFunctions.holeAndPitColumns(n),
                 (n)->FeatureFunctions.holeAndPitColumnsMin(n),
                 (n)->FeatureFunctions.topPerimeter(n),
-                (n)->FeatureFunctions.maxHeight(n),
-                (n)->FeatureFunctions.maxHeightCube(n),
+                //(n)->FeatureFunctions.maxHeight(n),     //
+                //(n)->FeatureFunctions.maxHeightCube(n), //
                 (n)->FeatureFunctions.sumEmptyCellDistanceFromTop(n),
-                (n)->FeatureFunctions.numFilledCells(n),
+                //(n)->FeatureFunctions.numFilledCells(n), //
                 (n)->FeatureFunctions.numRowsThatHasMoreThanOneHole(n),
                 (n)->FeatureFunctions.holeCoverEmptyCells(n)
                 
