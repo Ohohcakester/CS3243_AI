@@ -22,9 +22,9 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
                         (n)->FeatureFunctions.sumEmptyCellDistanceFromTop(n),
                         (n)->FeatureFunctions.holeAndPitColumns(n),
                         (n)->FeatureFunctions.topPerimeter(n),
-                        (n)->FeatureFunctions.maxHeightCube(n),
+                        (n)->FeatureFunctions.maxHeightCubed(n),
                         (n)->FeatureFunctions.holeAndPitColumnsMin(n),
-                        (n)->FeatureFunctions.numRowsThatHasMoreThanOneHole(n),
+                        (n)->FeatureFunctions.numRowsWithMoreThanOneEmptyCell(n),
                         (n)->FeatureFunctions.holeCoverEmptyCells(n)/*,
                         FeatureFunctions.variableHeightMinimaxInt(
                                 (h) -> State.ROWS-h,

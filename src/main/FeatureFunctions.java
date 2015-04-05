@@ -816,7 +816,7 @@ public class FeatureFunctions {
      */
     public static float WeightedFilledCells(NextState nextState) {
         int weightedFilledCells = 0;
-        int field[][] = nextState.getField();
+        int field[][] = nextState.field;
 
         for (int i = 0; i < State.ROWS; ++i) {
             for (int j = 0; j < State.COLS; ++j) {
