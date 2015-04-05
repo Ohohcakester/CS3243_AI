@@ -48,12 +48,12 @@ public class FeatureFunctions {
     }
 
     /**
-     * Returns the (maximum column height) ^ 3.
+     * Returns the maximum column height, to a given power.
      */
-    public static float maxHeightCubed(NextState nextState) {
+    public static float maxHeightPow(NextState nextState, int power) {
         float maxHeight = maxHeight(nextState);
 
-        return (float) Math.pow(maxHeight, 3);
+        return (float) Math.pow(maxHeight, power);
     }
 
     /**
