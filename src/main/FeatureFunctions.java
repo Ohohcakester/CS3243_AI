@@ -818,7 +818,7 @@ public class FeatureFunctions {
         int weightedFilledCells = 0;
         int field[][] = nextState.getField();
 
-        for (int i = 1; i <= State.ROWS; ++i) {
+        for (int i = 0; i < State.ROWS; ++i) {
             for (int j = 0; j < State.COLS; ++j) {
                 if (field[i][j] != 0) {
                     weightedFilledCells += i;
@@ -827,5 +827,43 @@ public class FeatureFunctions {
         }
 
         return weightedFilledCells;
+    }
+    
+    /**
+     * Returns the number of holes.
+     * A row transition occurs when an empty cell is adjacent to a filled cell on the same row and vice versa
+     */
+    public static float rowTransitions(NextState nextState) {
+        int rt = 0;
+
+        int field[][] = nextState.field;
+        for (int i = 0; i < State.ROWS-1; i++) {
+            for (int j = 0; j < State.COLS; j++) {
+                if (field[i][j] == 0 && field[i + 1][j] != 0) {
+                   rt++;
+                }
+            }
+        }
+
+        return rt;
+    }
+
+     /**
+     * Returns the number of column transitions.
+     * A column transition occurs when an empty cell is adjacent to a filled cell on the same column and vice versa
+     */
+    public static float colTransitions(NextState nextState) {
+        int ct = 0;
+
+        int field[][] = nextState.field;
+        for (int i = 0; i < State.ROWS; i++) {
+            for (int j = 0; j < State.COLS-1; j++) {
+                if (field[i][j] == 0 && field[i][j + 1] != 0) {
+                   ct++;
+                }
+            }
+        }
+
+        return ct;
     }
 }
