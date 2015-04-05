@@ -17,78 +17,72 @@ public class FeatureFunctions {
     }
 
     /**
-     * Returns 1 if state is lost, 0 otherwise
+     * Returns 1 if state is lost, 0 otherwise.
      */
     public static float lost(NextState nextState) {
         return nextState.lost ? 1 : 0;
     }
 
     /**
-     * Returns the number of rows cleared
-     * Maximize to ensure game continuity
+     * Returns the number of rows cleared.
+     * Maximize to ensure game continuity.
      */
     public static float numRowsCleared(NextState nextState) {
         return nextState.cleared;
     }
 
     /**
-     * Returns the maximum column height
+     * Returns the maximum column height.
      */
     public static float maxHeight(NextState nextState) {
-        int maximumHeight = Integer.MIN_VALUE;
-        int top[] = nextState.top;
-
-        for (int x : top) {
-            if (x > maximumHeight) {
-                maximumHeight = x;
-            }
-        }
-
-        return maximumHeight;
-    }
-    
-    /**
-     * Returns the (maximum column height) ^ 3
-     */
-    public static float maxHeightCube(NextState nextState) {
-        int maximumHeight = Integer.MIN_VALUE;
-        int top[] = nextState.top;
-
-        for (int x : top) {
-            if (x > maximumHeight) {
-                maximumHeight = x;
-            }
-        }
-
-        return (float)Math.pow(maximumHeight,3);
-    }
-
-    /**
-     * Returns the sum of all column heights
-     */
-    public static float sumHeight(NextState nextState) {
-        int totalHeight = 0;
-        int top[] = nextState.top;
-
-        for (int x : top) {
-            totalHeight += x;
-        }
-
-        return totalHeight;
-    }
-
-    /**
-     * Returns the difference between the maximum and minimum column heights
-     */
-    public static float maxHeightDifference(NextState nextState) {
         int maxHeight = Integer.MIN_VALUE;
-        int minHeight = Integer.MAX_VALUE;
-        int top[] = nextState.top;
 
+        int top[] = nextState.top;
         for (int x : top) {
             if (x > maxHeight) {
                 maxHeight = x;
             }
+        }
+
+        return maxHeight;
+    }
+
+    /**
+     * Returns the (maximum column height) ^ 3.
+     */
+    public static float maxHeightCubed(NextState nextState) {
+        float maxHeight = maxHeight(nextState);
+
+        return (float) Math.pow(maxHeight, 3);
+    }
+
+    /**
+     * Returns the sum of all column heights.
+     */
+    public static float sumHeight(NextState nextState) {
+        int sumHeight = 0;
+
+        int top[] = nextState.top;
+        for (int x : top) {
+            sumHeight += x;
+        }
+
+        return sumHeight;
+    }
+
+    /**
+     * Returns the difference between the maximum and minimum column heights.
+     */
+    public static float maxHeightDifference(NextState nextState) {
+        int maxHeight = Integer.MIN_VALUE;
+        int minHeight = Integer.MAX_VALUE;
+
+        int top[] = nextState.top;
+        for (int x : top) {
+            if (x > maxHeight) {
+                maxHeight = x;
+            }
+
             if (x < minHeight) {
                 minHeight = x;
             }
@@ -98,13 +92,13 @@ public class FeatureFunctions {
     }
 
     /**
-     * Returns the bumpiness of the column heights
-     * Minimize to ensure the top as flat as possible to avoid deep wells
+     * Returns the bumpiness of the column heights.
+     * Minimize to ensure the top as flat as possible to avoid deep wells.
      */
     public static float bumpiness(NextState nextState) {
         int bumpiness = 0;
-        int top[] = nextState.top;
 
+        int top[] = nextState.top;
         for (int i = 0; i < State.COLS - 1; i++) {
             bumpiness += Math.abs(top[i] - top[i + 1]);
         }
@@ -225,116 +219,123 @@ public class FeatureFunctions {
     }
 
     /**
-     * Returns the number of filled cells
+     * Returns the number of filled cells.
      */
     public static float numFilledCells(NextState nextState) {
-        int filledCells = 0;
-        int field[][] = nextState.field;
+        int numFilledCells = 0;
 
-        for (int i = 0; i < State.ROWS; ++i) {
-            for (int j = 0; j < State.COLS; ++j) {
+        int field[][] = nextState.field;
+        for (int i = 0; i < State.ROWS; i++) {
+            for (int j = 0; j < State.COLS; j++) {
                 if (field[i][j] != 0) {
-                    ++filledCells;
+                    numFilledCells++;
                 }
             }
         }
 
-        return filledCells;
-    }
-
-    /**
-     * Returns the number of empty cells
-     */
-    public static float numEmptyCells(NextState nextState) {
-        int emptyCells = 0;
-        int field[][] = nextState.field;
-        int top[] = nextState.top;
-
-        for (int j = 0; j < State.COLS; ++j) {
-            for (int i = 0; i < top[j]; ++i) {
-                if (field[i][j] == 0) {
-                    ++emptyCells;
-                }
-            }
-        }
-
-        return emptyCells;
-    }
-
-    /**
-     * Returns the number of holes
-     */
-    public static float numHoles(NextState nextState) {
-        int holes = 0;
-        int field[][] = nextState.field;
-        int top[] = nextState.top;
-
-        for (int j = 0; j < State.COLS; ++j) {
-            for (int i = 0; i < top[j]; ++i) {
-                if (field[i][j] == 0 && field[i + 1][j] != 0) {
-                    ++holes;
-                }
-            }
-        }
-
-        return holes;
+        return numFilledCells;
     }
     
-    public static float numHolesPow(NextState nextState, int power) {
-        int holes = 0;
-        int field[][] = nextState.field;
-        int top[] = nextState.top;
+    /**
+     * Returns the sum of all filled cell heights.
+     */
+    public static float sumFilledCellHeight(NextState nextState) {
+        int sumFilledCellHeight = 0;
 
-        for (int j = 0; j < State.COLS; ++j) {
-            for (int i = 0; i < top[j]; ++i) {
-                if (field[i][j] == 0 && field[i + 1][j] != 0) {
-                    ++holes;
+        int field[][] = nextState.field;
+        for (int i = 0; i < State.ROWS; i++) {
+            for (int j = 0; j < State.COLS; j++) {
+                if (field[i][j] != 0) {
+                    sumFilledCellHeight += i;
                 }
             }
         }
 
-        return (float)Math.pow(holes,power);
+        return sumFilledCellHeight;
     }
 
     /**
-     * Returns the sum of empty cell distances from the top
+     * Returns the number of empty cells.
+     */
+    public static float numEmptyCells(NextState nextState) {
+        int numEmptyCells = 0;
+
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
+        for (int j = 0; j < State.COLS; j++) {
+            for (int i = 0; i < top[j]; i++) {
+                if (field[i][j] == 0) {
+                    numEmptyCells++;
+                }
+            }
+        }
+
+        return numEmptyCells;
+    }
+
+    /**
+     * Returns the number of holes.
+     */
+    public static float numHoles(NextState nextState) {
+        int numHoles = 0;
+
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
+        for (int j = 0; j < State.COLS; j++) {
+            for (int i = 0; i < top[j]; i++) {
+                if (field[i][j] == 0 && field[i + 1][j] != 0) {
+                    numHoles++;
+                }
+            }
+        }
+
+        return numHoles;
+    }
+    /**
+     * Returns the number of holes, to a given power.
+     */
+    public static float numHolesPow(NextState nextState, int power) {
+        float numHoles = numHoles(nextState);
+
+        return (float) Math.pow(numHoles, power);
+    }
+
+    /**
+     * Returns the sum of empty cell distances from the top.
      */
     public static float sumEmptyCellDistanceFromTop(NextState nextState) {
         int sumDistance = 0;
+
         int field[][] = nextState.field;
         int top[] = nextState.top;
-        for (int j = 0; j < State.COLS; ++j) {
-            for (int i = 0; i < top[j]; ++i) {
+        for (int j = 0; j < State.COLS; j++) {
+            for (int i = 0; i < top[j]; i++) {
+                if (field[i][j] == 0) {
+                    sumDistance += top[j] - i;
+                }
+            }
+        }
+
+        return sumDistance;
+    }
+
+    /**
+     * Returns the sum of hole distances from the top.
+     */
+    public static float sumHoleDistanceFromTop(NextState nextState) {
+        int sumDistance = 0;
+
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
+        for (int j = 0; j < State.COLS; j++) {
+            for (int i = 0; i < top[j]; i++) {
                 if (field[i][j] == 0 && field[i + 1][j] != 0) {
                     sumDistance += top[j] - i;
                 }
             }
         }
+
         return sumDistance;
-    }
-
-    /**
-     * Returns the sum of hole distances from the top
-     */
-    public static float sumHoleDistanceFromTop(NextState ns) {
-        int total = 0;
-
-        int field[][] = ns.field;
-        int top[] = ns.top;
-        for (int j = 0; j < State.COLS; ++j) {
-            boolean last = false;
-            for (int i = 0; i < top[j]; ++i) {
-                if (field[i][j] == 0) {
-                    if (!last) {
-                        total += top[j];
-                    }
-                    last = true;
-                } else {
-                    last = false;
-                }
-            }
-        }
-        return total;
     }
 
     /**
@@ -484,78 +485,82 @@ public class FeatureFunctions {
         return total;
     }
     
-    /*
-     * Returns number of columns that has at least one hole
-     * Minimize this value
+    /**
+     * Returns the number of columns that has at least one empty cell.
+     * Minimize this value.
      */
-    public static float numColumnsThatHasHole(NextState ns) {
-    	int total = 0;
-    	int field[][] = ns.field;
-    	int top[] = ns.top;
-    	
-    	for (int col=0; col<State.COLS ; col++) {
-    		for (int row=0; row<top[col]-1; row++) {
-    			if (field[row][col] == 0) {
-    				total++;
-    				break;
-    			}
-    		}
-    	}
-    	return total;
-    }
-    
-    /*
-     * Returns number of rows that at least one hole (empty hole considered 
-     * Minimize this value
-     */
-    public static float numRowsThatHasHole(NextState ns) {
-    	int total = 0;
-    	int field[][] = ns.field;
-    	int top[] = ns.top;
-    	
-    	for (int row=0; row<State.ROWS ; row++) {
-    		for(int col=0; col<State.COLS; col++) {
-    			if(row >= top[col]) {
-    				continue;
-    			}
-    			
-    			if(field[row][col] == 0) {
-    				total++;
-    				break;
-    			}
-    		}
-    	}
-    	return total;
-    }
-
-    /*
-     * Returns number of rows that more than one hole
-     * Minimize this value
-     */
-    public static float numRowsThatHasMoreThanOneHole(NextState ns) {
+    public static float numColumnsWithEmptyCell(NextState nextState) {
         int total = 0;
-        int field[][] = ns.field;
-        int top[] = ns.top;
-        
-        for (int row=0; row<State.ROWS ; row++) {
-            int numHoles = 0;
-            for(int col=0; col<State.COLS; col++) {
-                if(row >= top[col]) {
-                    continue;
-                }
-                
-                if(field[row][col] == 0) {
-                    ++numHoles;
+
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
+        for (int j = 0; j < State.COLS; j++) {
+            for (int i = 0; i < top[j]; i++) {
+                if (field[i][j] == 0) {
+                    total++;
                     break;
                 }
             }
-            if (numHoles > 1) {
-                ++total;
-            }
         }
+
         return total;
     }
-    
+
+    /**
+     * Returns the number of rows that has at least one empty cell. 
+     * Minimize this value.
+     */
+    public static float numRowsWithEmptyCell(NextState nextState) {
+        int total = 0;
+
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
+        for (int i = 0; i < State.ROWS; i++) {
+            for (int j = 0; j < State.COLS; j++) {
+                if (i >= top[j]) {
+                    continue;
+                }
+
+                if (field[i][j] == 0) {
+                    total++;
+                    break;
+                }
+            }
+        }
+
+        return total;
+    }
+
+    /**
+     * Returns the number of rows that has more than one empty cell.
+     * Minimize this value.
+     */
+    public static float numRowsWithMoreThanOneEmptyCell(NextState nextState) {
+        int total = 0;
+
+        int field[][] = nextState.field;
+        int top[] = nextState.top;
+        for (int i = 0; i < State.ROWS; i++) {
+            int numHoles = 0;
+
+            for (int j = 0; j < State.COLS; j++) {
+                if (i >= top[j]) {
+                    continue;
+                }
+
+                if (field[i][j] == 0) {
+                    numHoles++;
+                }
+            }
+
+            if (numHoles > 1) {
+                total++;
+            }
+        }
+
+        return total;
+    }
+
     /**
      * For every holes in position (i,j) and blocks in position (k,j) where k>=i
      * Then we add rowScore[k] to the result
@@ -804,5 +809,61 @@ public class FeatureFunctions {
             int heightRegion = ((maximumHeight - 1) / regionHeight) + 1;
             return -heightRegion;
         };
+    }
+    
+    /**
+     * Returns the number of filled cells weighted by height
+     */
+    public static float WeightedFilledCells(NextState nextState) {
+        int weightedFilledCells = 0;
+        int field[][] = nextState.getField();
+
+        for (int i = 0; i < State.ROWS; ++i) {
+            for (int j = 0; j < State.COLS; ++j) {
+                if (field[i][j] != 0) {
+                    weightedFilledCells += i;
+                }
+            }
+        }
+
+        return weightedFilledCells;
+    }
+    
+    /**
+     * Returns the number of holes.
+     * A row transition occurs when an empty cell is adjacent to a filled cell on the same row and vice versa
+     */
+    public static float rowTransitions(NextState nextState) {
+        int rt = 0;
+
+        int field[][] = nextState.field;
+        for (int i = 0; i < State.ROWS-1; i++) {
+            for (int j = 0; j < State.COLS; j++) {
+                if (field[i][j] == 0 && field[i + 1][j] != 0) {
+                   rt++;
+                }
+            }
+        }
+
+        return rt;
+    }
+
+     /**
+     * Returns the number of column transitions.
+     * A column transition occurs when an empty cell is adjacent to a filled cell on the same column and vice versa
+     */
+    public static float colTransitions(NextState nextState) {
+        int ct = 0;
+
+        int field[][] = nextState.field;
+        for (int i = 0; i < State.ROWS; i++) {
+            for (int j = 0; j < State.COLS-1; j++) {
+                if (field[i][j] == 0 && field[i][j + 1] != 0) {
+                   ct++;
+                }
+            }
+        }
+
+        return ct;
     }
 }
