@@ -810,4 +810,22 @@ public class FeatureFunctions {
             return -heightRegion;
         };
     }
+    
+    /**
+     * Returns the number of filled cells weighted by height
+     */
+    public static float WeightedFilledCells(NextState nextState) {
+        int weightedFilledCells = 0;
+        int field[][] = nextState.getField();
+
+        for (int i = 1; i <= State.ROWS; ++i) {
+            for (int j = 0; j < State.COLS; ++j) {
+                if (field[i][j] != 0) {
+                    weightedFilledCells += i;
+                }
+            }
+        }
+
+        return weightedFilledCells;
+    }
 }
