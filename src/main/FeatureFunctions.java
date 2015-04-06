@@ -814,7 +814,7 @@ public class FeatureFunctions {
     /**
      * Returns the number of filled cells weighted by height
      */
-    public static float WeightedFilledCells(NextState nextState) {
+    public static float weightedFilledCells(NextState nextState) {
         int weightedFilledCells = 0;
         int field[][] = nextState.field;
 

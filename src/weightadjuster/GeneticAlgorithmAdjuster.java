@@ -15,7 +15,7 @@ public class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 12;
+    protected final int INITIAL_GOOD_STATES = 0;
     protected int PRINT_INTERVAL = 10;
     
     
@@ -95,13 +95,13 @@ public class GeneticAlgorithmAdjuster {
             //new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f},
             //new float[]{-40.0f, -8000.0f, 100.0f, 10.0f, 0.5f, -5.0f, 0.5f, -8000.0f, -40.0f, 0.01f, -5.0f, -2.0f, -0.1f, -40.0f, -1.0f},
             //new float[]{0.05f, 2.0f, -2.0f, -0.05f, -8000.0f, -500.0f, -8000.0f, -500.0f, -500.0f, -0.01f, -10.0f, 40.0f, 20.0f, -3.0f, -1.0f},
-            new float[]{0.01f, -200f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f},
-            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 150f, -1.5f},
-            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f},
-            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f},
-            new float[]{10f, -1000f, -1000f, -1000f, -1000f, -200f, 1000f, 25f, -1.5f},
-            new float[]{10f, -150f, -1000f, -1500f, -150f, -500f, 1000f, -25f, -0.05f},
-            new float[]{10f, -150f, -1000f, -1500f, -150f, -200f, 1000f, -100f, -0.05f}
+            new float[]{0.01f, -200f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f,0,0,0},
+            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 150f, -1.5f,0,0,0},
+            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f,0,0,0},
+            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f,0,0,0},
+            new float[]{10f, -1000f, -1000f, -1000f, -1000f, -200f, 1000f, 25f, -1.5f,0,0,0},
+            new float[]{10f, -150f, -1000f, -1500f, -150f, -500f, 1000f, -25f, -0.05f,0,0,0},
+            new float[]{10f, -150f, -1000f, -1500f, -150f, -200f, 1000f, -100f, -0.05f,0,0,0}
 
 
         };
