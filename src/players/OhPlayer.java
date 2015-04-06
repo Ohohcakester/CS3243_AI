@@ -22,7 +22,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 (n)->FeatureFunctions.holeAndPitColumnsMin(n),
                 (n)->FeatureFunctions.topPerimeter(n),
                 //(n)->FeatureFunctions.maxHeight(n),     //
-                //(n)->FeatureFunctions.maxHeightCubed(n), //
+                //(n)->FeatureFunctions.maxHeightPow(n, 3), //
                 (n)->FeatureFunctions.sumEmptyCellDistanceFromTop(n),
                 //(n)->FeatureFunctions.numFilledCells(n), //
                 (n)->FeatureFunctions.numRowsWithMoreThanOneEmptyCell(n),
