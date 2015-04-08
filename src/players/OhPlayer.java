@@ -4,6 +4,7 @@ import main.FeatureFunctions;
 import main.NextState;
 import main.State;
 import weightadjuster.GeneticAlgorithmAdjuster;
+import weightadjuster.GeneticAlgorithmSD;
 
 public class OhPlayer extends WeightedHeuristicPlayer {
 
@@ -12,20 +13,23 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         features = new Feature[]{
                 (n)->FeatureFunctions.lost(n),
                 (n)->FeatureFunctions.bumpiness(n),
-                (n)->FeatureFunctions.sumHeight(n),
-                (n)->FeatureFunctions.numRowsCleared(n),
-                (n)->FeatureFunctions.maxHeightDifference(n),
+                //(n)->FeatureFunctions.sumHeight(n), //
+                //(n)->FeatureFunctions.numRowsCleared(n), //
+                //(n)->FeatureFunctions.maxHeightDifference(n), //
                 (n)->FeatureFunctions.numHoles(n),
                 (n)->FeatureFunctions.sumHoleDistanceFromTop(n),
                 (n)->FeatureFunctions.holeAndPitColumns(n),
                 (n)->FeatureFunctions.holeAndPitColumnsMin(n),
                 (n)->FeatureFunctions.topPerimeter(n),
-                (n)->FeatureFunctions.maxHeight(n),
-                (n)->FeatureFunctions.maxHeightCube(n),
+                //(n)->FeatureFunctions.maxHeight(n),     //
+                //(n)->FeatureFunctions.maxHeightPow(n, 3), //
                 (n)->FeatureFunctions.sumEmptyCellDistanceFromTop(n),
-                (n)->FeatureFunctions.numFilledCells(n),
-                (n)->FeatureFunctions.numRowsThatHasMoreThanOneHole(n),
-                (n)->FeatureFunctions.holeCoverEmptyCells(n)
+                //(n)->FeatureFunctions.numFilledCells(n), //
+                (n)->FeatureFunctions.numRowsWithMoreThanOneEmptyCell(n),
+                (n)->FeatureFunctions.holeCoverEmptyCells(n),
+                (n)->FeatureFunctions.weightedFilledCells(n),
+                (n)->FeatureFunctions.rowTransitions(n),
+                (n)->FeatureFunctions.colTransitions(n)
                 
                 
                 
@@ -99,6 +103,11 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         //weights = new float[]{-99999.0f, -10.0f, -500.0f, -500.0f, 0.01f, -70.0f, -2.0f, -40.0f, 0.02f, -70.0f};
         //weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, 0f, -3.0f};
         //weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f};
+
+        weights = new float[]{-9999999f, -40f, -5f, -100f, -100f, -40f, 0.1f, -100f, -0.1f, -0.1f,0,0,0};
+
+
+        //weights = new float[]{-99999, -100, -2, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f};
         
         //weights = new float[]{-8000.0f, 0.01f, -3.0f, -0.05f, -0.05f, -100.0f, -20.0f, -70.0f, -20.0f};
         
@@ -138,12 +147,10 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 1; // 0 to watch, 1 to learn.
+        int choice = 0; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new OhPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
-        GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmAdjuster(p, p.dim(), 20);
-        adjuster.fixValue(0, -99999f);
         //adjuster.fixValue(1, -0f);
         //adjuster.fixValue(7, -0f);
         //adjuster.fixValue(2, -5f);
@@ -152,15 +159,19 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         //adjuster.fixValue(5, 1000f);
         //adjuster.fixValue(6, 0f);
        
-        //p.switchToMinimax(1);
+        p.switchToMinimax(1);
         switch(choice) {
             case -1:
                 checkScore(p);break;
             case 0:
                 watch(p);break;
             case 1:
+                GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmSD(p, p.dim(), 20);
+                adjuster.fixValue(0, -99999f);
                 learn(adjuster);break;
                 //learn(p, adjuster);break;
+            case 2:
+                record(p);break;
         }
     }
 }

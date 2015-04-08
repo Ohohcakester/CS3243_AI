@@ -6,6 +6,8 @@ import java.util.stream.IntStream;
 import main.FeatureFunctions;
 import main.NextState;
 import main.PredeterminedState;
+import main.Sequence;
+import main.SequenceStore;
 import main.State;
 import main.TFrame;
 import weightadjuster.GeneticAlgorithmAdjuster;
@@ -59,7 +61,7 @@ public class WeightedHeuristicPlayer {
         weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, 100f, 100f, 10f}; // <-- better weights.
         //weights = new float[]{-99999.0f, -1, -4, -95};
     }
-    
+
     public float playWithWeights(float[] weights, int times) {
         this.weights = new float[weights.length];
         for (int i = 0; i < weights.length; ++i) {
@@ -81,7 +83,40 @@ public class WeightedHeuristicPlayer {
         return (total/times);
     }
     
+    public float playWithWeights(float[] weights, int times, SequenceStore store) {
+        if (store == null) return playWithWeights(weights, times);
+        
+        this.weights = new float[weights.length];
+        for (int i = 0; i < weights.length; ++i) {
+            this.weights[i] = weights[i];
+        }
+        long total = 0;
+        int[] resultArray = new int[times];
+        Sequence[] sequenceArray = new Sequence[times];
+    
+        IntStream.range(0, times)
+            .parallel()
+            .forEach(i -> {
+                playRecord(resultArray, sequenceArray, i);
+            });
+        for (float result : resultArray) {
+            total += result;
+        }
+        
+        for (Sequence seq : sequenceArray) {
+            if (seq != null) {
+                store.addSequence(seq);
+            }
+        }
+        
+        return ((float)total/times);
+    }
+
     public float playPartialWithWeights(float[] weights, int times) {
+        return playPartialWithWeights(weights, times, null);
+    }
+    
+    public float playPartialWithWeights(float[] weights, int times, Sequence[] sequences) {
         this.weights = new float[weights.length];
         for (int i = 0; i < weights.length; ++i) {
             this.weights[i] = weights[i];
@@ -94,7 +129,8 @@ public class WeightedHeuristicPlayer {
             .parallel()
             .forEach(i -> {
                 float[] results = new float[2];
-                PartialGamePlayer.play(this, results, 1);
+                Sequence sequence = sequences == null ? null : sequences[i];
+                PartialGamePlayer.play(this, results, 1, sequence);
                 resultArray[i] = results[0];
             });
         for (float result : resultArray) {
@@ -103,6 +139,7 @@ public class WeightedHeuristicPlayer {
 
         return (total/times);
     }
+    
     
     private float heuristic(State state, int[] legalMove) {
         NextState nextState = NextState.generate(state, legalMove);
@@ -164,6 +201,24 @@ public class WeightedHeuristicPlayer {
         results[1] = stdDev;
     }
     
+    public void playRecord(int[] resultArray, Sequence[] sequenceArray, int index) {
+        ArrayList<Integer> pieces = new ArrayList<>();
+        
+        State s = new State();
+        while(!s.hasLost()) {
+            if (maxHeight(s) == 0) {
+                pieces.clear();
+            }
+            pieces.add(s.getNextPiece());
+            s.makeMove(findBest(s,s.legalMoves()));
+        }
+        int cleared = s.getRowsCleared();
+        
+        sequenceArray[index] = new Sequence(cleared, pieces);
+        resultArray[index] = cleared;
+        
+    }
+    
     public void learn(WeightAdjuster adjuster) {
         float[] results = new float[2];
         int iteration = 0;
@@ -186,9 +241,23 @@ public class WeightedHeuristicPlayer {
         }
         return maxHeight;
     }
+
+    
+    public static int[] toArray(ArrayList<Integer> pieceList) {
+        int[] pieces = new int[pieceList.size()];
+        for (int i=0; i<pieces.length; ++i) {
+            pieces[i] = pieceList.get(i);
+        }
+        return pieces;
+    }
     
     public static void record(WeightedHeuristicPlayer p) {
+        record(p, null);
+    }
+    
+    public static void record(WeightedHeuristicPlayer p, SequenceStore store) {
         ArrayList<Integer> pieces = new ArrayList<>();
+        
         State s = new State();
         while(!s.hasLost()) {
             if (maxHeight(s) == 0) {
@@ -197,8 +266,14 @@ public class WeightedHeuristicPlayer {
             pieces.add(s.getNextPiece());
             s.makeMove(p.findBest(s,s.legalMoves()));
         }
-        System.out.println("PIECES = " + pieces.toString());
-        System.out.println("You have completed "+s.getRowsCleared()+" rows.");
+        
+        if (store == null) {
+            System.out.println("PIECES = " + pieces.toString());
+            //System.out.println(pieces.size() + " | " + count);
+            System.out.println("You have completed "+s.getRowsCleared()+" rows.");
+        } else {
+            store.addSequence(s.getRowsCleared(), toArray(pieces));
+        }
     }
 
     
@@ -237,6 +312,7 @@ public class WeightedHeuristicPlayer {
     public static void watch(WeightedHeuristicPlayer p) {
         final int REPORT_INTERVAL = 1000;
         State s = new State();
+        s = new PredeterminedState(new int[0]);
         new TFrame(s);
 
         int counter = REPORT_INTERVAL;

@@ -7,26 +7,28 @@ import java.util.Random;
 import players.WeightedHeuristicPlayer;
 
 public class GeneticAlgorithmAdjuster {
-    private static Random rand = new Random();
-    private int dim;
-    private int realDim;
-    private float[][] states;
-    private float[] scores;
-    private WeightedHeuristicPlayer w;
-    private PartialGamePlayer p;
-    private int stateNumber;
-    private int INITIAL_GOOD_STATES = 12;
+    protected static Random rand = new Random();
+    protected int dim;
+    protected int realDim;
+    protected float[][] states;
+    protected float[] scores;
+    protected WeightedHeuristicPlayer w;
+    protected PartialGamePlayer p;
+    protected int stateNumber;
+    protected final int INITIAL_GOOD_STATES = 0;
+    protected int PRINT_INTERVAL = 10;
     
     
-    //private double mutationProbability = 0.1;
-    private double mutationProbability = 0.4;
-    private HashMap<Integer,Float> fixedValue = new HashMap<>(); 
+    protected double mutationProbability = 0.08;
+    //protected double mutationProbability = 0.4;
+    protected HashMap<Integer,Float> fixedValue = new HashMap<>(); 
     
-    private float[] highScoreWeights;
-    private float highScore;
+    protected float[] highScoreWeights;
+    protected float highScore;
 
-    private static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
-    private static final int WORD_SIZE = 5;
+    //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
+    protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 25f, 45f, 70f, 100, 150, 200, 500, 1000, 1500, 6000};
+    protected static final int WORD_SIZE = 5;
     
     public GeneticAlgorithmAdjuster(WeightedHeuristicPlayer w, int _dim, int N) {
         dim = _dim;
@@ -61,7 +63,7 @@ public class GeneticAlgorithmAdjuster {
         return realWeights;
     }
     
-    private float[] generateRandomState(int length) {
+    protected float[] generateRandomState(int length) {
         boolean[] encoded = new boolean[length*WORD_SIZE];
         for (int i=0; i<encoded.length; ++i) {
             encoded[i] = rand.nextBoolean();
@@ -69,7 +71,7 @@ public class GeneticAlgorithmAdjuster {
         return decode(encoded);
     }
     
-    private void generateRandomStates() {
+    protected void generateRandomStates() {
         generateMostlyRandomStates();
     }
     
@@ -90,9 +92,18 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f,0,0,0,0,0,0},
-            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f},
-            new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f}
+            //new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f},
+            //new float[]{-40.0f, -8000.0f, 100.0f, 10.0f, 0.5f, -5.0f, 0.5f, -8000.0f, -40.0f, 0.01f, -5.0f, -2.0f, -0.1f, -40.0f, -1.0f},
+            //new float[]{0.05f, 2.0f, -2.0f, -0.05f, -8000.0f, -500.0f, -8000.0f, -500.0f, -500.0f, -0.01f, -10.0f, 40.0f, 20.0f, -3.0f, -1.0f},
+            new float[]{0.01f, -200f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f,0,0,0},
+            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 150f, -1.5f,0,0,0},
+            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f,0,0,0},
+            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f,0,0,0},
+            new float[]{10f, -1000f, -1000f, -1000f, -1000f, -200f, 1000f, 25f, -1.5f,0,0,0},
+            new float[]{10f, -150f, -1000f, -1500f, -150f, -500f, 1000f, -25f, -0.05f,0,0,0},
+            new float[]{10f, -150f, -1000f, -1500f, -150f, -200f, 1000f, -100f, -0.05f,0,0,0}
+
+
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
@@ -102,7 +113,7 @@ public class GeneticAlgorithmAdjuster {
         return weights;
     }
     
-    private void selection() {
+    protected void selection() {
         float totalScore = 0;
         while (totalScore == 0) {
             for (int i = 0; i < states.length; ++i) {
@@ -180,11 +191,13 @@ public class GeneticAlgorithmAdjuster {
     private void mutation() {
         for (int i = 0; i < states.length; ++i) {
             boolean[] bitString = encode(states[i]);
-            int position = rand.nextInt(bitString.length);
-            double prob = rand.nextDouble();
-            if (prob < mutationProbability) {
-                //System.out.println("MUTATION!");
-                bitString[position] ^= true;
+            for (int j=0; j<3; ++j) {
+                int position = rand.nextInt(bitString.length);
+                double prob = rand.nextDouble();
+                if (prob < mutationProbability) {
+                    //System.out.println("MUTATION!");
+                    bitString[position] ^= true;
+                }
             }
             states[i] = decode(bitString);
         }
@@ -253,11 +266,12 @@ public class GeneticAlgorithmAdjuster {
                 index++;
             }
         }
-        return encoded;//binToGray(encoded);
+        //return encoded;
+        return binToGray(encoded);
     }
 
     public static float[] decode(boolean[] encoded) {
-        //encoded = grayToBin(encoded);
+        encoded = grayToBin(encoded);
         float[] decoded = new float[encoded.length/WORD_SIZE];
         for (int i=0; i<decoded.length; ++i) {
             int offset = i*WORD_SIZE;
@@ -272,37 +286,30 @@ public class GeneticAlgorithmAdjuster {
     }
 
     
+    protected void maybeSave(int iteration) {
+    }
+    
+    protected float playWithWeights(float[] realWeights, int times) {
+        return w.playWithWeights(realWeights, 2);
+    }
+    
     public void adjust() {
         generateRandomStates();
         int iteration = Integer.MAX_VALUE;
-        int interval = 5;
         for (int i = 0; i < iteration; ++i) {
             System.out.println("Iteration " + i);
             selection();
             crossover();
             mutation();
             
-            if (i%interval == 0) {
+            if ((i+1)%PRINT_INTERVAL == 0) {
                 //System.out.println("Iteration " + i);
                 float total = 0;
                 for (int j = 0; j < stateNumber; ++j) {
                     float[] realWeights = generateRealWeights(states[j]);
-                    float result = w.playWithWeights(realWeights, 2);
-                    float resultPartial = w.playPartialWithWeights(realWeights, 10);
-                    /*System.out.println(
-                            //bitString(encode(states[j])) + "    " +
-                            "State #" + j + ". Score = " + result + "   " +
-                            Arrays.toString(states[j]));
-                            //Arrays.toString(states[j]));*/
-                    System.out.printf("State #%2d. Score = %10.3f - %8.3f [",j,result,resultPartial);
-                    for (int k = 0; k < states[j].length; ++k) {
-                        System.out.printf("%9.2f", states[j][k]);
-                        if (k + 1 < states[j].length) {
-                            System.out.printf(",");
-                        } else {
-                            System.out.println("]");
-                        }
-                    }
+                    
+                    float result = printAndReturnResult(j, realWeights);
+                    
                     total += result;
                     
                     if (result > highScore) {
@@ -314,7 +321,25 @@ public class GeneticAlgorithmAdjuster {
                 System.out.println("Average Score: " + (total/stateNumber));
                 System.out.println("Hi-Score: " + highScore + " | " + Arrays.toString(highScoreWeights));
             }
+
+            maybeSave(i);
         }
+    }
+
+    protected float printAndReturnResult(int j, float[] realWeights) {
+        float result = playWithWeights(realWeights, 2);
+        float resultPartial = w.playPartialWithWeights(realWeights, 10);
+
+        System.out.printf("State #%2d. Score = %10.3f - %8.3f [",j,result,resultPartial);
+        for (int k = 0; k < states[j].length; ++k) {
+            System.out.printf("%9.2f", states[j][k]);
+            if (k + 1 < states[j].length) {
+                System.out.printf(",");
+            } else {
+                System.out.println("]");
+            }
+        }
+        return result;
     }
     
 }
