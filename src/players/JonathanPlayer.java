@@ -1,6 +1,7 @@
 package players;
 
 import main.FeatureFunctions;
+import main.FeatureFunctions2;
 import main.NextState;
 import main.State;
 import weightadjuster.GeneticAlgorithmAdjuster;
@@ -11,28 +12,19 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
     protected void configure() {
         features = new Feature[]{
                         (n)->FeatureFunctions.lost(n),
-                        (n)->FeatureFunctions.maxHeight(n),
-                        (n)->FeatureFunctions.numHoles(n),
-                        (n)->FeatureFunctions.sumHeight(n),
-                        (n)->FeatureFunctions.bumpiness(n),
-                        (n)->FeatureFunctions.numRowsCleared(n),
                         (n)->FeatureFunctions.numFilledCells(n),
+                        (n)->FeatureFunctions2.weightedFilledCells(n),
+                        (n)->FeatureFunctions.maxHeight(n),
+                        (n)->FeatureFunctions.numEmptyCells(n),
+                        (n)->FeatureFunctions2.clearLines(n),
                         (n)->FeatureFunctions.maxHeightDifference(n),
-                        (n)->FeatureFunctions.sumHoleDistanceFromTop(n),
-                        (n)->FeatureFunctions.sumEmptyCellDistanceFromTop(n),
-                        (n)->FeatureFunctions.holeAndPitColumns(n),
-                        (n)->FeatureFunctions.topPerimeter(n),
-                        (n)->FeatureFunctions.maxHeightCube(n),
-                        (n)->FeatureFunctions.holeAndPitColumnsMin(n),
-                        (n)->FeatureFunctions.numRowsThatHasMoreThanOneHole(n),
-                        (n)->FeatureFunctions.holeCoverEmptyCells(n)/*,
-                        FeatureFunctions.variableHeightMinimaxInt(
-                                (h) -> State.ROWS-h,
-                                FeatureFunctions.negHeightRegion(1)
-                                )*/
-                        //FeatureFunctions.minimaxInt(2, FeatureFunctions.negHeightRegion(10)),
-                        //FeatureFunctions.minimaxInt(2, FeatureFunctions.negHeightRegion(7))
-                        //FeatureFunctions.minimaxInt(2, FeatureFunctions.lost())
+                        (n)->FeatureFunctions2.deepestOneHole(n),
+                        (n)->FeatureFunctions2.sumOfAllHoles(n),
+                        (n)->FeatureFunctions2.horizontalRoughness(n),
+                        (n)->FeatureFunctions2.verticalRoughness(n),
+                        (n)->FeatureFunctions2.wellCount(n),
+                        (n)->FeatureFunctions2.weightedEmptyCells(n),
+                        (n)->FeatureFunctions2.highestHole(n)
         };
     }
     
@@ -41,7 +33,7 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
         //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -5, -30, 0};
         //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -15, -5, -10};
         //weights = new float[]{-99999.0f, 299.2644f, -241.19064f, -269.57117f, -271.10962f, -175.32292f, 149.07938f, -269.22433f, -184.39595f, -274.9451f, -233.19809f, -293.61053f};
-        weights = new float[]{-9999999.0f, -40.0f, -500.0f, -0.01f, -40.0f, 20.0f, 1.0f, 0.01f, -20.0f, 3.0f, -500.0f, -40.0f, 0.05f, -40.0f, -100.0f, 0f};
+        //weights = new float[]{-9999999.0f, -40.0f, -500.0f, -0.01f, -40.0f, 20.0f, 1.0f, 0.01f, -20.0f, 3.0f, -500.0f, -40.0f, 0.05f, -40.0f, -100.0f, 0f};
         
         //weights = new float[]{-99999.0f, -0.0f, -72.27131f, -0.39263827f, -18.150364f, 1.9908575f, -4.523054f, 2.6717715f}; // <-- good weights.
         //weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, -1f, -1f}; // <-- good weights.
