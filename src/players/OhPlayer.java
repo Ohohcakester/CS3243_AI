@@ -1,6 +1,7 @@
 package players;
 
 import main.FeatureFunctions;
+import main.FeatureFunctions2;
 import main.NextState;
 import main.State;
 import weightadjuster.GeneticAlgorithmAdjuster;
@@ -27,9 +28,14 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 //(n)->FeatureFunctions.numFilledCells(n), //
                 (n)->FeatureFunctions.numRowsWithMoreThanOneEmptyCell(n),
                 (n)->FeatureFunctions.holeCoverEmptyCells(n),
-                (n)->FeatureFunctions.weightedFilledCells(n),
-                (n)->FeatureFunctions.rowTransitions(n),
-                (n)->FeatureFunctions.colTransitions(n)
+                (n)->FeatureFunctions2.weightedFilledCells(n),
+                (n)->FeatureFunctions2.deepestOneHole(n),
+                (n)->FeatureFunctions2.sumOfAllHoles(n),
+                (n)->FeatureFunctions2.horizontalRoughness(n),
+                (n)->FeatureFunctions2.verticalRoughness(n),
+                (n)->FeatureFunctions2.wellCount(n),
+                (n)->FeatureFunctions2.weightedEmptyCells(n),
+                (n)->FeatureFunctions2.highestHole(n)
                 
                 
                 
@@ -104,7 +110,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         //weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, 0f, -3.0f};
         //weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f};
 
-        weights = new float[]{-9999999f, -40f, -5f, -100f, -100f, -40f, 0.1f, -100f, -0.1f, -0.1f,0,0,0};
+        //weights = new float[]{-9999999f, -40f, -5f, -100f, -100f, -40f, 0.1f, 100f, -0.1f, -0.1f,0,0,0};
 
 
         //weights = new float[]{-99999, -100, -2, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f};
@@ -147,7 +153,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 0; // 0 to watch, 1 to learn.
+        int choice = -1; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new OhPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
@@ -159,7 +165,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         //adjuster.fixValue(5, 1000f);
         //adjuster.fixValue(6, 0f);
        
-        p.switchToMinimax(1);
+        //p.switchToMinimax(1);
         switch(choice) {
             case -1:
                 checkScore(p);break;
