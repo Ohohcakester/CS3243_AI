@@ -138,8 +138,21 @@ public class FeatureFunctions2 {
     /**
      * Number of rows cleared by current move
      */
-    
     public static float clearLines(NextState nextState) {
         return nextState.rowsCleared;
+    }
+    
+    /**
+     * (h2 – h1) + |h2 – h3| + |h3 – h4| + |h4 – h5| + |h5 – h6| + |h6 – h7| + |h7 – h8| + |h8 – h9| + (h9 – h10)
+     */
+    public static float surfaceSmoothness(NextState nextState) {
+        int surfaceSmoothness = 0;
+        int top[] = nextState.top;
+        surfaceSmoothness += top[1] - top[0];
+        surfaceSmoothness += top[State.COLS-1] - top[State.COLS-2];
+        for (int i = 1; i < State.COLS - 2; ++i) {
+            surfaceSmoothness += Math.abs(top[i] - top[i+1]);
+        }
+        return surfaceSmoothness;
     }
 }
