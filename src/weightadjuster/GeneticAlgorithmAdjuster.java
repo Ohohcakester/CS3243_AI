@@ -19,7 +19,7 @@ public class GeneticAlgorithmAdjuster {
     protected int PRINT_INTERVAL = 10;
     
     
-    protected double mutationProbability = 0.08;
+    protected double mutationProbability = 0.06;
     //protected double mutationProbability = 0.4;
     protected HashMap<Integer,Float> fixedValue = new HashMap<>(); 
     
@@ -27,7 +27,7 @@ public class GeneticAlgorithmAdjuster {
     protected float highScore;
 
     //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
-    protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 25f, 45f, 70f, 100, 150, 200, 500, 1000, 1500, 6000};
+    protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 30f, 60f, 90f, 140, 200, 300, 500, 1000, 1500, 6000};
     protected static final int WORD_SIZE = 5;
     
     public GeneticAlgorithmAdjuster(WeightedHeuristicPlayer w, int _dim, int N) {
