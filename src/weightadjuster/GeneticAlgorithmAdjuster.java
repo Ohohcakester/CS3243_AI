@@ -15,11 +15,12 @@ public class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 15;
+    protected final int INITIAL_GOOD_STATES = 10;
     protected int PRINT_INTERVAL = 10;
     
     
-    protected double mutationProbability = 0.06;
+    protected final int MUTATION_BITS = 9;
+    protected double mutationProbability = 0.1;
     //protected double mutationProbability = 0.4;
     protected HashMap<Integer,Float> fixedValue = new HashMap<>(); 
     
@@ -27,8 +28,16 @@ public class GeneticAlgorithmAdjuster {
     protected float highScore;
 
     //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
-    protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 30f, 60f, 90f, 140, 200, 300, 500, 1000, 1500, 6000};
-    protected static final int WORD_SIZE = 5;
+    //protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 30f, 60f, 90f, 140, 200, 300, 500, 1000, 1500, 6000};
+    //protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 30f, 60f, 90f, 140, 200, 250,300,350,400,500,700,850, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 4000, 5000, 6000};
+    protected static final int WORD_SIZE = 12;
+    protected static final int HALF_TABLE_SIZE = pow2(WORD_SIZE-1);
+    
+    private static int pow2(int n) {
+        int v = 1;
+        for (; n > 0; --n) v *= 2;
+        return v;
+    }
     
     public GeneticAlgorithmAdjuster(WeightedHeuristicPlayer w, int _dim, int N) {
         dim = _dim;
@@ -92,18 +101,12 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-            //new float[]{-100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f},
-            //new float[]{-40.0f, -8000.0f, 100.0f, 10.0f, 0.5f, -5.0f, 0.5f, -8000.0f, -40.0f, 0.01f, -5.0f, -2.0f, -0.1f, -40.0f, -1.0f},
-            //new float[]{0.05f, 2.0f, -2.0f, -0.05f, -8000.0f, -500.0f, -8000.0f, -500.0f, -500.0f, -0.01f, -10.0f, 40.0f, 20.0f, -3.0f, -1.0f},
-            /*new float[]{0.01f, -200f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f,0,0,0},
-            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 150f, -1.5f,0,0,0},
-            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f,0,0,0},
-            new float[]{1.5f, -1000f, -1000f, -1500f, -1500f, -200f, 1000f, 4f, -1.5f,0,0,0},
-            new float[]{10f, -1000f, -1000f, -1000f, -1000f, -200f, 1000f, 25f, -1.5f,0,0,0},
-            new float[]{10f, -150f, -1000f, -1500f, -150f, -500f, 1000f, -25f, -0.05f,0,0,0},
-            new float[]{10f, -150f, -1000f, -1500f, -150f, -200f, 1000f, -100f, -0.05f,0,0,0}*/
-            new float[]{-70.0f, -1000.0f, 1500.0f, -25.0f, 70.0f, 1500.0f, -200.0f, 70.0f, -6000.0f, -200.0f, 1500.0f, -500.0f, -6000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-            new float[]{0.01f, -1.5f, 1.5f, -6000.0f, -1000.0f, -70.0f, 10.0f, -4.0f, -1500.0f, -25.0f, -0.3f, -1000.0f, 1.5f, 25.0f, -1500.0f, -1000.0f, -45.0f, -0.01f}
+            new float[]{-2f, -0.025f, 800f, -250f, -3000f, -3000f, -800f, 30f, -0.025f, -150f, -0.025f, -500f, 0.75f, 0.15f, -500f, -800f, -30f},
+            new float[]{-2f, -0.025f, 800f, -250f, -3000f, -3000f, -800f, 30f, -0.025f, -150f, -0.025f, -500f, 0.75f, 0.15f, -500f, -800f, -30f},
+            new float[]{-2f, -0.025f, 800f, -250f, -3000f, -3000f, -800f, 30f, -0.025f, -150f, -0.025f, -500f, 0.75f, 0.15f, -500f, -800f, -30f},
+            new float[]{-2f, -0.025f, 800f, -150f, -3000f, -3000f, -800f, 30f, -0.025f, -250f, -0.025f, -500f, 0.75f, 0.15f, -500f, -800f, -30f},
+            new float[]{-2f, -0.025f, 800f, -250f, -2500f, -3000f, -800f, 30f, -0.025f, -250f, -0.025f, -500f, 0.75f, 0.75f, -500f, -800f, -30f},
+            new float[]{-2f, -0.025f, 800f, -250f, -3000f, -3000f, -800f, 30f, -0.025f, -250f, -0.025f, -500f, 0.75f, 0.15f, -500f, -800f, -30f}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
@@ -192,7 +195,7 @@ public class GeneticAlgorithmAdjuster {
     private void mutation() {
         for (int i = 0; i < states.length; ++i) {
             boolean[] bitString = encode(states[i]);
-            for (int j=0; j<3; ++j) {
+            for (int j=0; j<MUTATION_BITS; ++j) {
                 int position = rand.nextInt(bitString.length);
                 double prob = rand.nextDouble();
                 if (prob < mutationProbability) {
@@ -237,22 +240,26 @@ public class GeneticAlgorithmAdjuster {
     }
 
     public static int encodeFloat(float f) {
-        boolean neg = f < 0;
+        return (int)(f + HALF_TABLE_SIZE);
+        
+        /*boolean neg = f < 0;
         if (neg) f = -f;
+        
         int index = 0;
         while (index+1 < conversionTable.length && f > conversionTable[index]) {
             index++;
         }
         if (neg) return conversionTable.length-index-1;
-        else return conversionTable.length+index;
+        else return conversionTable.length+index;*/
     }
 
     public static float decodeFloat(int v) {
-        boolean neg = v < 16;
-        if (neg) v = 16 - v - 1;
-        else v -= 16;
+        return v - HALF_TABLE_SIZE;
+        /*boolean neg = v < HALF_TABLE_SIZE;
+        if (neg) v = HALF_TABLE_SIZE - v - 1;
+        else v -= HALF_TABLE_SIZE;
         if (neg) return -conversionTable[v];
-        else return conversionTable[v];
+        else return conversionTable[v];*/
     }
 
     public static boolean[] encode(float[] array) {

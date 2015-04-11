@@ -9,10 +9,12 @@ import players.WeightedHeuristicPlayer;
 public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     //private static int SAVE_INTERVAL = 1;
     private static final double DATABASE_SEQUENCE_PROBABILTY = 1f;
-    private static final float HARD_BIAS = 0.1f; // HARD_BIAS of 1 is 100% hardest sequence. HARD_BIAS of 0 is even distribution.
+    private static final float HARD_BIAS = 0.2f; // HARD_BIAS of 1 is 100% hardest sequence. HARD_BIAS of 0 is even distribution.
     
-    private static final int PARTIAL_TRIES = 1;
-    private static final int REAL_TRIES = 3;
+    private static final int PARTIAL_TRIES = 16;
+    private static final int REAL_TRIES = 4;
+    private int selectionIteration;
+    private int realInterval = 1;
     
     private static final float WEIGHT_REAL = 0.8f; // between 0 and 1.
     
@@ -23,17 +25,18 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     
     public GeneticAlgorithmSD(WeightedHeuristicPlayer w, int dim, int N) {
         super(w, dim, N);
-        store = SequenceStore.empty();
-        //store = SequenceStore.loadTrimmed();
+        //store = SequenceStore.empty();
+        store = SequenceStore.loadTrimmed();
         sequences = new Sequence[PARTIAL_TRIES];
         System.out.println(store);
         
-        PRINT_INTERVAL = 3;
+        PRINT_INTERVAL = 4;
     }
     
 
     @Override
     protected void selection() {
+        selectionIteration++;
         float totalScore = 0;
         while (totalScore == 0) {
 
@@ -48,11 +51,17 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
             for (int i = 0; i < states.length; ++i) {
                 float[] realWeights = generateRealWeights(states[i]);
                 
-                float resultP = w.playPartialWithWeights(realWeights, PARTIAL_TRIES, sequences);
-                float resultR = w.playWithWeights(realWeights, REAL_TRIES);
-
-                scores[i] = weightedMean(resultP, resultR);
-
+                if (selectionIteration%realInterval == 0) {
+                    float resultP = w.playPartialWithWeights(realWeights, PARTIAL_TRIES, sequences);
+                    float resultR = w.playWithWeights(realWeights, REAL_TRIES);
+                    scores[i] = weightedMean(resultP, resultR);
+                    if (resultR > 100000) {
+                        System.out.println(resultR + " attained from " + Arrays.toString(realWeights));
+                    }
+                } else {
+                    float resultP = w.playPartialWithWeights(realWeights, PARTIAL_TRIES, sequences);
+                    scores[i] = resultP;
+                }
                 //System.out.println(resultR + " | " + resultP + " | " + scores[i]);
                 //System.out.println(i + " " + scores[i]);
                 totalScore += scores[i];
@@ -60,6 +69,7 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
             if (totalScore == 0) {
                 generateRandomStates();
             }
+            System.out.println((selectionIteration%realInterval == 0) + " | " + totalScore/states.length);
         }
         
         Integer[] ranked = new Integer[scores.length];

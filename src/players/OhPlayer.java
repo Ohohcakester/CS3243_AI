@@ -14,7 +14,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         features = new Feature[]{
                 (n)->FeatureFunctions.lost(n),
                 (n)->FeatureFunctions.bumpiness(n),
-                //(n)->FeatureFunctions.sumHeight(n), //
+                (n)->FeatureFunctions.sumHeight(n), //
                 //(n)->FeatureFunctions.numRowsCleared(n), //
                 //(n)->FeatureFunctions.maxHeightDifference(n), //
                 (n)->FeatureFunctions.numHoles(n),
@@ -26,8 +26,8 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 //(n)->FeatureFunctions.maxHeightPow(n, 3), //
                 (n)->FeatureFunctions.sumEmptyCellDistanceFromTop(n),
                 //(n)->FeatureFunctions.numFilledCells(n), //
-                (n)->FeatureFunctions.numRowsWithMoreThanOneEmptyCell(n),
-                (n)->FeatureFunctions.holeCoverEmptyCells(n),
+                //(n)->FeatureFunctions.numRowsWithMoreThanOneEmptyCell(n), ////
+                //(n)->FeatureFunctions.holeCoverEmptyCells(n), ////
                 (n)->FeatureFunctions2.weightedFilledCells(n),
                 (n)->FeatureFunctions2.deepestOneHole(n),
                 (n)->FeatureFunctions2.sumOfAllHoles(n),
@@ -35,7 +35,8 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 (n)->FeatureFunctions2.verticalRoughness(n),
                 (n)->FeatureFunctions2.wellCount(n),
                 (n)->FeatureFunctions2.weightedEmptyCells(n),
-                (n)->FeatureFunctions2.highestHole(n)
+                (n)->FeatureFunctions2.highestHole(n),
+                (n)->FeatureFunctions2.surfaceSmoothness(n)
                 
                 
                 
@@ -111,6 +112,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         //weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f};
 
         //weights = new float[]{-9999999f, -40f, -5f, -100f, -100f, -40f, 0.1f, 100f, -0.1f, -0.1f,0,0,0};
+        //weights = new float[]{-9999999f, -1000f, -6000f, 90f, -1500f, -6000f, -200f, -200f, -300f, -4f, -10f, -1500f, -90f, -0.3f, -90f, -0.3f, -300f, -6000f};
 
 
         //weights = new float[]{-99999, -100, -2, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f};
@@ -172,7 +174,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
             case 0:
                 watch(p);break;
             case 1:
-                GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmSD(p, p.dim(), 20);
+                GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmSD(p, p.dim(), 10);
                 adjuster.fixValue(0, -9999999f);
                 learn(adjuster);break;
                 //learn(p, adjuster);break;
