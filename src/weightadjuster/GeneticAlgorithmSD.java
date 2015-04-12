@@ -9,14 +9,17 @@ import players.WeightedHeuristicPlayer;
 public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     //private static int SAVE_INTERVAL = 1;
     private static final double DATABASE_SEQUENCE_PROBABILTY = 1f;
-    private static final float HARD_BIAS = 0.2f; // HARD_BIAS of 1 is 100% hardest sequence. HARD_BIAS of 0 is even distribution.
+    private static final float HARD_BIAS = 0.1f; // HARD_BIAS of 1 is 100% hardest sequence. HARD_BIAS of 0 is even distribution.
     
     private static final int PARTIAL_TRIES = 16;
     private static final int REAL_TRIES = 4;
     private int selectionIteration;
-    private int realInterval = 1;
+    private int realInterval = 2;
     
-    private static final float WEIGHT_REAL = 0.8f; // between 0 and 1.
+    private static final float WEIGHT_REAL = 0.9f; // between 0 and 1.
+
+    private boolean readyToPrint;
+    private boolean printed;
     
     
     private Sequence[] sequences;
@@ -30,10 +33,9 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
         sequences = new Sequence[PARTIAL_TRIES];
         System.out.println(store);
         
-        PRINT_INTERVAL = 4;
+        PRINT_INTERVAL = 1;
     }
     
-
     @Override
     protected void selection() {
         selectionIteration++;
@@ -58,6 +60,10 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
                     if (resultR > 100000) {
                         System.out.println(resultR + " attained from " + Arrays.toString(realWeights));
                     }
+                    if (readyToPrint) {
+                        analyseResults(i, resultR, resultP, scores[i], realWeights);
+                        printed = true;
+                    }
                 } else {
                     float resultP = w.playPartialWithWeights(realWeights, PARTIAL_TRIES, sequences);
                     scores[i] = resultP;
@@ -69,7 +75,14 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
             if (totalScore == 0) {
                 generateRandomStates();
             }
-            System.out.println((selectionIteration%realInterval == 0) + " | " + totalScore/states.length);
+            
+            if (printed) {
+                printTotalAndHighScore(totalScore);
+            } else {
+                System.out.println((selectionIteration%realInterval == 0) + " | " + totalScore/states.length);
+            }
+
+            readyToPrint = false;
         }
         
         Integer[] ranked = new Integer[scores.length];
@@ -144,29 +157,44 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     }
     
     @Override
-    protected void maybeSave(int iteration) {
-        if ((iteration+1)%PRINT_INTERVAL == 0) {
-            store.saveSequences();
+    public void adjust() {
+        generateRandomStates();
+        printed = false;
+        readyToPrint = false;
+        
+        int iteration = Integer.MAX_VALUE;
+        for (int i = 0; i < iteration; ++i) {
+            if ((i+1)%PRINT_INTERVAL == 0) readyToPrint = true;
+            System.out.println("Iteration " + i);
+            
+            selection();
+            crossover();
+            mutation();
+            
+            if (printed) {
+                store.saveSequences();
+                printed = false;
+            }
         }
     }
     
-
-    @Override
-    protected float printAndReturnResult(int j, float[] realWeights) {
-        float result = playWithWeights(realWeights, 2);
-        float resultPartial = w.playPartialWithWeights(realWeights, 10);
-        float weightedMean = weightedMean(resultPartial, result);
-
-        System.out.printf("State #%2d. Score = %10.3f - %8.3f - %8.3f [",j,result,resultPartial,weightedMean);
-        for (int k = 0; k < states[j].length; ++k) {
-            System.out.printf("%9.2f", states[j][k]);
-            if (k + 1 < states[j].length) {
+    
+    
+    private void analyseResults(int stateNo, float result, float resultPartial, float weightedMean, float[] realWeights) {
+        System.out.printf("State #%2d. Score = %10.3f - %8.3f - %8.3f [",stateNo,result,resultPartial,weightedMean);
+        for (int k = 0; k < states[stateNo].length; ++k) {
+            System.out.printf("%9.2f", states[stateNo][k]);
+            if (k + 1 < states[stateNo].length) {
                 System.out.printf(",");
             } else {
                 System.out.println("]");
             }
         }
-        return result;
+
+        if (result > highScore) {
+            highScoreWeights = Arrays.copyOf(realWeights, realWeights.length);
+            highScore = result;
+        }
     }
     
     

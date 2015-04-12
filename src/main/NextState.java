@@ -11,16 +11,21 @@ public class NextState {
     public final int turn;
     public final int rowsCleared;
 
-    public static int[][][] legalMoves = new int[State.N_PIECES][][];
-    public static int[] minimaxPieceOrdering = new int[State.N_PIECES];
-    
-    {
+    public static final int[][][] legalMoves = generateLegalMoves();
+    public static final int[] minimaxPieceOrdering = generateMinimaxPieceOrdering();
+
+    public static final int[] generateMinimaxPieceOrdering() {
+        int[] minimaxPieceOrdering = new int[State.N_PIECES];
+        
         // Worst to best:
         // 5 6 2 3 4 0 1
         minimaxPieceOrdering = new int[]{0,5,6,2,3,4,1};
+        
+        return minimaxPieceOrdering;
     }
     
-    {
+    public static final int[][][] generateLegalMoves() {
+        int[][][] legalMoves = new int[State.N_PIECES][][];
         //for each piece type
         for(int i = 0; i < State.N_PIECES; i++) {
             //figure number of legal moves
@@ -42,7 +47,7 @@ public class NextState {
                 }
             }
         }
-    
+        return legalMoves;
     }
     
     /**
@@ -57,38 +62,11 @@ public class NextState {
         this.rowsCleared = rowsCleared;
     }
 
-    /*public int[][] getField() {
-        return field;
-    }
-
-    public int[] getTop() {
-        return top;
-    }
-
-    public boolean hasLost() {
-        return lost;
-    }
-    
-    public int getRowsCleared() {
-        return cleared;
-    }
-    
-    public int getTurnNumber() {
-        return turn;
-    }*/
-    
-
     /**
      * @return a new CurrentState object.
      */
     public static NextState generate(NextState s, int piece, int[] move) {
         int nextPiece = piece;
-        /*int[][] field = s.getField();
-        int[] top = s.getTop();
-        boolean lost = s.hasLost();
-        int cleared = s.getRowsCleared();
-        int turn = s.getTurnNumber();*/
-
         return makeMove(nextPiece, move, s.field, s.top, s.lost, s.cleared, s.turn);
     }
     

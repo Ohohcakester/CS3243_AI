@@ -15,9 +15,10 @@ public class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 10;
+    protected final int INITIAL_GOOD_STATES = 20;
     protected int PRINT_INTERVAL = 10;
     
+    protected float total = 0;
     
     protected final int MUTATION_BITS = 9;
     protected double mutationProbability = 0.1;
@@ -101,12 +102,20 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-            new float[]{-2f, -0.025f, 800f, -250f, -3000f, -3000f, -800f, 30f, -0.025f, -150f, -0.025f, -500f, 0.75f, 0.15f, -500f, -800f, -30f},
-            new float[]{-2f, -0.025f, 800f, -250f, -3000f, -3000f, -800f, 30f, -0.025f, -150f, -0.025f, -500f, 0.75f, 0.15f, -500f, -800f, -30f},
-            new float[]{-2f, -0.025f, 800f, -250f, -3000f, -3000f, -800f, 30f, -0.025f, -150f, -0.025f, -500f, 0.75f, 0.15f, -500f, -800f, -30f},
-            new float[]{-2f, -0.025f, 800f, -150f, -3000f, -3000f, -800f, 30f, -0.025f, -250f, -0.025f, -500f, 0.75f, 0.15f, -500f, -800f, -30f},
-            new float[]{-2f, -0.025f, 800f, -250f, -2500f, -3000f, -800f, 30f, -0.025f, -250f, -0.025f, -500f, 0.75f, 0.75f, -500f, -800f, -30f},
-            new float[]{-2f, -0.025f, 800f, -250f, -3000f, -3000f, -800f, 30f, -0.025f, -250f, -0.025f, -500f, 0.75f, 0.15f, -500f, -800f, -30f}
+                new float[]{-2f, -1f, 223f, -250f, -2048f, -2033f, -993f, 30f, -1f, -150f, -1f, -500f, 125f, 56f, -425f, -900f, -26f},
+                new float[]{-2f, -1f, 800f, -250f, -2048f, -2033f, -800f, 30f, -2f, -150f, -1f, -509f, 114f, 63f, -425f, -900f, -31f},
+                new float[]{-2f, -1f, 863f, -250f, -2048f, -2033f, -800f, 30f, -1f, -150f, -1f, -500f, 125f, 0f, -425f, -900f, -31f},
+                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -799f, 30f, -1f, -150f, -1f, -500f, 114f, 63f, -425f, -900f, -31f},
+                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -800f, 30f, -1f, -150f, -1f, -500f, 114f, 127f, -425f, -897f, -31f},
+                new float[]{-2f, -4f, 800f, -250f, -2048f, -2033f, -800f, 30f, -1f, -171f, -8f, -269f, 125f, 0f, -344f, -897f, -31f},
+                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -800f, 30f, -1f, -150f, -1f, -500f, 114f, 127f, -425f, -897f, -31f},
+                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -800f, 30f, -1f, -150f, -1f, -500f, 114f, 127f, -425f, -897f, -31f},
+                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -800f, 30f, -1f, -150f, -1f, -500f, 114f, 127f, -425f, -897f, -31f},
+                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -800f, 30f, -1f, -150f, -1f, -500f, 114f, 127f, -425f, -897f, -31f},
+                new float[]{-1f, 1f, -227f, -247f, -2049f, -2033f, -802f, 28f, -1f, -155f, -2f, -501f, 113f, 123f, -424f, -898f, -33f},
+                new float[]{-5f, -4f, -226f, -255f, -2049f, -2032f, -803f, 27f, 3f, -149f, -5f, -501f, 118f, 131f, -430f, -893f, -33f},
+                new float[]{-2f, 0f, -223f, -251f, -2050f, -2036f, -803f, 33f, -5f, -146f, -3f, -503f, 109f, 124f, -429f, -902f, -31f},
+                new float[]{-3f, -6f, -223f, -252f, -2049f, -2035f, -805f, 28f, -2f, -146f, 1f, -499f, 115f, 125f, -430f, -893f, -27f}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
@@ -175,7 +184,7 @@ public class GeneticAlgorithmAdjuster {
         states = newStates;
     }
     
-    private void crossover() {
+    protected void crossover() {
         for (int i = 0; i + 1 < states.length; i += 2) {
             boolean[] firstBitString = encode(states[i]);
             boolean[] secondBitString = encode(states[i+1]);
@@ -192,7 +201,7 @@ public class GeneticAlgorithmAdjuster {
         }
     }
     
-    private void mutation() {
+    protected void mutation() {
         for (int i = 0; i < states.length; ++i) {
             boolean[] bitString = encode(states[i]);
             for (int j=0; j<MUTATION_BITS; ++j) {
@@ -292,10 +301,6 @@ public class GeneticAlgorithmAdjuster {
         }
         return decoded;
     }
-
-    
-    protected void maybeSave(int iteration) {
-    }
     
     protected float playWithWeights(float[] realWeights, int times) {
         return w.playWithWeights(realWeights, 2);
@@ -326,28 +331,35 @@ public class GeneticAlgorithmAdjuster {
                     }
                     
                 }
-                System.out.println("Average Score: " + (total/stateNumber));
-                System.out.println("Hi-Score: " + highScore + " | " + Arrays.toString(highScoreWeights));
+                printTotalAndHighScore(total);
             }
-
-            maybeSave(i);
         }
+    }
+
+    protected void printTotalAndHighScore(float total) {
+        System.out.println("Average Score: " + (total/stateNumber));
+        System.out.println("Hi-Score: " + highScore + " | " + Arrays.toString(highScoreWeights));
     }
 
     protected float printAndReturnResult(int j, float[] realWeights) {
         float result = playWithWeights(realWeights, 2);
         float resultPartial = w.playPartialWithWeights(realWeights, 10);
 
-        System.out.printf("State #%2d. Score = %10.3f - %8.3f [",j,result,resultPartial);
-        for (int k = 0; k < states[j].length; ++k) {
-            System.out.printf("%9.2f", states[j][k]);
-            if (k + 1 < states[j].length) {
+        printResults(j, result, resultPartial);
+        return result;
+    }
+
+    protected void printResults(int stateNo, float result, float resultPartial) {
+        System.out.printf("State #%2d. Score = %10.3f - %8.3f [",stateNo,result,resultPartial);
+        for (int k = 0; k < states[stateNo].length; ++k) {
+            System.out.printf("%9.2f", states[stateNo][k]);
+            if (k + 1 < states[stateNo].length) {
                 System.out.printf(",");
             } else {
                 System.out.println("]");
             }
         }
-        return result;
     }
+    
     
 }

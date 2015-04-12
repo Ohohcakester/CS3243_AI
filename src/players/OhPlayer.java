@@ -174,7 +174,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
             case 0:
                 watch(p);break;
             case 1:
-                GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmSD(p, p.dim(), 10);
+                GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmSD(p, p.dim(), 20);
                 adjuster.fixValue(0, -9999999f);
                 learn(adjuster);break;
                 //learn(p, adjuster);break;
