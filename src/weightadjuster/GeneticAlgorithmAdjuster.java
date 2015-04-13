@@ -15,7 +15,7 @@ public class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 18;
+    protected final int INITIAL_GOOD_STATES = 3;
     protected int PRINT_INTERVAL = 10;
     
     protected float total = 0;
@@ -103,26 +103,8 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-                new float[]{-1647f, 1870f, 1992f, -1439f, -1302f, -1792f, -790f, 1419f, -95f, 734f, -1794f, -1967f, -845f, -273f, 902f, 1233f, 132f},
-                new float[]{-1653f, 1868f, 1918f, -1457f, -1283f, -1791f, -541f, 1414f, -85f, 736f, -1798f, -1966f, -837f, -273f, 881f, 1231f, 117f},
-                new float[]{-1626f, 1800f, 1921f, -1202f, -1283f, -1796f, -537f, 1291f, -85f, 729f, -1857f, -1966f, -846f, -341f, 899f, 1492f, 386f},
-                new float[]{-1613f, 1814f, 1917f, -1188f, -1294f, -1806f, -566f, 1283f, -88f, 739f, -1602f, -1971f, -844f, -274f, 898f, -823f, 379f},
-                new float[]{-1636f, 1816f, 1916f, -1197f, -1301f, -1793f, -567f, 1292f, -92f, 721f, -1602f, -1976f, -838f, -288f, 897f, -799f, 376f},
-                new float[]{-1664f, 1859f, 1977f, -1458f, -1291f, -1799f, -792f, 1404f, -86f, 730f, -1800f, -1977f, -833f, -275f, 896f, 1234f, 132f},
-                new float[]{-1659f, 1871f, 1924f, -1443f, -1296f, -1791f, -536f, 1404f, -98f, 743f, -1797f, -1966f, -847f, -280f, 884f, 1234f, 119f},
-                new float[]{-1629f, 1802f, 1923f, -1200f, -1301f, -1800f, -548f, 1274f, -92f, 729f, -1858f, -1981f, -856f, -349f, 897f, 1495f, 381f},
-                new float[]{-1628f, 1805f, 1934f, -1200f, -1288f, -1793f, -578f, 1273f, -90f, 725f, -1613f, -1967f, -828f, -279f, 888f, -809f, 387f},
-                new float[]{-1640f, 1815f, 1920f, -1196f, -1303f, -1795f, -570f, 1294f, -103f, 727f, -1601f, -1959f, -844f, -297f, 887f, -812f, 372f},
-                new float[]{-1658f, 1859f, 1987f, -1444f, -1302f, -1805f, -800f, 1411f, -85f, 742f, -1797f, -1971f, -841f, -283f, 902f, 1242f, 124f},
-                new float[]{-1663f, 1860f, 1929f, -1446f, -1297f, -1796f, -531f, 1401f, -89f, 728f, -1796f, -1969f, -842f, -280f, 892f, 1242f, 120f},
-                new float[]{-1618f, 1806f, 1924f, -1198f, -1283f, -1794f, -543f, 1284f, -87f, 734f, -1865f, -1982f, -856f, -342f, 896f, 1493f, 375f},
-                new float[]{-1620f, 1797f, 1929f, -1198f, -1295f, -1800f, -572f, 1275f, -92f, 725f, -1600f, -1972f, -838f, -275f, 897f, -819f, 380f},
-                new float[]{-1627f, 1814f, 1917f, -1195f, -1309f, -1797f, -572f, 1291f, -97f, 733f, -1602f, -1972f, -833f, -284f, 890f, -811f, 362f},
-                new float[]{-1654f, 1862f, 1993f, -1439f, -1294f, -1791f, -804f, 1401f, -94f, 729f, -1802f, -1980f, -838f, -278f, 900f, 1236f, 115f},
-                new float[]{-1656f, 1860f, 1917f, -1455f, -1287f, -1799f, -546f, 1405f, -98f, 741f, -1797f, -1978f, -835f, -283f, 883f, 1244f, 120f},
-                new float[]{-1624f, 1813f, 1928f, -1187f, -1296f, -1804f, -538f, 1279f, -84f, 728f, -1853f, -1972f, -855f, -351f, 900f, 1483f, 376f},
-                new float[]{-1625f, 1809f, 1929f, -1186f, -1289f, -1797f, -572f, 1283f, -90f, 724f, -1597f, -1971f, -843f, -276f, 896f, -807f, 379f},
-                new float[]{-1629f, 1812f, 1923f, -1189f, -1297f, -1793f, -577f, 1278f, -102f, 726f, -1605f, -1957f, -840f, -287f, 884f, -803f, 368f}
+                new float[]{-1447f, 713f, -283f, -1389f, -196f, -975f, -822f, -673f, 1901f, -395f, -574f, -1260f, 696f, -1923f},
+                new float[]{-1447f, 713f, -284f, -1389f, -196f, -975f, -822f, 1952f, 1901f, -395f, -1475f, -1260f, 696f, -1923f}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];

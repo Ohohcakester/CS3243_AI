@@ -240,4 +240,5 @@ State # 0. Score =  29719.000 -  208.920 - 11026.137 [  -385.00,   469.00,  -882
 
 
 
-
+===========================
+ELIMINATE weightedFilledCells, enter numRowsCleared

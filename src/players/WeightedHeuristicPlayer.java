@@ -120,7 +120,6 @@ public class WeightedHeuristicPlayer {
         for (int i = 0; i < weights.length; ++i) {
             this.weights[i] = weights[i];
         }
-        float total = Float.POSITIVE_INFINITY;
         int[] result = new int[1];
         result[0] = Integer.MAX_VALUE;
         Sequence[] sequenceArray = new Sequence[times];
@@ -130,10 +129,6 @@ public class WeightedHeuristicPlayer {
             .forEach(i -> {
                 playRecordMin(result, sequenceArray, i);
             });
-        /*for (float result : resultArray) {
-            if (result < total)
-                total = result;
-        }*/
         
         for (Sequence seq : sequenceArray) {
             if (seq != null) {
@@ -269,7 +264,8 @@ public class WeightedHeuristicPlayer {
 
         //System.out.println("Clear game " + index);
         sequenceArray[index] = new Sequence(cleared, pieces);
-        result[0] = cleared;
+        if (cleared < result[0])
+            result[0] = cleared;
     }
     
     public void learn(WeightAdjuster adjuster) {
