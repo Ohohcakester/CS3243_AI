@@ -112,6 +112,38 @@ public class WeightedHeuristicPlayer {
         return ((float)total/times);
     }
 
+    
+    public float playWithWeightsMin(float[] weights, int times, SequenceStore store) {
+        if (store == null) return playWithWeights(weights, times);
+        
+        this.weights = new float[weights.length];
+        for (int i = 0; i < weights.length; ++i) {
+            this.weights[i] = weights[i];
+        }
+        float total = Float.POSITIVE_INFINITY;
+        int[] result = new int[1];
+        result[0] = Integer.MAX_VALUE;
+        Sequence[] sequenceArray = new Sequence[times];
+    
+        IntStream.range(0, times)
+            .parallel()
+            .forEach(i -> {
+                playRecordMin(result, sequenceArray, i);
+            });
+        /*for (float result : resultArray) {
+            if (result < total)
+                total = result;
+        }*/
+        
+        for (Sequence seq : sequenceArray) {
+            if (seq != null) {
+                store.addSequence(seq);
+            }
+        }
+        return result[0];
+        //return ((float)total/times);
+    }
+
     public float playPartialWithWeights(float[] weights, int times) {
         return playPartialWithWeights(weights, times, null);
     }
@@ -216,7 +248,28 @@ public class WeightedHeuristicPlayer {
         
         sequenceArray[index] = new Sequence(cleared, pieces);
         resultArray[index] = cleared;
+    }
+    
+    public void playRecordMin(int[] result, Sequence[] sequenceArray, int index) {
+        ArrayList<Integer> pieces = new ArrayList<>();
         
+        State s = new State();
+        while(!s.hasLost()) {
+            if (maxHeight(s) == 0) {
+                pieces.clear();
+            }
+            pieces.add(s.getNextPiece());
+            s.makeMove(findBest(s,s.legalMoves()));
+            if (s.getRowsCleared() >= result[0]) {
+                //System.out.println("Terminate game " + index + " @ " + s.getRowsCleared());
+                return; // first failure terminate.
+            }
+        }
+        int cleared = s.getRowsCleared();
+
+        //System.out.println("Clear game " + index);
+        sequenceArray[index] = new Sequence(cleared, pieces);
+        result[0] = cleared;
     }
     
     public void learn(WeightAdjuster adjuster) {

@@ -15,24 +15,25 @@ public class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 20;
+    protected final int INITIAL_GOOD_STATES = 18;
     protected int PRINT_INTERVAL = 10;
     
     protected float total = 0;
     
-    protected final int MUTATION_BITS = 9;
-    protected double mutationProbability = 0.1;
+    protected final int MUTATION_BITS = 2;
+    protected double mutationProbability = 0.2;
     //protected double mutationProbability = 0.4;
     protected HashMap<Integer,Float> fixedValue = new HashMap<>(); 
     
     protected float[] highScoreWeights;
     protected float highScore;
-
+    
     //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
     //protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 30f, 60f, 90f, 140, 200, 300, 500, 1000, 1500, 6000};
     //protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 30f, 60f, 90f, 140, 200, 250,300,350,400,500,700,850, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 4000, 5000, 6000};
     protected static final int WORD_SIZE = 12;
     protected static final int HALF_TABLE_SIZE = pow2(WORD_SIZE-1);
+    private static final int MUTATE_LENGTH_MAX = 8;
     
     private static int pow2(int n) {
         int v = 1;
@@ -102,20 +103,26 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-                new float[]{-2f, -1f, 223f, -250f, -2048f, -2033f, -993f, 30f, -1f, -150f, -1f, -500f, 125f, 56f, -425f, -900f, -26f},
-                new float[]{-2f, -1f, 800f, -250f, -2048f, -2033f, -800f, 30f, -2f, -150f, -1f, -509f, 114f, 63f, -425f, -900f, -31f},
-                new float[]{-2f, -1f, 863f, -250f, -2048f, -2033f, -800f, 30f, -1f, -150f, -1f, -500f, 125f, 0f, -425f, -900f, -31f},
-                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -799f, 30f, -1f, -150f, -1f, -500f, 114f, 63f, -425f, -900f, -31f},
-                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -800f, 30f, -1f, -150f, -1f, -500f, 114f, 127f, -425f, -897f, -31f},
-                new float[]{-2f, -4f, 800f, -250f, -2048f, -2033f, -800f, 30f, -1f, -171f, -8f, -269f, 125f, 0f, -344f, -897f, -31f},
-                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -800f, 30f, -1f, -150f, -1f, -500f, 114f, 127f, -425f, -897f, -31f},
-                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -800f, 30f, -1f, -150f, -1f, -500f, 114f, 127f, -425f, -897f, -31f},
-                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -800f, 30f, -1f, -150f, -1f, -500f, 114f, 127f, -425f, -897f, -31f},
-                new float[]{-2f, -1f, -224f, -250f, -2048f, -2034f, -800f, 30f, -1f, -150f, -1f, -500f, 114f, 127f, -425f, -897f, -31f},
-                new float[]{-1f, 1f, -227f, -247f, -2049f, -2033f, -802f, 28f, -1f, -155f, -2f, -501f, 113f, 123f, -424f, -898f, -33f},
-                new float[]{-5f, -4f, -226f, -255f, -2049f, -2032f, -803f, 27f, 3f, -149f, -5f, -501f, 118f, 131f, -430f, -893f, -33f},
-                new float[]{-2f, 0f, -223f, -251f, -2050f, -2036f, -803f, 33f, -5f, -146f, -3f, -503f, 109f, 124f, -429f, -902f, -31f},
-                new float[]{-3f, -6f, -223f, -252f, -2049f, -2035f, -805f, 28f, -2f, -146f, 1f, -499f, 115f, 125f, -430f, -893f, -27f}
+                new float[]{-1647f, 1870f, 1992f, -1439f, -1302f, -1792f, -790f, 1419f, -95f, 734f, -1794f, -1967f, -845f, -273f, 902f, 1233f, 132f},
+                new float[]{-1653f, 1868f, 1918f, -1457f, -1283f, -1791f, -541f, 1414f, -85f, 736f, -1798f, -1966f, -837f, -273f, 881f, 1231f, 117f},
+                new float[]{-1626f, 1800f, 1921f, -1202f, -1283f, -1796f, -537f, 1291f, -85f, 729f, -1857f, -1966f, -846f, -341f, 899f, 1492f, 386f},
+                new float[]{-1613f, 1814f, 1917f, -1188f, -1294f, -1806f, -566f, 1283f, -88f, 739f, -1602f, -1971f, -844f, -274f, 898f, -823f, 379f},
+                new float[]{-1636f, 1816f, 1916f, -1197f, -1301f, -1793f, -567f, 1292f, -92f, 721f, -1602f, -1976f, -838f, -288f, 897f, -799f, 376f},
+                new float[]{-1664f, 1859f, 1977f, -1458f, -1291f, -1799f, -792f, 1404f, -86f, 730f, -1800f, -1977f, -833f, -275f, 896f, 1234f, 132f},
+                new float[]{-1659f, 1871f, 1924f, -1443f, -1296f, -1791f, -536f, 1404f, -98f, 743f, -1797f, -1966f, -847f, -280f, 884f, 1234f, 119f},
+                new float[]{-1629f, 1802f, 1923f, -1200f, -1301f, -1800f, -548f, 1274f, -92f, 729f, -1858f, -1981f, -856f, -349f, 897f, 1495f, 381f},
+                new float[]{-1628f, 1805f, 1934f, -1200f, -1288f, -1793f, -578f, 1273f, -90f, 725f, -1613f, -1967f, -828f, -279f, 888f, -809f, 387f},
+                new float[]{-1640f, 1815f, 1920f, -1196f, -1303f, -1795f, -570f, 1294f, -103f, 727f, -1601f, -1959f, -844f, -297f, 887f, -812f, 372f},
+                new float[]{-1658f, 1859f, 1987f, -1444f, -1302f, -1805f, -800f, 1411f, -85f, 742f, -1797f, -1971f, -841f, -283f, 902f, 1242f, 124f},
+                new float[]{-1663f, 1860f, 1929f, -1446f, -1297f, -1796f, -531f, 1401f, -89f, 728f, -1796f, -1969f, -842f, -280f, 892f, 1242f, 120f},
+                new float[]{-1618f, 1806f, 1924f, -1198f, -1283f, -1794f, -543f, 1284f, -87f, 734f, -1865f, -1982f, -856f, -342f, 896f, 1493f, 375f},
+                new float[]{-1620f, 1797f, 1929f, -1198f, -1295f, -1800f, -572f, 1275f, -92f, 725f, -1600f, -1972f, -838f, -275f, 897f, -819f, 380f},
+                new float[]{-1627f, 1814f, 1917f, -1195f, -1309f, -1797f, -572f, 1291f, -97f, 733f, -1602f, -1972f, -833f, -284f, 890f, -811f, 362f},
+                new float[]{-1654f, 1862f, 1993f, -1439f, -1294f, -1791f, -804f, 1401f, -94f, 729f, -1802f, -1980f, -838f, -278f, 900f, 1236f, 115f},
+                new float[]{-1656f, 1860f, 1917f, -1455f, -1287f, -1799f, -546f, 1405f, -98f, 741f, -1797f, -1978f, -835f, -283f, 883f, 1244f, 120f},
+                new float[]{-1624f, 1813f, 1928f, -1187f, -1296f, -1804f, -538f, 1279f, -84f, 728f, -1853f, -1972f, -855f, -351f, 900f, 1483f, 376f},
+                new float[]{-1625f, 1809f, 1929f, -1186f, -1289f, -1797f, -572f, 1283f, -90f, 724f, -1597f, -1971f, -843f, -276f, 896f, -807f, 379f},
+                new float[]{-1629f, 1812f, 1923f, -1189f, -1297f, -1793f, -577f, 1278f, -102f, 726f, -1605f, -1957f, -840f, -287f, 884f, -803f, 368f}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
@@ -190,7 +197,13 @@ public class GeneticAlgorithmAdjuster {
             boolean[] secondBitString = encode(states[i+1]);
             int position = rand.nextInt(firstBitString.length);
             int position2 = rand.nextInt(firstBitString.length);
-            for (int j = 0; j < position; ++j) {
+            if (position2 < position) {
+                int temp = position2;
+                position2 = position;
+                position = temp;
+            }
+            
+            for (int j = position; j < position2; ++j) {
                 boolean temp = firstBitString[j];
                 firstBitString[j] = secondBitString[j];
                 secondBitString[j] = temp;
@@ -201,15 +214,22 @@ public class GeneticAlgorithmAdjuster {
         }
     }
     
+    protected int mutationBits() {
+        return MUTATION_BITS;
+    }
+    
     protected void mutation() {
+        int mutationBits = mutationBits();
         for (int i = 0; i < states.length; ++i) {
             boolean[] bitString = encode(states[i]);
-            for (int j=0; j<MUTATION_BITS; ++j) {
-                int position = rand.nextInt(bitString.length);
+            for (int j=0; j<mutationBits; ++j) {
+                int mutateLength = rand.nextInt(MUTATE_LENGTH_MAX);
+                int position = rand.nextInt(bitString.length-mutateLength);
                 double prob = rand.nextDouble();
                 if (prob < mutationProbability) {
                     //System.out.println("MUTATION!");
-                    bitString[position] ^= true;
+                    for (int k=0; k<mutateLength; ++k)
+                        bitString[position+k] ^= true;
                 }
             }
             states[i] = decode(bitString);

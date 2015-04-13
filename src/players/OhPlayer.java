@@ -99,29 +99,8 @@ public class OhPlayer extends WeightedHeuristicPlayer {
      */
     protected void initialiseWeights() {
         weights = new float[features.length];
-        //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -5, -30, 0};
-        //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -15, -5, -10};
-        //weights = new float[]{-99999.0f, 0, 0, 0, 0, -50, 0, -30, -50, -50};
-
-        //weights = new float[]{-99999f, -100.0f, -2.0f, -0.01f, 5.0f, -500.0f, -40.0f, -70.0f, -3.0f};
-        //weights = new float[]{-99999f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -3.0f}; // Very good weights.
-        
-
-        //weights = new float[]{-99999.0f, -10.0f, -500.0f, -500.0f, 0.01f, -70.0f, -2.0f, -40.0f, 0.02f, -70.0f};
-        //weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, 0f, -3.0f};
-        //weights = new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f};
-
-        //weights = new float[]{-9999999f, -40f, -5f, -100f, -100f, -40f, 0.1f, 100f, -0.1f, -0.1f,0,0,0};
-        //weights = new float[]{-9999999f, -1000f, -6000f, 90f, -1500f, -6000f, -200f, -200f, -300f, -4f, -10f, -1500f, -90f, -0.3f, -90f, -0.3f, -300f, -6000f};
-
-
-        //weights = new float[]{-99999, -100, -2, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, -0.1f};
-        
-        //weights = new float[]{-8000.0f, 0.01f, -3.0f, -0.05f, -0.05f, -100.0f, -20.0f, -70.0f, -20.0f};
-        
-        //weights = new float[]{-99999.0f, -0.0f, -72.27131f, -0.39263827f, -18.150364f, 1.9908575f, -4.523054f, 2.6717715f}; // <-- good weights.
-        //weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, -1f, -1f}; // <-- good weights.
-        //weights = new float[]{-99999.0f, -1, -4, -95};
+        //weights = new float[]{-9999999f, -1912f, 1894f, 1707f, -1357f, -1070f, -1793f, -703f, 1323f, -86f, 305f, -1619f, -1976f, -806f, 542f, 927f, -1995f, 643f};
+        weights = new float[]{-9999999f, -1093f, 469f, -1202f, -603f, -1958f, -1535f, -1556f, 378f, 31f, -1562f, 26f, -1844f, -118f, 1006f, -655f, -1882f, 490f};
     }
     
     /**
@@ -155,7 +134,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 1; // 0 to watch, 1 to learn.
+        int choice = -1; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new OhPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
@@ -174,7 +153,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
             case 0:
                 watch(p);break;
             case 1:
-                GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmSD(p, p.dim(), 20);
+                GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmSD(p, p.dim(), 18);
                 adjuster.fixValue(0, -9999999f);
                 learn(adjuster);break;
                 //learn(p, adjuster);break;
