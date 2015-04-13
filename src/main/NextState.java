@@ -10,6 +10,7 @@ public class NextState {
     public final int cleared;
     public final int turn;
     public final int rowsCleared;
+    public final int[][] fieldBeforeCleared;
 
     public static final int[][][] legalMoves = generateLegalMoves();
     public static final int[] minimaxPieceOrdering = generateMinimaxPieceOrdering();
@@ -53,13 +54,14 @@ public class NextState {
     /**
      * (Shallow) Copy constructor
      */
-    private NextState(int[][] field, int[] top, boolean lost, int cleared, int turn, int rowsCleared) {
+    private NextState(int[][] field, int[] top, boolean lost, int cleared, int turn, int rowsCleared, int[][] beforeCleared) {
         this.field = field;
         this.top = top;
         this.lost = lost;
         this.cleared = cleared;
         this.turn = turn;
         this.rowsCleared = rowsCleared;
+        this.fieldBeforeCleared = beforeCleared;
     }
 
     /**
@@ -118,7 +120,7 @@ public class NextState {
         //check if game ended
         if(height+pHeight[nextPiece][orient] >= ROWS) {
             lost = true;
-            return new NextState(field, top, lost, cleared, turn, 0);
+            return new NextState(field, top, lost, cleared, turn, 0, field);
         }
 
         
@@ -128,6 +130,13 @@ public class NextState {
             //from bottom to top of brick
             for(int h = height+pBottom[nextPiece][orient][i]; h < height+pTop[nextPiece][orient][i]; h++) {
                 field[h][i+slot] = turn;
+            }
+        }
+        
+        int[][] fieldBeforeCleared = new int[State.ROWS][State.COLS];
+        for (int i = 0; i < State.ROWS; ++i) {
+            for (int j = 0; j < State.COLS; ++j) {
+                fieldBeforeCleared[i][j] = field[i][j];
             }
         }
         
@@ -164,7 +173,7 @@ public class NextState {
             }
         }
     
-        return new NextState(field, top, lost, cleared, turn, rowsCleared);
+        return new NextState(field, top, lost, cleared, turn, rowsCleared, fieldBeforeCleared);
     }
     
 }

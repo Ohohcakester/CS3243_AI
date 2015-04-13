@@ -155,4 +155,43 @@ public class FeatureFunctions2 {
         }
         return surfaceSmoothness;
     }
+    
+    /**
+     * for every well of depth w, sum 1 + 2 + 3 + ... + w
+     */
+    public static float sumSquareWells(NextState nextState) {
+        int sum = 0;
+        int top[] = nextState.top;
+        int field[][] = nextState.field;
+        for (int j = 0; j < State.COLS; ++j) {
+            int wellDepth = 0;
+            for (int i = 0; i < top[j]; ++i) {
+                if (field[i][j] == 0) {
+                    ++wellDepth;
+                    sum += wellDepth;
+                } else {
+                    wellDepth = 0;
+                }
+            }
+        }
+        return sum;
+    }
+    
+    /**
+     * compute the lowest and highest position of new piece. compute the total
+     */
+    public static float totalHeightNewPiece(NextState nextState) {
+        int fieldBeforeCleared[][] = nextState.fieldBeforeCleared;
+        int minHeightPiece = Integer.MAX_VALUE;
+        int maxHeightPiece = Integer.MIN_VALUE;
+        for (int i = 0; i < State.ROWS; ++i) {
+            for (int j = 0; j < State.COLS; ++j) {
+                if (fieldBeforeCleared[i][j] == nextState.turn) {
+                    minHeightPiece = Math.min(minHeightPiece,i);
+                    maxHeightPiece = Math.max(maxHeightPiece,i);
+                }
+            }
+        }
+        return maxHeightPiece + minHeightPiece;
+    }
 }
