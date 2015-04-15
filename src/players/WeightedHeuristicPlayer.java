@@ -417,24 +417,29 @@ public class WeightedHeuristicPlayer {
      * watch, but without UI. much faster
      */
     public static void checkScore(WeightedHeuristicPlayer p) {
-        final int REPORT_INTERVAL = 1000;
+        final int REPORT_INTERVAL = 3000;
         State s = new State();
         //new TFrame(s);
 
         int counter = REPORT_INTERVAL;
         while(!s.hasLost()) {
             s.makeMove(p.findBest(s,s.legalMoves()));
-            try {
-                Thread.sleep(0);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             
             counter--;
             if (counter <= 0) {
                 System.out.println("CURRENT SCORE: " + s.getRowsCleared());
                 counter = REPORT_INTERVAL;
             }
+            
+            /*int[] top = s.getTop();
+            boolean heightZero = true;
+            for (int t : top) {
+                if (t != 0) {
+                    heightZero = false;
+                    break;
+                }
+            }
+            if (heightZero) System.out.println("ALL CLEAR!");*/
         }
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
     }
