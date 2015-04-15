@@ -12,7 +12,7 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     private static final float HARD_BIAS = 0.15f; // HARD_BIAS of 1 is 100% hardest sequence. HARD_BIAS of 0 is even distribution.
     
     private static final int PARTIAL_TRIES = 50;
-    private static final int REAL_TRIES = 4;
+    private static final int REAL_TRIES = 8;
     private int selectionIteration;
     private int realInterval = 1;
     

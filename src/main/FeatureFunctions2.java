@@ -196,4 +196,19 @@ public class FeatureFunctions2 {
         }
         return maxHeightPiece + minHeightPiece;
     }
+    
+    /**
+     * return the landing height of the new piece
+     */
+    public static float landingHeight(NextState nextState) {
+    	int fieldBeforeCleared[][] = nextState.fieldBeforeCleared;
+    	for (int i = 0; i < State.ROWS; ++i) {
+    		for (int j = 0; j < State.COLS; ++j) {
+    			if (fieldBeforeCleared[i][j] == nextState.turn) {
+    				return i;
+    			}
+    		}
+    	}
+    	return 0;
+    }
 }

@@ -310,13 +310,16 @@ public class WeightedHeuristicPlayer {
         State s = new State();
         while(!s.hasLost()) {
             if (maxHeight(s) == 0) {
+                //System.out.println("CLEAR SCREEN!");
                 pieces.clear();
             }
+            System.out.print(" " + s.getNextPiece());
             pieces.add(s.getNextPiece());
             s.makeMove(p.findBest(s,s.legalMoves()));
         }
         
         if (store == null) {
+            System.out.println();
             System.out.println("PIECES = " + pieces.toString());
             //System.out.println(pieces.size() + " | " + count);
             System.out.println("You have completed "+s.getRowsCleared()+" rows.");
@@ -391,11 +394,12 @@ public class WeightedHeuristicPlayer {
 
         int counter = REPORT_INTERVAL;
         while(!s.hasLost()) {
+            System.out.print(" " + s.getNextPiece());
             s.makeMove(p.findBest(s,s.legalMoves()));
             s.draw();
             s.drawNext(0,0);
             try {
-                Thread.sleep(0);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -413,24 +417,29 @@ public class WeightedHeuristicPlayer {
      * watch, but without UI. much faster
      */
     public static void checkScore(WeightedHeuristicPlayer p) {
-        final int REPORT_INTERVAL = 1000;
+        final int REPORT_INTERVAL = 3000;
         State s = new State();
         //new TFrame(s);
 
         int counter = REPORT_INTERVAL;
         while(!s.hasLost()) {
             s.makeMove(p.findBest(s,s.legalMoves()));
-            try {
-                Thread.sleep(0);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             
             counter--;
             if (counter <= 0) {
                 System.out.println("CURRENT SCORE: " + s.getRowsCleared());
                 counter = REPORT_INTERVAL;
             }
+            
+            /*int[] top = s.getTop();
+            boolean heightZero = true;
+            for (int t : top) {
+                if (t != 0) {
+                    heightZero = false;
+                    break;
+                }
+            }
+            if (heightZero) System.out.println("ALL CLEAR!");*/
         }
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
     }
