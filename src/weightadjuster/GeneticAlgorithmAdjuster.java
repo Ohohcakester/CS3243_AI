@@ -77,6 +77,21 @@ public class GeneticAlgorithmAdjuster {
         return realWeights;
     }
     
+    protected float[] generateState(float[] realWeights) {
+        float[] state = new float[dim];
+        int index = 0;
+        for (int i = 0; i < realDim; ++i) {
+            if (!fixedValue.containsKey(i)) {
+                state[index++] = realWeights[i];
+            }
+        }
+        return realWeights;
+    }
+    
+    protected float[] randomStateFromHeap() {
+        return generateState(bestHeap.getRandomWeights());
+    }
+    
     protected float[] generateRandomState(int length) {
         boolean[] encoded = new boolean[length*WORD_SIZE];
         for (int i=0; i<encoded.length; ++i) {
@@ -168,7 +183,7 @@ public class GeneticAlgorithmAdjuster {
             //System.out.println(i + " | " + ranked[i] + " | " + scores[ranked[i]] + " | " + probability[i]);
         }
         //states[ranked[ranked.length-1]] = generateRandomState(states[0].length);
-        states[ranked[ranked.length-1]] = bestHeap.getRandomWeights();
+        states[ranked[ranked.length-1]] = randomStateFromHeap();
         
         
         

@@ -116,7 +116,7 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
             //System.out.println(i + " | " + ranked[i] + " | " + scores[ranked[i]] + " | " + probability[i]);
         }
         //states[ranked[ranked.length-1]] = generateRandomState(states[0].length);
-        states[ranked[ranked.length-1]] = bestHeap.getRandomWeights();
+        states[ranked[ranked.length-1]] = randomStateFromHeap();
         
         
         
