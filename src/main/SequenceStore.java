@@ -23,7 +23,7 @@ public class SequenceStore {
     
     public static final String SEPARATOR_ROW = "\n";
     
-    public static final String PATH = "SequenceData\\";
+    public static final String PATH = "SequenceData/";
     public static final String FILE_MAIN = "main.txt";
     public static final String FILE_MAIN_TRIM = "main_trim.txt";
     public static final String FILE_AUX_PREFIX = "aux";
