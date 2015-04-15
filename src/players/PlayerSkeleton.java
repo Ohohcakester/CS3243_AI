@@ -14,13 +14,13 @@ public class PlayerSkeleton {
     public static void main(String[] args) {
         State s = new State();
         new TFrame(s);
-        PlayerSkeleton p = new PlayerSkeleton();
+        WeightedHeuristicPlayer p = new OhPlayer();
         while(!s.hasLost()) {
-            s.makeMove(0, p.pickMove(s,s.legalMoves()));
+            s.makeMove(p.findBest(s,s.legalMoves()));
             s.draw();
             s.drawNext(0,0);
             try {
-                Thread.sleep(300);
+                Thread.sleep(0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

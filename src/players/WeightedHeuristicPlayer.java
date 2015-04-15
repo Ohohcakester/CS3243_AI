@@ -310,13 +310,16 @@ public class WeightedHeuristicPlayer {
         State s = new State();
         while(!s.hasLost()) {
             if (maxHeight(s) == 0) {
+                //System.out.println("CLEAR SCREEN!");
                 pieces.clear();
             }
+            System.out.print(" " + s.getNextPiece());
             pieces.add(s.getNextPiece());
             s.makeMove(p.findBest(s,s.legalMoves()));
         }
         
         if (store == null) {
+            System.out.println();
             System.out.println("PIECES = " + pieces.toString());
             //System.out.println(pieces.size() + " | " + count);
             System.out.println("You have completed "+s.getRowsCleared()+" rows.");
@@ -391,11 +394,12 @@ public class WeightedHeuristicPlayer {
 
         int counter = REPORT_INTERVAL;
         while(!s.hasLost()) {
+            System.out.print(" " + s.getNextPiece());
             s.makeMove(p.findBest(s,s.legalMoves()));
             s.draw();
             s.drawNext(0,0);
             try {
-                Thread.sleep(0);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
