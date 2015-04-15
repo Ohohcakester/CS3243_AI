@@ -212,8 +212,9 @@ public class GeneticAlgorithmAdjuster {
         }
     }
     
-    protected void maybeReset(int iteration) {
-        if (bestHeap.consecutiveRejects <= STALE_HEAP_THRESHOLD) return;
+    protected boolean maybeReset(int iteration) {
+        if (bestHeap.consecutiveRejects <= STALE_HEAP_THRESHOLD) return false;
+        
         String message = "Best scores heap is stale. " + bestHeap.consecutiveRejects +
                 " consecutive rejects. RESETTING STATES AND SAVING...";
         System.out.print(message);
@@ -221,6 +222,7 @@ public class GeneticAlgorithmAdjuster {
         ResultDump.saveResults(message);
         generateTotallyRandomStates();
         bestHeap = new WeightHeap(bestHeap.size());
+        return true;
     }
     
     

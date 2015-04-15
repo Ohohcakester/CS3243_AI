@@ -185,6 +185,7 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
         printed = false;
         readyToPrint = false;
         
+        int resetCount = 0;
         int iteration = Integer.MAX_VALUE;
         for (int i = 0; i < iteration; ++i) {
             if ((i+1)%PRINT_INTERVAL == 0) readyToPrint = true;
@@ -194,8 +195,9 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
             crossover();
             mutation();
             
-            maybeReset(i);
-            System.out.println("Staleness: " + bestHeap.consecutiveRejects + " / " + STALE_HEAP_THRESHOLD);
+            boolean reset = maybeReset(i);
+            if(reset) {i = 0; resetCount++;}
+            System.out.println("Resets: " + resetCount + " | Staleness: " + bestHeap.consecutiveRejects + " / " + STALE_HEAP_THRESHOLD);
             
             if (printed) {
                 store.saveSequences();
