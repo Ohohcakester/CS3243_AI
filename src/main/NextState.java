@@ -133,12 +133,7 @@ public class NextState {
             }
         }
         
-        int[][] fieldBeforeCleared = new int[State.ROWS][State.COLS];
-        for (int i = 0; i < State.ROWS; ++i) {
-            for (int j = 0; j < State.COLS; ++j) {
-                fieldBeforeCleared[i][j] = field[i][j];
-            }
-        }
+        int[][] fieldBeforeCleared = null;
         
         //adjust top
         for(int c = 0; c < pWidth[nextPiece][orient]; c++) {
@@ -157,6 +152,13 @@ public class NextState {
             }
             //if the row was full - remove it and slide above stuff down
             if(full) {
+                if (fieldBeforeCleared == null) { // make a copy of field.
+                    fieldBeforeCleared = new int[ROWS][COLS];
+                    for (int y=0; y<field.length; ++y) {
+                        fieldBeforeCleared[y] = Arrays.copyOf(field[y], field[y].length);
+                    }
+                }
+                
                 rowsCleared++;
                 cleared++;
                 //for each column
@@ -171,6 +173,10 @@ public class NextState {
                     while(top[c]>=1 && field[top[c]-1][c]==0)   top[c]--;
                 }
             }
+        }
+        
+        if (fieldBeforeCleared == null) {
+            fieldBeforeCleared = field;
         }
     
         return new NextState(field, top, lost, cleared, turn, rowsCleared, fieldBeforeCleared);

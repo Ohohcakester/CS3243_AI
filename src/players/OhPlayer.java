@@ -12,10 +12,10 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
     protected void configure() {
         features = new Feature[]{
-                /*(n)->FeatureFunctions.lost(n),
+                (n)->FeatureFunctions.lost(n),
                 (n)->FeatureFunctions.bumpiness(n),
                 (n)->FeatureFunctions.sumHeight(n), //
-                (n)->FeatureFunctions.numRowsCleared(n), //
+                // (n)->FeatureFunctions.numRowsCleared(n), //
                 //(n)->FeatureFunctions.maxHeightDifference(n), //
                 (n)->FeatureFunctions.numHoles(n),
                 (n)->FeatureFunctions.sumHoleDistanceFromTop(n),
@@ -28,7 +28,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 //(n)->FeatureFunctions.numFilledCells(n), //
                 //(n)->FeatureFunctions.numRowsWithMoreThanOneEmptyCell(n), ////
                 //(n)->FeatureFunctions.holeCoverEmptyCells(n), ////
-                //(n)->FeatureFunctions2.weightedFilledCells(n), //////
+                (n)->FeatureFunctions2.weightedFilledCells(n), //////
                 (n)->FeatureFunctions2.deepestOneHole(n),
                 (n)->FeatureFunctions2.sumOfAllHoles(n),
                 (n)->FeatureFunctions2.horizontalRoughness(n),
@@ -36,13 +36,15 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 (n)->FeatureFunctions2.wellCount(n),
                 (n)->FeatureFunctions2.weightedEmptyCells(n),
                 (n)->FeatureFunctions2.highestHole(n),
-                (n)->FeatureFunctions2.surfaceSmoothness(n)*/
-                
+                (n)->FeatureFunctions2.surfaceSmoothness(n),
+                (n)->FeatureFunctions2.totalHeightNewPiece(n),
+                (n)->FeatureFunctions2.sumSquareWells(n)
                 
 
 
-                (n)->FeatureFunctions.lost(n),
+                /*(n)->FeatureFunctions.lost(n),
                 (n)->FeatureFunctions.numRowsCleared(n),
+                (n)->FeatureFunctions2.totalHeightNewPiece(n),
                 (n)->FeatureFunctions.sumHeight(n),
                 (n)->FeatureFunctions.sumHoleDistanceFromTop(n),
                 (n)->FeatureFunctions.holeAndPitColumns(n),
@@ -50,15 +52,13 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 (n)->FeatureFunctions2.deepestOneHole(n),
                 (n)->FeatureFunctions2.highestHole(n),
                 (n)->FeatureFunctions2.wellCount(n),
+                (n)->FeatureFunctions2.sumSquareWells(n),
                 (n)->FeatureFunctions.numHoles(n),
                 (n)->FeatureFunctions2.weightedEmptyCells(n),
                 (n)->FeatureFunctions2.horizontalRoughness(n),
                 (n)->FeatureFunctions2.verticalRoughness(n),
                 (n)->FeatureFunctions.bumpiness(n),
-                (n)->FeatureFunctions.topPerimeter(n),
-                
-                
-                
+                (n)->FeatureFunctions.topPerimeter(n)*/
                 
         };
     }
@@ -107,8 +107,9 @@ public class OhPlayer extends WeightedHeuristicPlayer {
      */
     protected void initialiseWeights() {
         weights = new float[features.length];
-        //weights = new float[]{-9999999f, -1912f, 1894f, 1707f, -1357f, -1070f, -1793f, -703f, 1323f, -86f, 305f, -1619f, -1976f, -806f, 542f, 927f, -1995f, 643f};
+        weights = new float[]{-9999999f, -1912f, 1894f, 1707f, -1357f, -1070f, -1793f, -703f, 1323f, -86f, 305f, -1619f, -1976f, -806f, 542f, 927f, -1995f, 643f, -10f, -10f};
         //weights = new float[]{-9999999f, -1093f, 469f, -1202f, -603f, -1958f, -1535f, -1556f, 378f, 31f, -1562f, 26f, -1844f, -118f, 1006f, -655f, -1882f, 490f};
+        //weights = new float[]{-9999999f, -1920f, 1901f, 1697f, -1360f, -1071f, -1793f, -699f, 1330f, -78f, 305f, -1625f, -1981f, -806f, 542f, 924f, -1987f, 652f, -105f, -109f};
     }
     
     /**
@@ -161,7 +162,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
             case 0:
                 watch(p);break;
             case 1:
-                GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmSD(p, p.dim(), 22);
+                GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmSD(p, p.dim(), 20);
                 adjuster.fixValue(0, -9999999f);
                 learn(adjuster);break;
                 //learn(p, adjuster);break;

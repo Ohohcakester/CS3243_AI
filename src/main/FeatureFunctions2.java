@@ -1,5 +1,7 @@
 package main;
 
+import java.util.Arrays;
+
 public class FeatureFunctions2 {
     /**
      * Return weighted filled cells. cells at row-i costs i.
