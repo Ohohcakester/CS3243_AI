@@ -31,7 +31,7 @@ public class GeneticAlgorithmAdjuster {
     //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
     //protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 30f, 60f, 90f, 140, 200, 300, 500, 1000, 1500, 6000};
     //protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 30f, 60f, 90f, 140, 200, 250,300,350,400,500,700,850, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 4000, 5000, 6000};
-    protected static final int WORD_SIZE = 12;
+    protected static final int WORD_SIZE = 14;
     protected static final int HALF_TABLE_SIZE = pow2(WORD_SIZE-1);
     private static final int MUTATE_LENGTH_MAX = 4;
     
