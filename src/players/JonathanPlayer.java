@@ -4,7 +4,7 @@ import main.FeatureFunctions;
 import main.FeatureFunctions2;
 import main.NextState;
 import main.State;
-import weightadjuster.GeneticAlgorithmAdjuster;
+import weightadjuster.GeneticAlgorithmSD;
 
 public class JonathanPlayer extends WeightedHeuristicPlayer {
 
@@ -26,6 +26,9 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
                         (n)->FeatureFunctions2.weightedEmptyCells(n),
                         (n)->FeatureFunctions2.highestHole(n),
                         (n)->FeatureFunctions2.surfaceSmoothness(n),
+                        (n)->FeatureFunctions2.sumSquareWells(n),
+                        (n)->FeatureFunctions2.totalHeightNewPiece(n),
+                        (n)->FeatureFunctions2.landingHeight(n),
                         
                         (n)->FeatureFunctions.bumpiness(n),
                         (n)->FeatureFunctions.topPerimeter(n),
@@ -81,7 +84,7 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
 
         WeightedHeuristicPlayer p = new JonathanPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
-        GeneticAlgorithmAdjuster adjuster = new GeneticAlgorithmAdjuster(p, p.dim(), 20);
+        GeneticAlgorithmSD adjuster = new GeneticAlgorithmSD(p, p.dim(), 20);
         adjuster.fixValue(0, -9999999f);
         /*adjuster.fixSign(0,-1);
         adjuster.fixSign(1,-1);

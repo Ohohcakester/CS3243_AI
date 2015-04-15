@@ -1,6 +1,6 @@
 package main;
 
-import java.util.Arrays;
+import java.util.Random;
 
 public class FeatureFunctions2 {
     /**
@@ -184,6 +184,9 @@ public class FeatureFunctions2 {
      */
     public static float totalHeightNewPiece(NextState nextState) {
         int fieldBeforeCleared[][] = nextState.fieldBeforeCleared;
+        if (nextState.lost) {
+        	return Integer.MAX_VALUE;
+        }
         int minHeightPiece = Integer.MAX_VALUE;
         int maxHeightPiece = Integer.MIN_VALUE;
         for (int i = 0; i < State.ROWS; ++i) {
@@ -202,6 +205,9 @@ public class FeatureFunctions2 {
      */
     public static float landingHeight(NextState nextState) {
     	int fieldBeforeCleared[][] = nextState.fieldBeforeCleared;
+    	if (nextState.lost) {
+        	return Integer.MAX_VALUE;
+        }
     	for (int i = 0; i < State.ROWS; ++i) {
     		for (int j = 0; j < State.COLS; ++j) {
     			if (fieldBeforeCleared[i][j] == nextState.turn) {
