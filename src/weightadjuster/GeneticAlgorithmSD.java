@@ -115,7 +115,8 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
             scores[ranked[i]] = probability[i];
             //System.out.println(i + " | " + ranked[i] + " | " + scores[ranked[i]] + " | " + probability[i]);
         }
-        states[ranked[ranked.length-1]] = generateRandomState(states[0].length);
+        //states[ranked[ranked.length-1]] = generateRandomState(states[0].length);
+        states[ranked[ranked.length-1]] = bestHeap.getRandomWeights();
         
         
         
@@ -193,6 +194,9 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
             crossover();
             mutation();
             
+            maybeReset(i);
+            System.out.println("Staleness: " + bestHeap.consecutiveRejects + " / " + STALE_HEAP_THRESHOLD);
+            
             if (printed) {
                 store.saveSequences();
                 printed = false;
@@ -213,11 +217,13 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
             }
         }
 
-        if (result > highScore) {
+        bestHeap.tryInsert(result, realWeights);
+        /*if (result > highScore) {
             highScoreWeights = Arrays.copyOf(realWeights, realWeights.length);
             highScore = result;
-        }
+        }*/
     }
     
     
 }
+

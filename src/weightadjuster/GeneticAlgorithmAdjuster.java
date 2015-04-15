@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
+import main.ResultDump;
 import players.WeightedHeuristicPlayer;
 
 public class GeneticAlgorithmAdjuster {
@@ -25,8 +26,10 @@ public class GeneticAlgorithmAdjuster {
     //protected double mutationProbability = 0.4;
     protected HashMap<Integer,Float> fixedValue = new HashMap<>(); 
     
-    protected float[] highScoreWeights;
-    protected float highScore;
+    //protected float[] highScoreWeights;
+    //protected float highScore;
+    protected int STALE_HEAP_THRESHOLD = 200; // terminate after 10 iterations of no improvement
+    protected WeightHeap bestHeap = new WeightHeap(10);
     
     //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
     //protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 30f, 60f, 90f, 140, 200, 300, 500, 1000, 1500, 6000};
@@ -164,7 +167,8 @@ public class GeneticAlgorithmAdjuster {
             scores[ranked[i]] = probability[i];
             //System.out.println(i + " | " + ranked[i] + " | " + scores[ranked[i]] + " | " + probability[i]);
         }
-        states[ranked[ranked.length-1]] = generateRandomState(states[0].length);
+        //states[ranked[ranked.length-1]] = generateRandomState(states[0].length);
+        states[ranked[ranked.length-1]] = bestHeap.getRandomWeights();
         
         
         
@@ -207,6 +211,18 @@ public class GeneticAlgorithmAdjuster {
             states[i+1] = decode(secondBitString);
         }
     }
+    
+    protected void maybeReset(int iteration) {
+        if (bestHeap.consecutiveRejects <= STALE_HEAP_THRESHOLD) return;
+        String message = "Best scores heap is stale. " + bestHeap.consecutiveRejects +
+                " consecutive rejects. RESETTING STATES AND SAVING...";
+        System.out.print(message);
+        message += "\nTerminated at iteration " + iteration + ".\nScores:\n" + bestHeap.toString() + "\n";
+        ResultDump.saveResults(message);
+        generateTotallyRandomStates();
+        bestHeap = new WeightHeap(bestHeap.size());
+    }
+    
     
     protected int mutationBits() {
         return MUTATION_BITS;
@@ -339,10 +355,11 @@ public class GeneticAlgorithmAdjuster {
                     
                     total += result;
                     
-                    if (result > highScore) {
+                    bestHeap.tryInsert(result, realWeights);
+                    /*if (result > highScore) {
                         highScoreWeights = Arrays.copyOf(realWeights, realWeights.length);
                         highScore = result;
-                    }
+                    }*/
                     
                 }
                 printTotalAndHighScore(total);
@@ -352,7 +369,8 @@ public class GeneticAlgorithmAdjuster {
 
     protected void printTotalAndHighScore(float total) {
         System.out.println("Average Score: " + (total/stateNumber));
-        System.out.println("Hi-Score: " + highScore + " | " + Arrays.toString(highScoreWeights));
+        System.out.println(bestHeap);
+        //System.out.println("Hi-Score: " + highScore + " | " + Arrays.toString(highScoreWeights));
     }
 
     protected float printAndReturnResult(int j, float[] realWeights) {
@@ -375,5 +393,115 @@ public class GeneticAlgorithmAdjuster {
         }
     }
     
+}
+
+
+class WeightHeap {
+    private float[] scores;
+    private float[][] weights;
+    private int size;
+    private static Random rand = new Random();
+    public int consecutiveRejects;
+
+    public WeightHeap(int size) {
+        this.size = size;
+        weights = new float[size][];
+        scores = new float[size];
+        consecutiveRejects = 0;
+    }
     
+    public void tryInsert(float score, float[] weights) {
+        if (score < scores[0]) {
+            //System.out.println(consecutiveRejects);
+            consecutiveRejects++;
+            return;
+        }
+        
+        consecutiveRejects = 0;
+        this.scores[0] = score;
+        this.weights[0] = Arrays.copyOf(weights, weights.length);
+        bubbleDown();
+    }
+    
+    private void bubbleDown() {
+        int current = 0;
+        while(true) {
+            int left = 2*current+1;
+            if (left >= size)
+                break;
+            int target = left;
+            int right = 2*current+2;
+            if (right < size)
+                target = minValue(left, right);
+            if (minValue(current, target) == current) {
+                break; // stop bubbling down.
+            } else {
+                // swap weights
+                float[] tempF = weights[current];
+                weights[current] = weights[target];
+                weights[target] = tempF;
+                // swap scores
+                float tempI = scores[current];
+                scores[current] = scores[target];
+                scores[target] = tempI;
+                
+                current = target;
+            }
+        }
+    }
+    
+    private int minValue(int i1, int i2) {
+        if (scores[i1] <= scores[i2])
+            return i1;
+        return i2;
+    }
+    
+    public int size() {
+        return size;
+    }
+    
+    @Override
+    public String toString() {
+        String sep = "";
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i<size; ++i) {
+            String scoreString = scores[i] + " - ";
+            sb.append(sep);
+            sb.append(scoreString);
+            for (int j=scoreString.length(); j<12; ++j) sb.append(" ");
+            sb.append(Arrays.toString(weights[i]));
+
+            sep = "\n";
+        }
+        
+        return sb.toString();
+    }
+    
+    
+    public float[] getRandomWeights() {
+        int nWeights = 0;
+        for (int i=0; i<weights.length; ++i) {
+            if (weights[i] != null) nWeights++;
+        }
+        if (nWeights == 0) throw new UnsupportedOperationException("Heap empty???");
+        
+        int count = rand.nextInt(nWeights);
+        for (int i=0; i<weights.length; ++i) {
+            if (weights[i] != null) {
+                if (count > 0) {
+                    count--;
+                } else{
+                    return Arrays.copyOf(weights[i], weights[i].length);
+                }
+            }
+        }
+        throw new UnsupportedOperationException("Not supposed to reach here.");
+    }
+    
+    private float[] popMin() {
+        float[] weight = weights[0];
+        scores[0] = Integer.MAX_VALUE;
+        bubbleDown();
+        return weight;
+    }
 }
