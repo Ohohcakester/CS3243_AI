@@ -15,7 +15,7 @@ public class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 18;
+    protected final int INITIAL_GOOD_STATES = 0;
     protected int PRINT_INTERVAL = 10;
     
     protected float total = 0;
@@ -33,7 +33,7 @@ public class GeneticAlgorithmAdjuster {
     //protected static float[] conversionTable = new float[]{0.01f, 0.05f, 0.3f, 1.5f, 4f, 10f, 30f, 60f, 90f, 140, 200, 250,300,350,400,500,700,850, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 4000, 5000, 6000};
     protected static final int WORD_SIZE = 12;
     protected static final int HALF_TABLE_SIZE = pow2(WORD_SIZE-1);
-    private static final int MUTATE_LENGTH_MAX = 8;
+    private static final int MUTATE_LENGTH_MAX = 4;
     
     private static int pow2(int n) {
         int v = 1;
@@ -103,26 +103,20 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-                new float[]{-1647f, 1870f, 1992f, -1439f, -1302f, -1792f, -790f, 1419f, -95f, 734f, -1794f, -1967f, -845f, -273f, 902f, 1233f, 132f},
-                new float[]{-1653f, 1868f, 1918f, -1457f, -1283f, -1791f, -541f, 1414f, -85f, 736f, -1798f, -1966f, -837f, -273f, 881f, 1231f, 117f},
-                new float[]{-1626f, 1800f, 1921f, -1202f, -1283f, -1796f, -537f, 1291f, -85f, 729f, -1857f, -1966f, -846f, -341f, 899f, 1492f, 386f},
-                new float[]{-1613f, 1814f, 1917f, -1188f, -1294f, -1806f, -566f, 1283f, -88f, 739f, -1602f, -1971f, -844f, -274f, 898f, -823f, 379f},
-                new float[]{-1636f, 1816f, 1916f, -1197f, -1301f, -1793f, -567f, 1292f, -92f, 721f, -1602f, -1976f, -838f, -288f, 897f, -799f, 376f},
-                new float[]{-1664f, 1859f, 1977f, -1458f, -1291f, -1799f, -792f, 1404f, -86f, 730f, -1800f, -1977f, -833f, -275f, 896f, 1234f, 132f},
-                new float[]{-1659f, 1871f, 1924f, -1443f, -1296f, -1791f, -536f, 1404f, -98f, 743f, -1797f, -1966f, -847f, -280f, 884f, 1234f, 119f},
-                new float[]{-1629f, 1802f, 1923f, -1200f, -1301f, -1800f, -548f, 1274f, -92f, 729f, -1858f, -1981f, -856f, -349f, 897f, 1495f, 381f},
-                new float[]{-1628f, 1805f, 1934f, -1200f, -1288f, -1793f, -578f, 1273f, -90f, 725f, -1613f, -1967f, -828f, -279f, 888f, -809f, 387f},
-                new float[]{-1640f, 1815f, 1920f, -1196f, -1303f, -1795f, -570f, 1294f, -103f, 727f, -1601f, -1959f, -844f, -297f, 887f, -812f, 372f},
-                new float[]{-1658f, 1859f, 1987f, -1444f, -1302f, -1805f, -800f, 1411f, -85f, 742f, -1797f, -1971f, -841f, -283f, 902f, 1242f, 124f},
-                new float[]{-1663f, 1860f, 1929f, -1446f, -1297f, -1796f, -531f, 1401f, -89f, 728f, -1796f, -1969f, -842f, -280f, 892f, 1242f, 120f},
-                new float[]{-1618f, 1806f, 1924f, -1198f, -1283f, -1794f, -543f, 1284f, -87f, 734f, -1865f, -1982f, -856f, -342f, 896f, 1493f, 375f},
-                new float[]{-1620f, 1797f, 1929f, -1198f, -1295f, -1800f, -572f, 1275f, -92f, 725f, -1600f, -1972f, -838f, -275f, 897f, -819f, 380f},
-                new float[]{-1627f, 1814f, 1917f, -1195f, -1309f, -1797f, -572f, 1291f, -97f, 733f, -1602f, -1972f, -833f, -284f, 890f, -811f, 362f},
-                new float[]{-1654f, 1862f, 1993f, -1439f, -1294f, -1791f, -804f, 1401f, -94f, 729f, -1802f, -1980f, -838f, -278f, 900f, 1236f, 115f},
-                new float[]{-1656f, 1860f, 1917f, -1455f, -1287f, -1799f, -546f, 1405f, -98f, 741f, -1797f, -1978f, -835f, -283f, 883f, 1244f, 120f},
-                new float[]{-1624f, 1813f, 1928f, -1187f, -1296f, -1804f, -538f, 1279f, -84f, 728f, -1853f, -1972f, -855f, -351f, 900f, 1483f, 376f},
-                new float[]{-1625f, 1809f, 1929f, -1186f, -1289f, -1797f, -572f, 1283f, -90f, 724f, -1597f, -1971f, -843f, -276f, 896f, -807f, 379f},
-                new float[]{-1629f, 1812f, 1923f, -1189f, -1297f, -1793f, -577f, 1278f, -102f, 726f, -1605f, -1957f, -840f, -287f, 884f, -803f, 368f}
+                new float[]{-1627f, 1817f, 1706f, -1361f, -1299f, -1786f, -706f, 1331f, -92f, 303f, -1602f, -1963f, -865f, -1516f, 910f, -2001f, 654f, 0f, -19f},
+                new float[]{-1917f, 1887f, 1714f, -1366f, -1069f, -1782f, -700f, 1331f, -79f, 304f, -1624f, -1971f, -794f, -1519f, 931f, -1996f, 654f, -7f, -13f},
+                new float[]{-1923f, 1890f, 1705f, -1353f, -1061f, -1794f, -709f, 1326f, -78f, 307f, -1621f, -1965f, -806f, 549f, 903f, -1990f, 655f, -13f, -5f},
+                new float[]{-1919f, 1882f, 1704f, -1369f, -1497f, -1783f, -704f, 1323f, -79f, 292f, -1612f, -1982f, -804f, 582f, 896f, -1981f, 671f, -6f, 4f},
+                new float[]{-1929f, 1902f, 1701f, -1362f, -1039f, -1796f, -696f, 1343f, -79f, 435f, -1612f, -1963f, -832f, 581f, 899f, -1924f, 668f, 2f, 6f},
+                new float[]{-1919f, 1883f, 1703f, -1360f, -1067f, -1777f, -702f, 1326f, -78f, 306f, -1614f, -1966f, -801f, 545f, 907f, -1992f, 644f, -6f, -13f},
+                new float[]{-1923f, 1891f, 1706f, -1353f, -1308f, -1779f, -696f, 1328f, -88f, 428f, -1619f, -1976f, -826f, 580f, 895f, -1932f, 642f, -8f, -3f},
+                new float[]{-1626f, 1805f, 1699f, -1361f, -1300f, -1796f, -707f, 1338f, -88f, 305f, -1614f, -1969f, -865f, -1514f, 896f, -2010f, 646f, -2f, -16f},
+                new float[]{-1916f, 1886f, 1699f, -1368f, -1069f, -1781f, -691f, 1339f, -92f, 308f, -1618f, -1978f, -808f, -1518f, 932f, -1990f, 652f, 4f, -13f},
+                new float[]{-1930f, 1878f, 1700f, -1356f, -1072f, -1780f, -702f, 1333f, -94f, 297f, -1618f, -1965f, -793f, 544f, 889f, -1992f, 653f, -10f, -8f},
+                new float[]{-1913f, 1889f, 1707f, -1353f, -1485f, -1783f, -711f, 1329f, -92f, 292f, -1613f, -1981f, -808f, 579f, 903f, -1981f, 688f, -11f, -7f},
+                new float[]{-1915f, 1900f, 1711f, -1349f, -1043f, -1792f, -704f, 1344f, -88f, 435f, -1631f, -1965f, -843f, 577f, 903f, -1941f, 670f, -8f, -2f},
+                new float[]{-1927f, 1891f, 1710f, -1369f, -1063f, -1795f, -716f, 1328f, -77f, 297f, -1627f, -1959f, -803f, 542f, 906f, -2003f, 639f, -15f, -11f},
+                new float[]{-1926f, 1887f, 1698f, -1360f, -1289f, -1794f, -692f, 1333f, -78f, 441f, -1625f, -1976f, -832f, 576f, 891f, -1937f, 640f, -13f, -2f}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];

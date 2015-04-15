@@ -10,6 +10,7 @@ public class NextState {
     public final int cleared;
     public final int turn;
     public final int rowsCleared;
+    public final int[][] fieldBeforeCleared;
 
     public static final int[][][] legalMoves = generateLegalMoves();
     public static final int[] minimaxPieceOrdering = generateMinimaxPieceOrdering();
@@ -53,13 +54,14 @@ public class NextState {
     /**
      * (Shallow) Copy constructor
      */
-    private NextState(int[][] field, int[] top, boolean lost, int cleared, int turn, int rowsCleared) {
+    private NextState(int[][] field, int[] top, boolean lost, int cleared, int turn, int rowsCleared, int[][] beforeCleared) {
         this.field = field;
         this.top = top;
         this.lost = lost;
         this.cleared = cleared;
         this.turn = turn;
         this.rowsCleared = rowsCleared;
+        this.fieldBeforeCleared = beforeCleared;
     }
 
     /**
@@ -118,7 +120,7 @@ public class NextState {
         //check if game ended
         if(height+pHeight[nextPiece][orient] >= ROWS) {
             lost = true;
-            return new NextState(field, top, lost, cleared, turn, 0);
+            return new NextState(field, top, lost, cleared, turn, 0, field);
         }
 
         
@@ -130,6 +132,8 @@ public class NextState {
                 field[h][i+slot] = turn;
             }
         }
+        
+        int[][] fieldBeforeCleared = null;
         
         //adjust top
         for(int c = 0; c < pWidth[nextPiece][orient]; c++) {
@@ -148,6 +152,13 @@ public class NextState {
             }
             //if the row was full - remove it and slide above stuff down
             if(full) {
+                if (fieldBeforeCleared == null) { // make a copy of field.
+                    fieldBeforeCleared = new int[ROWS][COLS];
+                    for (int y=0; y<field.length; ++y) {
+                        fieldBeforeCleared[y] = Arrays.copyOf(field[y], field[y].length);
+                    }
+                }
+                
                 rowsCleared++;
                 cleared++;
                 //for each column
@@ -163,8 +174,12 @@ public class NextState {
                 }
             }
         }
+        
+        if (fieldBeforeCleared == null) {
+            fieldBeforeCleared = field;
+        }
     
-        return new NextState(field, top, lost, cleared, turn, rowsCleared);
+        return new NextState(field, top, lost, cleared, turn, rowsCleared, fieldBeforeCleared);
     }
     
 }

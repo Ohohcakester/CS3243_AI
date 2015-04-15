@@ -12,7 +12,7 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     private static final float HARD_BIAS = 0.15f; // HARD_BIAS of 1 is 100% hardest sequence. HARD_BIAS of 0 is even distribution.
     
     private static final int PARTIAL_TRIES = 50;
-    private static final int REAL_TRIES = 8;
+    private static final int REAL_TRIES = 4;
     private int selectionIteration;
     private int realInterval = 1;
     
@@ -162,11 +162,12 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     @Override
     protected int mutationBits() {
         int s = (int)lastAverage;
-        int bits = 7;
-        while (s > 6) {
-            s /= 6;
+        int bits = 12;
+        while (s > 3) {
+            s /= 3;
             bits--;
         }
+        bits = bits*3/2;
         System.out.println("Mutation bits: " + lastAverage + " => " + Math.max(bits, MUTATION_BITS));
         return Math.max(bits, MUTATION_BITS);
     }
