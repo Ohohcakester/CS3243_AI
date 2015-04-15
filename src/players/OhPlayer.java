@@ -20,25 +20,25 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 (n)->FeatureFunctions.numHoles(n),
                 (n)->FeatureFunctions.sumHoleDistanceFromTop(n),
                 (n)->FeatureFunctions.holeAndPitColumns(n),
-                //(n)->FeatureFunctions.holeAndPitColumnsMin(n),
+                (n)->FeatureFunctions.holeAndPitColumnsMin(n),
                 (n)->FeatureFunctions.topPerimeter(n),
                 //(n)->FeatureFunctions.maxHeight(n),     //
                 //(n)->FeatureFunctions.maxHeightPow(n, 3), //
-                //(n)->FeatureFunctions.sumEmptyCellDistanceFromTop(n),
+                (n)->FeatureFunctions.sumEmptyCellDistanceFromTop(n),
                 //(n)->FeatureFunctions.numFilledCells(n), //
                 //(n)->FeatureFunctions.numRowsWithMoreThanOneEmptyCell(n), ////
                 //(n)->FeatureFunctions.holeCoverEmptyCells(n), ////
-                //(n)->FeatureFunctions2.weightedFilledCells(n), //////
+                (n)->FeatureFunctions2.weightedFilledCells(n), //////
                 (n)->FeatureFunctions2.deepestOneHole(n),
-                //(n)->FeatureFunctions2.sumOfAllHoles(n),
+                (n)->FeatureFunctions2.sumOfAllHoles(n),
                 (n)->FeatureFunctions2.horizontalRoughness(n),
-                //(n)->FeatureFunctions2.verticalRoughness(n),
+                (n)->FeatureFunctions2.verticalRoughness(n),
                 (n)->FeatureFunctions2.wellCount(n),
-                //(n)->FeatureFunctions2.weightedEmptyCells(n),
+                (n)->FeatureFunctions2.weightedEmptyCells(n),
                 (n)->FeatureFunctions2.highestHole(n),
-                //(n)->FeatureFunctions2.surfaceSmoothness(n),
-                //(n)->FeatureFunctions2.totalHeightNewPiece(n),
-                //(n)->FeatureFunctions2.sumSquareWells(n)
+                (n)->FeatureFunctions2.surfaceSmoothness(n),
+                //(n)->FeatureFunctions2.totalHeightNewPiece(n), // messes up sequence database
+                (n)->FeatureFunctions2.sumSquareWells(n),
                 (n)->FeatureFunctions2.landingHeight(n)
                 
 
