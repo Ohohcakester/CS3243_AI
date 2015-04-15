@@ -185,7 +185,7 @@ public class FeatureFunctions2 {
     public static float totalHeightNewPiece(NextState nextState) {
         int fieldBeforeCleared[][] = nextState.fieldBeforeCleared;
         if (nextState.lost) {
-        	return Integer.MAX_VALUE;
+        	return State.ROWS;
         }
         int minHeightPiece = Integer.MAX_VALUE;
         int maxHeightPiece = Integer.MIN_VALUE;
@@ -206,7 +206,7 @@ public class FeatureFunctions2 {
     public static float landingHeight(NextState nextState) {
     	int fieldBeforeCleared[][] = nextState.fieldBeforeCleared;
     	if (nextState.lost) {
-        	return Integer.MAX_VALUE;
+        	return State.ROWS;
         }
     	for (int i = 0; i < State.ROWS; ++i) {
     		for (int j = 0; j < State.COLS; ++j) {
