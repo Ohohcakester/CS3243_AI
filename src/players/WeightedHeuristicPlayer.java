@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 import main.FeatureFunctions;
 import main.NextState;
 import main.PredeterminedState;
+import main.SeededState;
 import main.Sequence;
 import main.SequenceStore;
 import main.State;
@@ -113,7 +114,7 @@ public class WeightedHeuristicPlayer {
     }
 
     
-    public float playWithWeightsMin(float[] weights, int times, SequenceStore store) {
+    public float playWithWeightsMin(float[] weights, int times, SequenceStore store, int[] seeds) {
         if (store == null) return playWithWeights(weights, times);
         
         this.weights = new float[weights.length];
@@ -127,7 +128,10 @@ public class WeightedHeuristicPlayer {
         IntStream.range(0, times)
             .parallel()
             .forEach(i -> {
-                playRecordMin(result, sequenceArray, i);
+                if (seeds == null)
+                    playRecordMin(result, sequenceArray, i);
+                else
+                    playRecordMin(result, sequenceArray, i, seeds[i]);
             });
         
         for (Sequence seq : sequenceArray) {
@@ -244,11 +248,17 @@ public class WeightedHeuristicPlayer {
         sequenceArray[index] = new Sequence(cleared, pieces);
         resultArray[index] = cleared;
     }
-    
+    public void playRecordMin(int[] result, Sequence[] sequenceArray, int index, int seed) {
+        playRecordMin(result, sequenceArray, index, new SeededState(seed));
+    }
+
     public void playRecordMin(int[] result, Sequence[] sequenceArray, int index) {
+        playRecordMin(result, sequenceArray, index, new State());
+    }
+    
+    public void playRecordMin(int[] result, Sequence[] sequenceArray, int index, State s) {
         ArrayList<Integer> pieces = new ArrayList<>();
-        
-        State s = new State();
+
         while(!s.hasLost()) {
             if (maxHeight(s) == 0) {
                 pieces.clear();
