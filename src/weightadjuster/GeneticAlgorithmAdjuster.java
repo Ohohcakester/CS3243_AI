@@ -28,7 +28,7 @@ public class GeneticAlgorithmAdjuster {
     
     //protected float[] highScoreWeights;
     //protected float highScore;
-    protected int STALE_HEAP_THRESHOLD = 500; // terminate after 25 iterations of no improvement
+    protected int STALE_HEAP_THRESHOLD = 100; // terminate after 5 iterations of no improvement
     protected WeightHeap bestHeap = new WeightHeap(10);
     
     //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
@@ -85,7 +85,7 @@ public class GeneticAlgorithmAdjuster {
                 state[index++] = realWeights[i];
             }
         }
-        return realWeights;
+        return state;
     }
     
     protected float[] randomStateFromHeap() {
@@ -206,6 +206,7 @@ public class GeneticAlgorithmAdjuster {
     
     protected void crossover() {
         for (int i = 0; i + 1 < states.length; i += 2) {
+            System.out.println(states[i].length + " | " + states[i+1].length);
             boolean[] firstBitString = encode(states[i]);
             boolean[] secondBitString = encode(states[i+1]);
             int position = rand.nextInt(firstBitString.length);
