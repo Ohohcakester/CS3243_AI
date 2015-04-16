@@ -11,7 +11,7 @@ import players.WeightedHeuristicPlayer;
  * Override the functions "configure" and "initialiseWeights" with your own.
  */
 public class PartialGamePlayer {
-    private static final int CONST_ADD = 200;
+    private static final int CONST_ADD = 300;
     private static final int INITIAL_HEIGHT = 5;
     private static final int STOP_HEIGHT = 2;
 
@@ -21,7 +21,7 @@ public class PartialGamePlayer {
         int losses = 0;
         
         for (int i=0; i<tries; i++) {
-            int maxHeight = 0;
+            int maxTotalHeight = 0;
             int score = 0;
 
             State s;
@@ -34,12 +34,12 @@ public class PartialGamePlayer {
             int count = 0;
             s.makeMove(p.findBest(s,s.legalMoves()));
             while(!s.hasLost() && WeightedHeuristicPlayer.maxHeight(s) < INITIAL_HEIGHT) {
-                maxHeight = Math.max(maxHeight,WeightedHeuristicPlayer.maxHeight(s));
+                maxTotalHeight = Math.max(maxTotalHeight,WeightedHeuristicPlayer.totalColumnHeight(s));
                 s.makeMove(p.findBest(s,s.legalMoves()));
                 count++;
             }
             while(!s.hasLost() && WeightedHeuristicPlayer.maxHeight(s) > STOP_HEIGHT) {
-                maxHeight = Math.max(maxHeight,WeightedHeuristicPlayer.maxHeight(s));
+                maxTotalHeight = Math.max(maxTotalHeight,WeightedHeuristicPlayer.totalColumnHeight(s));
                 s.makeMove(p.findBest(s,s.legalMoves()));
                 count++;
             }
@@ -47,7 +47,7 @@ public class PartialGamePlayer {
                 score = 0;
                 ++losses;
             } else {
-                score = State.ROWS + CONST_ADD - INITIAL_HEIGHT - maxHeight;
+                score = State.ROWS + CONST_ADD - maxTotalHeight;
             }
             sum += score;
             sumSquare += score * score;

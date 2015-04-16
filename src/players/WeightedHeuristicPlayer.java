@@ -300,6 +300,15 @@ public class WeightedHeuristicPlayer {
         }
         return maxHeight;
     }
+    
+    public static int totalColumnHeight(State s) {
+        int top[] = s.getTop();
+        int totalHeight = 0;
+        for (int i = 0; i < State.COLS; ++i) {
+            totalHeight += top[i];
+        }
+        return totalHeight;
+    }
 
     
     public static int[] toArray(ArrayList<Integer> pieceList) {
