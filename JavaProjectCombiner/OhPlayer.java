@@ -1,15 +1,15 @@
-import java.util.Map;
-import java.util.Arrays;
-import java.util.Random;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.File;
-import java.util.Iterator;
-import java.util.TreeSet;
-import java.util.stream.IntStream;
 import java.util.HashMap;
+import java.util.stream.IntStream;
+import java.util.Random;
 import java.io.PrintWriter;
+import java.io.File;
+import java.io.BufferedReader;
+import java.util.TreeSet;
+import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
 import java.io.IOException;
 
 
@@ -1383,6 +1383,21 @@ class ResultDump {
 }
 
 
+class SeededState extends State {
+    private Random rand;
+    
+    public SeededState(int seed) {
+        rand = new Random(seed);
+        nextPiece = rand.nextInt(N_PIECES);
+    }
+    
+    public void makeMove(int[] move) {
+        super.makeMove(move);
+        nextPiece = rand.nextInt(N_PIECES);
+    }
+}
+
+
 class Sequence implements Comparable<Sequence> {
     private static final int SHORT_LIMIT = 30;
     
@@ -2026,6 +2041,7 @@ class JonathanPlayer extends WeightedHeuristicPlayer {
 
 public class OhPlayer extends WeightedHeuristicPlayer {
 
+
     protected void configure() {
         features = new Feature[]{
                 (n)->FeatureFunctions.lost(n),
@@ -2444,7 +2460,7 @@ class WeightedHeuristicPlayer {
     }
 
     
-    public float playWithWeightsMin(float[] weights, int times, SequenceStore store) {
+    public float playWithWeightsMin(float[] weights, int times, SequenceStore store, int[] seeds) {
         if (store == null) return playWithWeights(weights, times);
         
         this.weights = new float[weights.length];
@@ -2458,7 +2474,10 @@ class WeightedHeuristicPlayer {
         IntStream.range(0, times)
             .parallel()
             .forEach(i -> {
-                playRecordMin(result, sequenceArray, i);
+                if (seeds == null)
+                    playRecordMin(result, sequenceArray, i);
+                else
+                    playRecordMin(result, sequenceArray, i, seeds[i]);
             });
         
         for (Sequence seq : sequenceArray) {
@@ -2575,11 +2594,17 @@ class WeightedHeuristicPlayer {
         sequenceArray[index] = new Sequence(cleared, pieces);
         resultArray[index] = cleared;
     }
-    
+    public void playRecordMin(int[] result, Sequence[] sequenceArray, int index, int seed) {
+        playRecordMin(result, sequenceArray, index, new SeededState(seed));
+    }
+
     public void playRecordMin(int[] result, Sequence[] sequenceArray, int index) {
+        playRecordMin(result, sequenceArray, index, new State());
+    }
+    
+    public void playRecordMin(int[] result, Sequence[] sequenceArray, int index, State s) {
         ArrayList<Integer> pieces = new ArrayList<>();
-        
-        State s = new State();
+
         while(!s.hasLost()) {
             if (maxHeight(s) == 0) {
                 pieces.clear();
@@ -2804,7 +2829,7 @@ class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 0;
+    protected final int INITIAL_GOOD_STATES = 20;
     protected int PRINT_INTERVAL = 10;
     
     protected float total = 0;
@@ -2816,7 +2841,7 @@ class GeneticAlgorithmAdjuster {
     
     //protected float[] highScoreWeights;
     //protected float highScore;
-    protected int STALE_HEAP_THRESHOLD = 500; // terminate after 25 iterations of no improvement
+    protected int STALE_HEAP_THRESHOLD = 150; // terminate after 5 iterations of no improvement
     protected WeightHeap bestHeap = new WeightHeap(10);
     
     //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
@@ -2873,7 +2898,7 @@ class GeneticAlgorithmAdjuster {
                 state[index++] = realWeights[i];
             }
         }
-        return realWeights;
+        return state;
     }
     
     protected float[] randomStateFromHeap() {
@@ -2909,20 +2934,16 @@ class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-                new float[]{-1627f, 1817f, 1706f, -1361f, -1299f, -1786f, -706f, 1331f, -92f, 303f, -1602f, -1963f, -865f, -1516f, 910f, -2001f, 654f, 0f, -19f},
-                new float[]{-1917f, 1887f, 1714f, -1366f, -1069f, -1782f, -700f, 1331f, -79f, 304f, -1624f, -1971f, -794f, -1519f, 931f, -1996f, 654f, -7f, -13f},
-                new float[]{-1923f, 1890f, 1705f, -1353f, -1061f, -1794f, -709f, 1326f, -78f, 307f, -1621f, -1965f, -806f, 549f, 903f, -1990f, 655f, -13f, -5f},
-                new float[]{-1919f, 1882f, 1704f, -1369f, -1497f, -1783f, -704f, 1323f, -79f, 292f, -1612f, -1982f, -804f, 582f, 896f, -1981f, 671f, -6f, 4f},
-                new float[]{-1929f, 1902f, 1701f, -1362f, -1039f, -1796f, -696f, 1343f, -79f, 435f, -1612f, -1963f, -832f, 581f, 899f, -1924f, 668f, 2f, 6f},
-                new float[]{-1919f, 1883f, 1703f, -1360f, -1067f, -1777f, -702f, 1326f, -78f, 306f, -1614f, -1966f, -801f, 545f, 907f, -1992f, 644f, -6f, -13f},
-                new float[]{-1923f, 1891f, 1706f, -1353f, -1308f, -1779f, -696f, 1328f, -88f, 428f, -1619f, -1976f, -826f, 580f, 895f, -1932f, 642f, -8f, -3f},
-                new float[]{-1626f, 1805f, 1699f, -1361f, -1300f, -1796f, -707f, 1338f, -88f, 305f, -1614f, -1969f, -865f, -1514f, 896f, -2010f, 646f, -2f, -16f},
-                new float[]{-1916f, 1886f, 1699f, -1368f, -1069f, -1781f, -691f, 1339f, -92f, 308f, -1618f, -1978f, -808f, -1518f, 932f, -1990f, 652f, 4f, -13f},
-                new float[]{-1930f, 1878f, 1700f, -1356f, -1072f, -1780f, -702f, 1333f, -94f, 297f, -1618f, -1965f, -793f, 544f, 889f, -1992f, 653f, -10f, -8f},
-                new float[]{-1913f, 1889f, 1707f, -1353f, -1485f, -1783f, -711f, 1329f, -92f, 292f, -1613f, -1981f, -808f, 579f, 903f, -1981f, 688f, -11f, -7f},
-                new float[]{-1915f, 1900f, 1711f, -1349f, -1043f, -1792f, -704f, 1344f, -88f, 435f, -1631f, -1965f, -843f, 577f, 903f, -1941f, 670f, -8f, -2f},
-                new float[]{-1927f, 1891f, 1710f, -1369f, -1063f, -1795f, -716f, 1328f, -77f, 297f, -1627f, -1959f, -803f, 542f, 906f, -2003f, 639f, -15f, -11f},
-                new float[]{-1926f, 1887f, 1698f, -1360f, -1289f, -1794f, -692f, 1333f, -78f, 441f, -1625f, -1976f, -832f, 576f, 891f, -1937f, 640f, -13f, -2f}
+            new float[]{-9999999f, 501f, 1491f, 1791f, -1718f, -1663f, -1428f, -1669f, 1355f, -52f, -1647f, -1631f, -1837f, -464f, -511f, 1113f, -1369f, -55f, 295f, 184f},
+            new float[]{-9999999f, -1470f, 1356f, -1442f, -1604f, -1871f, -1427f, -1311f, 518f, -29f, -624f, -1828f, -1916f, -433f, -450f, 1180f, -1369f, -55f, 792f, 184f},
+            new float[]{-9999999f, 501f, 1529f, 1780f, -1718f, -1663f, -1428f, -1668f, 1352f, -52f, 400f, -1619f, -2031f, -289f, -495f, 1052f, 292f, -172f, 537f, 23f},
+            new float[]{-9999999f, 501f, 1523f, 1780f, -1718f, -1663f, -1428f, -1301f, 1354f, -52f, -1647f, -1631f, -2022f, -864f, 1274f, 1075f, 260f, -172f, 537f, 22f},
+            new float[]{-9999999f, 501f, 1363f, -438f, -1604f, -1871f, -1427f, -1302f, 1353f, -52f, -1638f, -1631f, -1915f, -864f, 1274f, 1075f, -1317f, -172f, 536f, 23f},
+            new float[]{-9999999f, 501f, 1523f, 1791f, -1718f, -1663f, -1428f, -1668f, 1352f, -52f, -1647f, -1631f, -2022f, -289f, -322f, 1075f, 292f, -172f, 569f, 23f},
+            new float[]{-9999999f, 501f, 1523f, 496f, -1355f, -1663f, -1428f, -1668f, 1355f, -52f, -1638f, -1631f, -1915f, -864f, 1274f, 1075f, -1317f, -172f, 536f, 23f},
+            new float[]{-9999999f, 501f, 1529f, 1780f, -1718f, -1663f, -1428f, -1668f, 1352f, -52f, -1647f, -1631f, -1916f, -464f, -191f, 1059f, 292f, -172f, 537f, 23f},
+            new float[]{-9999999f, 501f, 1523f, 1780f, -1718f, -1663f, -1428f, -1301f, 1355f, -52f, -1647f, -1626f, -2022f, -864f, -326f, 1075f, 292f, -172f, 537f, 23f},
+            new float[]{-9999999f, 501f, 1523f, 1780f, -1718f, -1663f, -1428f, -1668f, 1355f, -52f, -1638f, -1626f, -2031f, -289f, -322f, 1052f, 292f, -172f, 537f, 23f}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
@@ -3503,6 +3524,7 @@ class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     protected float lastAverage;
     
     private Sequence[] sequences;
+    private int[] seeds;
     
     private SequenceStore store;
     
@@ -3511,6 +3533,7 @@ class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
         //store = SequenceStore.empty();
         store = SequenceStore.loadTrimmed();
         sequences = new Sequence[PARTIAL_TRIES];
+        seeds = new int[REAL_TRIES];
         System.out.println(store);
         
         PRINT_INTERVAL = 1;
@@ -3532,12 +3555,16 @@ class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
                 }
             }
             
+            for (int i=0; i<REAL_TRIES; ++i) {
+                seeds[i] = rand.nextInt();
+            }
+            
             for (int i = 0; i < states.length; ++i) {
                 float[] realWeights = generateRealWeights(states[i]);
                 
                 if (playReal) {
                     float resultP = w.playPartialWithWeights(realWeights, PARTIAL_TRIES, sequences);
-                    float resultR = w.playWithWeightsMin(realWeights, REAL_TRIES, store);
+                    float resultR = w.playWithWeightsMin(realWeights, REAL_TRIES, store, seeds);
                     scores[i] = weightedMean(resultP, resultR);
                     if (resultR > 100000) {
                         //System.out.println(resultR + " attained from " + Arrays.toString(realWeights));
@@ -3583,7 +3610,7 @@ class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
         int totalProb = 0;
         for (int i=0; i<probability.length; ++i) {
             int prob = scores.length-i;
-            prob = prob*prob;
+            //prob = prob*prob;
             probability[i] = prob;
             totalProb += prob;
         }
