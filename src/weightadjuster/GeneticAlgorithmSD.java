@@ -104,7 +104,7 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
         int totalProb = 0;
         for (int i=0; i<probability.length; ++i) {
             int prob = scores.length-i;
-            prob = prob*prob;
+            //prob = prob*prob;
             probability[i] = prob;
             totalProb += prob;
         }
