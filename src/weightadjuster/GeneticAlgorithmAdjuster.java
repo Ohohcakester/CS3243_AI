@@ -206,7 +206,6 @@ public class GeneticAlgorithmAdjuster {
     
     protected void crossover() {
         for (int i = 0; i + 1 < states.length; i += 2) {
-            System.out.println(states[i].length + " | " + states[i+1].length);
             boolean[] firstBitString = encode(states[i]);
             boolean[] secondBitString = encode(states[i+1]);
             int position = rand.nextInt(firstBitString.length);
