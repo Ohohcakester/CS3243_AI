@@ -24,6 +24,7 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     protected float lastAverage;
     
     private Sequence[] sequences;
+    private int[] seeds;
     
     private SequenceStore store;
     
@@ -32,6 +33,7 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
         //store = SequenceStore.empty();
         store = SequenceStore.loadTrimmed();
         sequences = new Sequence[PARTIAL_TRIES];
+        seeds = new int[REAL_TRIES];
         System.out.println(store);
         
         PRINT_INTERVAL = 1;
@@ -53,12 +55,16 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
                 }
             }
             
+            for (int i=0; i<REAL_TRIES; ++i) {
+                seeds[i] = rand.nextInt();
+            }
+            
             for (int i = 0; i < states.length; ++i) {
                 float[] realWeights = generateRealWeights(states[i]);
                 
                 if (playReal) {
                     float resultP = w.playPartialWithWeights(realWeights, PARTIAL_TRIES, sequences);
-                    float resultR = w.playWithWeightsMin(realWeights, REAL_TRIES, store);
+                    float resultR = w.playWithWeightsMin(realWeights, REAL_TRIES, store, seeds);
                     scores[i] = weightedMean(resultP, resultR);
                     if (resultR > 100000) {
                         //System.out.println(resultR + " attained from " + Arrays.toString(realWeights));
