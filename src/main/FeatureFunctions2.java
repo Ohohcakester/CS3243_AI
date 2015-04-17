@@ -179,6 +179,28 @@ public class FeatureFunctions2 {
         return sum;
     }
     
+    public static float sumSquareWellsFixed(NextState nextState) {
+    	int sum = 0;
+        int top[] = nextState.top;
+        int field[][] = nextState.field;
+        for (int j = 0; j < State.COLS; ++j) {
+            int wellDepth = 0;
+            for (int i = 0; i < State.ROWS; ++i) {
+                if (field[i][j] == 0) {
+                    ++wellDepth;
+                    boolean wallLeft = (j == 0 || field[i][j-1] != 0);
+                    boolean wallRight = (j == State.COLS-1 || field[i][j+1] != 0);
+                    if (wallLeft && wallRight) {
+                    	sum += wellDepth;
+                    }
+                } else {
+                    wellDepth = 0;
+                }
+            }
+        }
+        return sum;
+    }
+    
     /**
      * compute the lowest and highest position of new piece. compute the total
      */
@@ -197,7 +219,7 @@ public class FeatureFunctions2 {
                 }
             }
         }
-        return maxHeightPiece + minHeightPiece;
+        return (float)(maxHeightPiece + minHeightPiece) / 2f;
     }
     
     /**
@@ -216,5 +238,38 @@ public class FeatureFunctions2 {
     		}
     	}
     	return 0;
+    }
+    
+    public static float rowTransitions(NextState nextState) {
+    	int sum = 0;
+    	int field[][] = nextState.field;
+    	for (int i = 0; i < State.ROWS; ++i) {
+    		for (int j = 0; j < State.COLS; ++j) {
+    			boolean wallLeft = (j == 0 || field[i][j-1] != 0);
+    			boolean wallNow = (field[i][j] != 0);
+    			if (wallLeft ^ wallNow) {
+    				++sum;
+    			}
+    		}
+    		if (field[i][State.COLS - 1] == 0) {
+    			++sum;
+    		}
+    	}
+    	return sum;
+    }
+    
+    public static float columnTransitions(NextState nextState) {
+    	int sum = 0;
+    	int field[][] = nextState.field;
+    	for (int j = 0; j < State.COLS; ++j) {
+    		for (int i = 0; i < State.ROWS; ++i) {
+    			boolean wallDown = (i == 0 || field[i-1][j] != 0);
+    			boolean wallNow = (field[i][j] != 0);
+    			if (wallDown ^ wallNow) {
+    				++sum;
+    			}
+    		}
+    	}
+    	return sum;
     }
 }

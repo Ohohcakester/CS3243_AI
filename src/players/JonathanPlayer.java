@@ -12,33 +12,18 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
     protected void configure() {
         features = new Feature[]{
                         (n)->FeatureFunctions.lost(n),
-                        (n)->FeatureFunctions.numFilledCells(n),
-                        (n)->FeatureFunctions2.weightedFilledCells(n),
-                        (n)->FeatureFunctions.maxHeight(n),
-                        (n)->FeatureFunctions.numEmptyCells(n),
-                        (n)->FeatureFunctions2.clearLines(n),
-                        (n)->FeatureFunctions.maxHeightDifference(n),
-                        (n)->FeatureFunctions2.deepestOneHole(n),
-                        (n)->FeatureFunctions2.sumOfAllHoles(n),
-                        (n)->FeatureFunctions2.horizontalRoughness(n),
-                        (n)->FeatureFunctions2.verticalRoughness(n),
-                        (n)->FeatureFunctions2.wellCount(n),
-                        (n)->FeatureFunctions2.weightedEmptyCells(n),
-                        (n)->FeatureFunctions2.highestHole(n),
-                        (n)->FeatureFunctions2.surfaceSmoothness(n),
-                        (n)->FeatureFunctions2.sumSquareWells(n),
                         (n)->FeatureFunctions2.totalHeightNewPiece(n),
-                        (n)->FeatureFunctions2.landingHeight(n),
-                        
-                        (n)->FeatureFunctions.bumpiness(n),
-                        (n)->FeatureFunctions.topPerimeter(n),
-                        (n)->FeatureFunctions.holeAndPitColumns(n),
-                        (n)->FeatureFunctions.holeAndPitColumnsMin(n),
+                        (n)->FeatureFunctions2.clearLines(n),
+                        (n)->FeatureFunctions2.rowTransitions(n),
+                        (n)->FeatureFunctions2.columnTransitions(n),
+                        (n)->FeatureFunctions.numEmptyCells(n),
+                        (n)->FeatureFunctions2.sumSquareWellsFixed(n)
         };
     }
     
     protected void initialiseWeights() {
         weights = new float[features.length];
+        weights = new float[]{-999999f,-4.500158825082766f,3.4181268101392694f,-3.2178882868487753f,-9.348695305445199f,-7.899265427351652f,-3.3855972247263626f};
         //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -5, -30, 0};
         //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -15, -5, -10};
         //weights = new float[]{-99999.0f, 299.2644f, -241.19064f, -269.57117f, -271.10962f, -175.32292f, 149.07938f, -269.22433f, -184.39595f, -274.9451f, -233.19809f, -293.61053f};
@@ -80,7 +65,7 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 1; // 0 to watch, 1 to learn.
+        int choice = 0; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new JonathanPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
