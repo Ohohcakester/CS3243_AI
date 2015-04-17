@@ -24,7 +24,8 @@ public class PlayerSkeleton {
     public static void main(String[] args) {
         State s = new State();
         new TFrame(s);
-        WeightedHeuristicPlayer p = new OhPlayer();
+        OhPlayer p = new OhPlayer();
+        p.switchToMinimax(1);
         while(!s.hasLost()) {
             s.makeMove(p.findBest(s,s.legalMoves()));
             s.draw();
@@ -2186,7 +2187,7 @@ class OhPlayer extends WeightedHeuristicPlayer {
         //adjuster.fixValue(5, 1000f);
         //adjuster.fixValue(6, 0f);
        
-        //p.switchToMinimax(1);
+        p.switchToMinimax(1);
         switch(choice) {
             case -2:
                 checkAverageScore(p, 20);break;
