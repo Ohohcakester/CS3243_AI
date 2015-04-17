@@ -1,19 +1,19 @@
 import java.util.HashMap;
-import java.util.Random;
 import java.util.stream.IntStream;
-import java.io.BufferedReader;
-import java.util.Map;
-import java.io.File;
+import java.util.Random;
 import java.io.PrintWriter;
+import java.io.File;
+import java.io.BufferedReader;
 import java.util.TreeSet;
 import java.io.FileReader;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.ArrayList;
+import java.util.Map;
+import java.io.IOException;
 
 
-public class PlayerSkeleton {
+class PlayerSkeleton {
 
     //implement this function to have a working system
     public int pickMove(State s, int[][] legalMoves) {
@@ -2039,7 +2039,7 @@ class JonathanPlayer extends WeightedHeuristicPlayer {
 }
 
 
-class OhPlayer extends WeightedHeuristicPlayer {
+public class OhPlayer extends WeightedHeuristicPlayer {
 
 
     protected void configure() {
@@ -2139,7 +2139,7 @@ class OhPlayer extends WeightedHeuristicPlayer {
      */
     protected void initialiseWeights() {
         weights = new float[features.length];
-        //weights = new float[]{-9999999f, -2002f, 1883f, -1111f, -1386f, -1061f, -1922f, -702f, 1397f, -78f, -1651f, -1576f, -1963f, -844f, 57f, 910f, -1569f, 653f, -11f, -7f};
+
         weights = new float[]{-9999999f, -1835f, 1886f, 1881f, -1353f, -1668f, -1782f, -693f, 1304f, -77f, 873f, -1623f, -1990f, -805f, 752f, 901f, -1421f, 632f, -7f, -10f};
     };
     
@@ -2174,7 +2174,7 @@ class OhPlayer extends WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = -2; // 0 to watch, 1 to learn.
+        int choice = 1; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new OhPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
@@ -2188,8 +2188,6 @@ class OhPlayer extends WeightedHeuristicPlayer {
        
         //p.switchToMinimax(1);
         switch(choice) {
-            case -2:
-                checkAverageScore(p, 20);break;
             case -1:
                 checkScore(p);break;
             case 0:
@@ -2648,15 +2646,6 @@ class WeightedHeuristicPlayer {
         }
         return maxHeight;
     }
-    
-    public static int totalColumnHeight(State s) {
-        int top[] = s.getTop();
-        int totalHeight = 0;
-        for (int i = 0; i < State.COLS; ++i) {
-            totalHeight += top[i];
-        }
-        return totalHeight;
-    }
 
     
     public static int[] toArray(ArrayList<Integer> pieceList) {
@@ -2791,31 +2780,24 @@ class WeightedHeuristicPlayer {
         int counter = REPORT_INTERVAL;
         while(!s.hasLost()) {
             s.makeMove(p.findBest(s,s.legalMoves()));
+            
             counter--;
             if (counter <= 0) {
                 System.out.println("CURRENT SCORE: " + s.getRowsCleared());
                 counter = REPORT_INTERVAL;
             }
+            
+            /*int[] top = s.getTop();
+            boolean heightZero = true;
+            for (int t : top) {
+                if (t != 0) {
+                    heightZero = false;
+                    break;
+                }
+            }
+            if (heightZero) System.out.println("ALL CLEAR!");*/
         }
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
-    }
-    
-    /**
-     * check average score
-     */
-    public static void checkAverageScore(WeightedHeuristicPlayer p, int trials) {
-        long sum = 0;
-
-        for (int i=0; i<trials; ++i) {
-            State s = new State();
-            while(!s.hasLost()) {
-                s.makeMove(p.findBest(s,s.legalMoves()));
-            }
-            System.out.println("You have completed "+s.getRowsCleared()+" rows.");
-            sum += s.getRowsCleared();
-        }
-        System.out.println("Total: " + sum + " lines in " + trials + " trials.");
-        System.out.println("Average score = " + (sum/trials));
     }
     
     /*public void learnWithGeneticAlgorithm(GeneticAlgorithmAdjuster adjuster) {
@@ -2847,7 +2829,7 @@ class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 0;
+    protected final int INITIAL_GOOD_STATES = 20;
     protected int PRINT_INTERVAL = 10;
     
     protected float total = 0;
@@ -2859,7 +2841,7 @@ class GeneticAlgorithmAdjuster {
     
     //protected float[] highScoreWeights;
     //protected float highScore;
-    protected int STALE_HEAP_THRESHOLD = 100; // terminate after 5 iterations of no improvement
+    protected int STALE_HEAP_THRESHOLD = 150; // terminate after 5 iterations of no improvement
     protected WeightHeap bestHeap = new WeightHeap(10);
     
     //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
@@ -2952,20 +2934,16 @@ class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-                new float[]{-1627f, 1817f, 1706f, -1361f, -1299f, -1786f, -706f, 1331f, -92f, 303f, -1602f, -1963f, -865f, -1516f, 910f, -2001f, 654f, 0f, -19f},
-                new float[]{-1917f, 1887f, 1714f, -1366f, -1069f, -1782f, -700f, 1331f, -79f, 304f, -1624f, -1971f, -794f, -1519f, 931f, -1996f, 654f, -7f, -13f},
-                new float[]{-1923f, 1890f, 1705f, -1353f, -1061f, -1794f, -709f, 1326f, -78f, 307f, -1621f, -1965f, -806f, 549f, 903f, -1990f, 655f, -13f, -5f},
-                new float[]{-1919f, 1882f, 1704f, -1369f, -1497f, -1783f, -704f, 1323f, -79f, 292f, -1612f, -1982f, -804f, 582f, 896f, -1981f, 671f, -6f, 4f},
-                new float[]{-1929f, 1902f, 1701f, -1362f, -1039f, -1796f, -696f, 1343f, -79f, 435f, -1612f, -1963f, -832f, 581f, 899f, -1924f, 668f, 2f, 6f},
-                new float[]{-1919f, 1883f, 1703f, -1360f, -1067f, -1777f, -702f, 1326f, -78f, 306f, -1614f, -1966f, -801f, 545f, 907f, -1992f, 644f, -6f, -13f},
-                new float[]{-1923f, 1891f, 1706f, -1353f, -1308f, -1779f, -696f, 1328f, -88f, 428f, -1619f, -1976f, -826f, 580f, 895f, -1932f, 642f, -8f, -3f},
-                new float[]{-1626f, 1805f, 1699f, -1361f, -1300f, -1796f, -707f, 1338f, -88f, 305f, -1614f, -1969f, -865f, -1514f, 896f, -2010f, 646f, -2f, -16f},
-                new float[]{-1916f, 1886f, 1699f, -1368f, -1069f, -1781f, -691f, 1339f, -92f, 308f, -1618f, -1978f, -808f, -1518f, 932f, -1990f, 652f, 4f, -13f},
-                new float[]{-1930f, 1878f, 1700f, -1356f, -1072f, -1780f, -702f, 1333f, -94f, 297f, -1618f, -1965f, -793f, 544f, 889f, -1992f, 653f, -10f, -8f},
-                new float[]{-1913f, 1889f, 1707f, -1353f, -1485f, -1783f, -711f, 1329f, -92f, 292f, -1613f, -1981f, -808f, 579f, 903f, -1981f, 688f, -11f, -7f},
-                new float[]{-1915f, 1900f, 1711f, -1349f, -1043f, -1792f, -704f, 1344f, -88f, 435f, -1631f, -1965f, -843f, 577f, 903f, -1941f, 670f, -8f, -2f},
-                new float[]{-1927f, 1891f, 1710f, -1369f, -1063f, -1795f, -716f, 1328f, -77f, 297f, -1627f, -1959f, -803f, 542f, 906f, -2003f, 639f, -15f, -11f},
-                new float[]{-1926f, 1887f, 1698f, -1360f, -1289f, -1794f, -692f, 1333f, -78f, 441f, -1625f, -1976f, -832f, 576f, 891f, -1937f, 640f, -13f, -2f}
+            new float[]{-9999999f, 501f, 1491f, 1791f, -1718f, -1663f, -1428f, -1669f, 1355f, -52f, -1647f, -1631f, -1837f, -464f, -511f, 1113f, -1369f, -55f, 295f, 184f},
+            new float[]{-9999999f, -1470f, 1356f, -1442f, -1604f, -1871f, -1427f, -1311f, 518f, -29f, -624f, -1828f, -1916f, -433f, -450f, 1180f, -1369f, -55f, 792f, 184f},
+            new float[]{-9999999f, 501f, 1529f, 1780f, -1718f, -1663f, -1428f, -1668f, 1352f, -52f, 400f, -1619f, -2031f, -289f, -495f, 1052f, 292f, -172f, 537f, 23f},
+            new float[]{-9999999f, 501f, 1523f, 1780f, -1718f, -1663f, -1428f, -1301f, 1354f, -52f, -1647f, -1631f, -2022f, -864f, 1274f, 1075f, 260f, -172f, 537f, 22f},
+            new float[]{-9999999f, 501f, 1363f, -438f, -1604f, -1871f, -1427f, -1302f, 1353f, -52f, -1638f, -1631f, -1915f, -864f, 1274f, 1075f, -1317f, -172f, 536f, 23f},
+            new float[]{-9999999f, 501f, 1523f, 1791f, -1718f, -1663f, -1428f, -1668f, 1352f, -52f, -1647f, -1631f, -2022f, -289f, -322f, 1075f, 292f, -172f, 569f, 23f},
+            new float[]{-9999999f, 501f, 1523f, 496f, -1355f, -1663f, -1428f, -1668f, 1355f, -52f, -1638f, -1631f, -1915f, -864f, 1274f, 1075f, -1317f, -172f, 536f, 23f},
+            new float[]{-9999999f, 501f, 1529f, 1780f, -1718f, -1663f, -1428f, -1668f, 1352f, -52f, -1647f, -1631f, -1916f, -464f, -191f, 1059f, 292f, -172f, 537f, 23f},
+            new float[]{-9999999f, 501f, 1523f, 1780f, -1718f, -1663f, -1428f, -1301f, 1355f, -52f, -1647f, -1626f, -2022f, -864f, -326f, 1075f, 292f, -172f, 537f, 23f},
+            new float[]{-9999999f, 501f, 1523f, 1780f, -1718f, -1663f, -1428f, -1668f, 1355f, -52f, -1638f, -1626f, -2031f, -289f, -322f, 1052f, 292f, -172f, 537f, 23f}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
@@ -3820,7 +3798,7 @@ class OhAdjuster implements WeightAdjuster {
 
 
 class PartialGamePlayer {
-    private static final int CONST_ADD = 300;
+    private static final int CONST_ADD = 200;
     private static final int INITIAL_HEIGHT = 5;
     private static final int STOP_HEIGHT = 2;
 
@@ -3830,7 +3808,7 @@ class PartialGamePlayer {
         int losses = 0;
         
         for (int i=0; i<tries; i++) {
-            int maxTotalHeight = 0;
+            int maxHeight = 0;
             int score = 0;
 
             State s;
@@ -3843,12 +3821,12 @@ class PartialGamePlayer {
             int count = 0;
             s.makeMove(p.findBest(s,s.legalMoves()));
             while(!s.hasLost() && WeightedHeuristicPlayer.maxHeight(s) < INITIAL_HEIGHT) {
-                maxTotalHeight = Math.max(maxTotalHeight,WeightedHeuristicPlayer.totalColumnHeight(s));
+                maxHeight = Math.max(maxHeight,WeightedHeuristicPlayer.maxHeight(s));
                 s.makeMove(p.findBest(s,s.legalMoves()));
                 count++;
             }
             while(!s.hasLost() && WeightedHeuristicPlayer.maxHeight(s) > STOP_HEIGHT) {
-                maxTotalHeight = Math.max(maxTotalHeight,WeightedHeuristicPlayer.totalColumnHeight(s));
+                maxHeight = Math.max(maxHeight,WeightedHeuristicPlayer.maxHeight(s));
                 s.makeMove(p.findBest(s,s.legalMoves()));
                 count++;
             }
@@ -3856,7 +3834,7 @@ class PartialGamePlayer {
                 score = 0;
                 ++losses;
             } else {
-                score = State.ROWS + CONST_ADD - maxTotalHeight;
+                score = State.ROWS + CONST_ADD - INITIAL_HEIGHT - maxHeight;
             }
             sum += score;
             sumSquare += score * score;

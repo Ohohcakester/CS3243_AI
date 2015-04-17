@@ -107,8 +107,8 @@ public class OhPlayer extends WeightedHeuristicPlayer {
      */
     protected void initialiseWeights() {
         weights = new float[features.length];
-
-        weights = new float[]{-9999999f, -1835f, 1886f, 1881f, -1353f, -1668f, -1782f, -693f, 1304f, -77f, 873f, -1623f, -1990f, -805f, 752f, 901f, -1421f, 632f, -7f, -10f};
+        weights = new float[]{-9999999f, -2002f, 1883f, -1111f, -1386f, -1061f, -1922f, -702f, 1397f, -78f, -1651f, -1576f, -1963f, -844f, 57f, 910f, -1569f, 653f, -11f, -7f};
+        //weights = new float[]{-9999999f, -1835f, 1886f, 1881f, -1353f, -1668f, -1782f, -693f, 1304f, -77f, 873f, -1623f, -1990f, -805f, 752f, 901f, -1421f, 632f, -7f, -10f};
     };
     
     /**
@@ -142,7 +142,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 1; // 0 to watch, 1 to learn.
+        int choice = -2; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new OhPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
@@ -156,6 +156,8 @@ public class OhPlayer extends WeightedHeuristicPlayer {
        
         //p.switchToMinimax(1);
         switch(choice) {
+            case -2:
+                checkAverageScore(p, 20);break;
             case -1:
                 checkScore(p);break;
             case 0:

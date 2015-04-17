@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 import main.FeatureFunctions;
 import main.NextState;
 import main.PredeterminedState;
+import main.SeededState;
 import main.Sequence;
 import main.SequenceStore;
 import main.State;
@@ -113,7 +114,7 @@ public class WeightedHeuristicPlayer {
     }
 
     
-    public float playWithWeightsMin(float[] weights, int times, SequenceStore store) {
+    public float playWithWeightsMin(float[] weights, int times, SequenceStore store, int[] seeds) {
         if (store == null) return playWithWeights(weights, times);
         
         this.weights = new float[weights.length];
@@ -127,7 +128,10 @@ public class WeightedHeuristicPlayer {
         IntStream.range(0, times)
             .parallel()
             .forEach(i -> {
-                playRecordMin(result, sequenceArray, i);
+                if (seeds == null)
+                    playRecordMin(result, sequenceArray, i);
+                else
+                    playRecordMin(result, sequenceArray, i, seeds[i]);
             });
         
         for (Sequence seq : sequenceArray) {
@@ -244,11 +248,17 @@ public class WeightedHeuristicPlayer {
         sequenceArray[index] = new Sequence(cleared, pieces);
         resultArray[index] = cleared;
     }
-    
+    public void playRecordMin(int[] result, Sequence[] sequenceArray, int index, int seed) {
+        playRecordMin(result, sequenceArray, index, new SeededState(seed));
+    }
+
     public void playRecordMin(int[] result, Sequence[] sequenceArray, int index) {
+        playRecordMin(result, sequenceArray, index, new State());
+    }
+    
+    public void playRecordMin(int[] result, Sequence[] sequenceArray, int index, State s) {
         ArrayList<Integer> pieces = new ArrayList<>();
-        
-        State s = new State();
+
         while(!s.hasLost()) {
             if (maxHeight(s) == 0) {
                 pieces.clear();
@@ -289,6 +299,15 @@ public class WeightedHeuristicPlayer {
             maxHeight = Math.max(maxHeight, top[i]);
         }
         return maxHeight;
+    }
+    
+    public static int totalColumnHeight(State s) {
+        int top[] = s.getTop();
+        int totalHeight = 0;
+        for (int i = 0; i < State.COLS; ++i) {
+            totalHeight += top[i];
+        }
+        return totalHeight;
     }
 
     
@@ -424,24 +443,31 @@ public class WeightedHeuristicPlayer {
         int counter = REPORT_INTERVAL;
         while(!s.hasLost()) {
             s.makeMove(p.findBest(s,s.legalMoves()));
-            
             counter--;
             if (counter <= 0) {
                 System.out.println("CURRENT SCORE: " + s.getRowsCleared());
                 counter = REPORT_INTERVAL;
             }
-            
-            /*int[] top = s.getTop();
-            boolean heightZero = true;
-            for (int t : top) {
-                if (t != 0) {
-                    heightZero = false;
-                    break;
-                }
-            }
-            if (heightZero) System.out.println("ALL CLEAR!");*/
         }
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
+    }
+    
+    /**
+     * check average score
+     */
+    public static void checkAverageScore(WeightedHeuristicPlayer p, int trials) {
+        long sum = 0;
+
+        for (int i=0; i<trials; ++i) {
+            State s = new State();
+            while(!s.hasLost()) {
+                s.makeMove(p.findBest(s,s.legalMoves()));
+            }
+            System.out.println("You have completed "+s.getRowsCleared()+" rows.");
+            sum += s.getRowsCleared();
+        }
+        System.out.println("Total: " + sum + " lines in " + trials + " trials.");
+        System.out.println("Average score = " + (sum/trials));
     }
     
     /*public void learnWithGeneticAlgorithm(GeneticAlgorithmAdjuster adjuster) {
