@@ -12,33 +12,24 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
     protected void configure() {
         features = new Feature[]{
                         (n)->FeatureFunctions.lost(n),
-                        (n)->FeatureFunctions.numFilledCells(n),
-                        (n)->FeatureFunctions2.weightedFilledCells(n),
-                        (n)->FeatureFunctions.maxHeight(n),
-                        (n)->FeatureFunctions.numEmptyCells(n),
-                        (n)->FeatureFunctions2.clearLines(n),
-                        (n)->FeatureFunctions.maxHeightDifference(n),
-                        (n)->FeatureFunctions2.deepestOneHole(n),
-                        (n)->FeatureFunctions2.sumOfAllHoles(n),
-                        (n)->FeatureFunctions2.horizontalRoughness(n),
-                        (n)->FeatureFunctions2.verticalRoughness(n),
-                        (n)->FeatureFunctions2.wellCount(n),
-                        (n)->FeatureFunctions2.weightedEmptyCells(n),
-                        (n)->FeatureFunctions2.highestHole(n),
-                        (n)->FeatureFunctions2.surfaceSmoothness(n),
-                        (n)->FeatureFunctions2.sumSquareWells(n),
                         (n)->FeatureFunctions2.totalHeightNewPiece(n),
-                        (n)->FeatureFunctions2.landingHeight(n),
-                        
-                        (n)->FeatureFunctions.bumpiness(n),
-                        (n)->FeatureFunctions.topPerimeter(n),
-                        (n)->FeatureFunctions.holeAndPitColumns(n),
-                        (n)->FeatureFunctions.holeAndPitColumnsMin(n),
+                        //(n)->FeatureFunctions2.clearLines(n),
+                        (n)->FeatureFunctions.numRowsCleared(n),
+                        (n)->FeatureFunctions2.rowTransitions(n),
+                        (n)->FeatureFunctions2.columnTransitions(n),
+                        (n)->FeatureFunctions.numEmptyCells(n),
+                        (n)->FeatureFunctions2.sumSquareWellsFixed(n)
         };
     }
     
     protected void initialiseWeights() {
         weights = new float[features.length];
+        //clearLines
+        //weights = new float[]{-999999f,-4500.158825082766f,3418.1268101392694f,-3217.8882868487753f,-9348.695305445199f,-7899.265427351652f,-3385.5972247263626f};
+        
+        //numRowsCleared
+        weights = new float[]{-99999999f,-1224f, -133f, -424f, -2026f, -832f, -663f};
+        
         //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -5, -30, 0};
         //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -15, -5, -10};
         //weights = new float[]{-99999.0f, 299.2644f, -241.19064f, -269.57117f, -271.10962f, -175.32292f, 149.07938f, -269.22433f, -184.39595f, -274.9451f, -233.19809f, -293.61053f};
@@ -80,12 +71,12 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 1; // 0 to watch, 1 to learn.
+        int choice = -1; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new JonathanPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
         GeneticAlgorithmSD adjuster = new GeneticAlgorithmSD(p, p.dim(), 20);
-        adjuster.fixValue(0, -9999999f);
+        adjuster.fixValue(0, -99999999f);
         /*adjuster.fixSign(0,-1);
         adjuster.fixSign(1,-1);
         adjuster.fixSign(2,-1);
@@ -107,7 +98,7 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
         //adjuster.fixValue(6, 0f);
         
         //p.configure();
-        //p.switchToMinimax(2);
+        //p.switchToMinimax(1);
         int[] sequence = new int[]{6, 2, 3, 2, 6, 3, 6, 3, 3, 3, 4, 1, 6, 2, 3, 2, 5, 0, 6, 4, 3, 5, 2, 5, 2, 4, 3, 6, 5, 0, 4, 2, 2, 5, 0, 0, 4, 6, 0, 0, 6, 6, 6, 4, 6, 4, 4, 3, 3, 0, 5, 3, 6, 0, 3, 2, 4, 1, 4, 3, 2, 6, 1, 5, 3, 2, 2, 2, 6, 6, 4, 5, 6, 1, 4, 4, 4, 0, 6, 6, 1, 1, 6, 1, 5, 3, 5, 0, 3, 0, 5, 6, 2, 4, 4, 0, 5, 0, 2, 6, 0, 6, 2, 2, 0, 1, 3, 0, 3, 1, 1, 5, 5, 5, 5, 2};
         switch(choice) {
             case -1:
