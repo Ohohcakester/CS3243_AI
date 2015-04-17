@@ -16,7 +16,7 @@ public class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 0;
+    protected final int INITIAL_GOOD_STATES = 15;
     protected int PRINT_INTERVAL = 10;
     
     protected float total = 0;
@@ -121,7 +121,8 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-                new float[]{-1627f, 1817f, 1706f, -1361f, -1299f, -1786f, -706f, 1331f, -92f, 303f, -1602f, -1963f, -865f, -1516f, 910f, -2001f, 654f, 0f, -19f},
+        		new float[]{-4500.158825082766f,3418.1268101392694f,-3217.8882868487753f,-9348.695305445199f,-7899.265427351652f,-3385.5972247263626f}
+                /*new float[]{-1627f, 1817f, 1706f, -1361f, -1299f, -1786f, -706f, 1331f, -92f, 303f, -1602f, -1963f, -865f, -1516f, 910f, -2001f, 654f, 0f, -19f},
                 new float[]{-1917f, 1887f, 1714f, -1366f, -1069f, -1782f, -700f, 1331f, -79f, 304f, -1624f, -1971f, -794f, -1519f, 931f, -1996f, 654f, -7f, -13f},
                 new float[]{-1923f, 1890f, 1705f, -1353f, -1061f, -1794f, -709f, 1326f, -78f, 307f, -1621f, -1965f, -806f, 549f, 903f, -1990f, 655f, -13f, -5f},
                 new float[]{-1919f, 1882f, 1704f, -1369f, -1497f, -1783f, -704f, 1323f, -79f, 292f, -1612f, -1982f, -804f, 582f, 896f, -1981f, 671f, -6f, 4f},
@@ -134,7 +135,7 @@ public class GeneticAlgorithmAdjuster {
                 new float[]{-1913f, 1889f, 1707f, -1353f, -1485f, -1783f, -711f, 1329f, -92f, 292f, -1613f, -1981f, -808f, 579f, 903f, -1981f, 688f, -11f, -7f},
                 new float[]{-1915f, 1900f, 1711f, -1349f, -1043f, -1792f, -704f, 1344f, -88f, 435f, -1631f, -1965f, -843f, 577f, 903f, -1941f, 670f, -8f, -2f},
                 new float[]{-1927f, 1891f, 1710f, -1369f, -1063f, -1795f, -716f, 1328f, -77f, 297f, -1627f, -1959f, -803f, 542f, 906f, -2003f, 639f, -15f, -11f},
-                new float[]{-1926f, 1887f, 1698f, -1360f, -1289f, -1794f, -692f, 1333f, -78f, 441f, -1625f, -1976f, -832f, 576f, 891f, -1937f, 640f, -13f, -2f}
+                new float[]{-1926f, 1887f, 1698f, -1360f, -1289f, -1794f, -692f, 1333f, -78f, 441f, -1625f, -1976f, -832f, 576f, 891f, -1937f, 640f, -13f, -2f}*/
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
