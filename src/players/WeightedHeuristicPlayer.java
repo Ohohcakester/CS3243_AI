@@ -443,24 +443,31 @@ public class WeightedHeuristicPlayer {
         int counter = REPORT_INTERVAL;
         while(!s.hasLost()) {
             s.makeMove(p.findBest(s,s.legalMoves()));
-            
             counter--;
             if (counter <= 0) {
                 System.out.println("CURRENT SCORE: " + s.getRowsCleared());
                 counter = REPORT_INTERVAL;
             }
-            
-            /*int[] top = s.getTop();
-            boolean heightZero = true;
-            for (int t : top) {
-                if (t != 0) {
-                    heightZero = false;
-                    break;
-                }
-            }
-            if (heightZero) System.out.println("ALL CLEAR!");*/
         }
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
+    }
+    
+    /**
+     * check average score
+     */
+    public static void checkAverageScore(WeightedHeuristicPlayer p, int trials) {
+        long sum = 0;
+
+        for (int i=0; i<trials; ++i) {
+            State s = new State();
+            while(!s.hasLost()) {
+                s.makeMove(p.findBest(s,s.legalMoves()));
+            }
+            System.out.println("You have completed "+s.getRowsCleared()+" rows.");
+            sum += s.getRowsCleared();
+        }
+        System.out.println("Total: " + sum + " lines in " + trials + " trials.");
+        System.out.println("Average score = " + (sum/trials));
     }
     
     /*public void learnWithGeneticAlgorithm(GeneticAlgorithmAdjuster adjuster) {
