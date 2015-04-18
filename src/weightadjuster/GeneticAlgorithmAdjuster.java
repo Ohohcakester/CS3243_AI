@@ -16,7 +16,7 @@ public class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 20;
+    protected final int INITIAL_GOOD_STATES = 1;
     protected int PRINT_INTERVAL = 10;
     
     protected float total = 0;
@@ -121,13 +121,13 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-                new float[]{-1835f, 1886f, 1881f, -1353f, -1668f, -1782f, -693f, 1304f, -77f, 873f, -1623f, -1990f, -805f, 752f, 901f, -1421f, 632f, -7f, -10f}
+                new float[]{-1224f, -133f, -424f, -2026f, -832f, -663f, 0}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
         if (weights.length != dim) {
-            generateRandomState(dim);
-            //throw new UnsupportedOperationException("ERROR!!! WRONG DIM!");
+            //generateRandomState(dim);
+            throw new UnsupportedOperationException("ERROR!!! WRONG DIM!");
         }
         return weights;
     }
