@@ -8,8 +8,10 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 /**
+ * Vector space model based learning algorithm.
  * Attempts to create a n-dimensional map of the scores using a finite number
  * of data points, which it will continually generate.
+ * Not in use - GA is much better.
  */
 public class SmoothingAdjuster implements WeightAdjuster {
     final float weightRange = 100f;

@@ -6,6 +6,9 @@ import main.NextState;
 import main.State;
 import weightadjuster.GeneticAlgorithmSD;
 
+/**
+ * Jonathan's Player
+ */
 public class JonathanPlayer extends WeightedHeuristicPlayer {
 
 
@@ -71,7 +74,7 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 1; // 0 to watch, 1 to learn.
+        int choice = 0; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new JonathanPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
@@ -99,7 +102,7 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
         
         //p.configure();
         //p.switchToMinimax(1);
-        //int[] sequence = new int[]{6, 2, 3, 2, 6, 3, 6, 3, 3, 3, 4, 1, 6, 2, 3, 2, 5, 0, 6, 4, 3, 5, 2, 5, 2, 4, 3, 6, 5, 0, 4, 2, 2, 5, 0, 0, 4, 6, 0, 0, 6, 6, 6, 4, 6, 4, 4, 3, 3, 0, 5, 3, 6, 0, 3, 2, 4, 1, 4, 3, 2, 6, 1, 5, 3, 2, 2, 2, 6, 6, 4, 5, 6, 1, 4, 4, 4, 0, 6, 6, 1, 1, 6, 1, 5, 3, 5, 0, 3, 0, 5, 6, 2, 4, 4, 0, 5, 0, 2, 6, 0, 6, 2, 2, 0, 1, 3, 0, 3, 1, 1, 5, 5, 5, 5, 2};
+        int[] sequence = new int[]{6, 2, 3, 2, 6, 3, 6, 3, 3, 3, 4, 1, 6, 2, 3, 2, 5, 0, 6, 4, 3, 5, 2, 5, 2, 4, 3, 6, 5, 0, 4, 2, 2, 5, 0, 0, 4, 6, 0, 0, 6, 6, 6, 4, 6, 4, 4, 3, 3, 0, 5, 3, 6, 0, 3, 2, 4, 1, 4, 3, 2, 6, 1, 5, 3, 2, 2, 2, 6, 6, 4, 5, 6, 1, 4, 4, 4, 0, 6, 6, 1, 1, 6, 1, 5, 3, 5, 0, 3, 0, 5, 6, 2, 4, 4, 0, 5, 0, 2, 6, 0, 6, 2, 2, 0, 1, 3, 0, 3, 1, 1, 5, 5, 5, 5, 2};
         switch(choice) {
             case -1:
                 checkScore(p);break;
@@ -110,7 +113,7 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
             case 2:
                 record(p); break;
             case 3:
-                //watchWithPredeterminedState(p,sequence); break;
+                watchWithPredeterminedState(p,sequence); break;
         }
     }
 }

@@ -19,6 +19,7 @@ import weightadjuster.WeightAdjuster;
 
 /**
  * A configure, extensible weighted heuristic player.
+ * The other players extend this class.
  * Override the functions "configure" and "initialiseWeights" with your own.
  */
 public class WeightedHeuristicPlayer {
@@ -383,7 +384,7 @@ public class WeightedHeuristicPlayer {
     public static void watch(WeightedHeuristicPlayer p) {
         final int REPORT_INTERVAL = 1000;
         State s = new State();
-        s = new PredeterminedState(new int[0]);
+        //s = new PredeterminedState(new int[0]);
         new TFrame(s);
 
         int counter = REPORT_INTERVAL;
@@ -418,7 +419,7 @@ public class WeightedHeuristicPlayer {
             s.draw();
             s.drawNext(0,0);
             try {
-                Thread.sleep(10);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

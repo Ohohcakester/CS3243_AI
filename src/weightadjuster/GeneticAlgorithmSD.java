@@ -6,6 +6,10 @@ import main.Sequence;
 import main.SequenceStore;
 import players.WeightedHeuristicPlayer;
 
+/**
+ * Another idea of genetic algorithm that makes use of the Sequence Database.
+ * We also used this.
+ */
 public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     //private static int SAVE_INTERVAL = 1;
     private static final double DATABASE_SEQUENCE_PROBABILTY = 1f;

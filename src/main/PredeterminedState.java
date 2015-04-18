@@ -3,6 +3,9 @@ package main;
 import java.util.Arrays;
 import java.util.Random;
 
+/**
+ * This class is used when we want to test the player with a predetermined sequence of pieces. 
+ */
 public class PredeterminedState extends State {
     private final int[] pieces;
     private int pieceIndex;

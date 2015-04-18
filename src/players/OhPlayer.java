@@ -7,6 +7,9 @@ import main.State;
 import weightadjuster.GeneticAlgorithmAdjuster;
 import weightadjuster.GeneticAlgorithmSD;
 
+/**
+ * Oh's Player
+ */
 public class OhPlayer extends WeightedHeuristicPlayer {
 
 

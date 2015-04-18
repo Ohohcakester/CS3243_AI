@@ -1,5 +1,9 @@
 package weightadjuster;
 
+/**
+ * An interface for learning algorithms. We didn't use it eventually.
+ * Not in use. 
+ */
 public interface WeightAdjuster {
     /**
      * @return a string if it has something to report.
