@@ -1,7 +1,5 @@
 package players;
 
-import java.util.Arrays;
-
 import main.FeatureFunctions;
 import main.FeatureFunctions2;
 import main.NextState;
@@ -11,10 +9,14 @@ import weightadjuster.GeneticAlgorithmSD;
 
 /**
  * Oh's Player
+ * choose features in configure()
+ * choose weights in initialiseWeights()
  */
 public class OhPlayer extends WeightedHeuristicPlayer {
 
-
+    /**
+     * Choose features here
+     */
     protected void configure() {
         features = new Feature[]{
                 /*(n)->FeatureFunctions.lost(n),
@@ -48,65 +50,31 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 
 
                 (n)->FeatureFunctions.lost(n),
-                (n)->FeatureFunctions2.totalHeightNewPiece(n),
+                (n)->FeatureFunctions2.tetrominoHeight(n),
                 //(n)->FeatureFunctions2.clearLines(n),
                 (n)->FeatureFunctions.numRowsCleared(n),
                 (n)->FeatureFunctions2.rowTransitions(n),
                 (n)->FeatureFunctions2.columnTransitions(n),
                 (n)->FeatureFunctions.numEmptyCells(n),
-                (n)->FeatureFunctions2.sumSquareWellsFixed(n),
+                (n)->FeatureFunctions2.sumWellDepths(n),
                 (n)->FeatureFunctions2.highestHole(n)
                 
         };
     }
     
     /**
-     * Genetic Algorithm Results
-     * Features: lost, bumpiness, sumHeight, numRowsCleared, maxHeightDifference,
-     *           numHoles, sumHoleDistanceFromTop, holeAndPitColumns, topPerimeter
-                (n) -> FeatureFunctions.lost(n),
-                (n) -> FeatureFunctions.bumpiness(n),
-                (n) -> FeatureFunctions.sumHeight(n),
-                (n) -> FeatureFunctions.numRowsCleared(n),
-                (n) -> FeatureFunctions.maxHeightDifference(n),
-                (n) -> FeatureFunctions.numHoles(n),
-                (n) -> FeatureFunctions.sumHoleDistanceFromTop(n),
-                (n) -> FeatureFunctions.holeAndPitColumns(n),
-                (n) -> FeatureFunctions.topPerimeter(n)
-     *  Hi-Score: 1561.0 | [2.0, -5.0, -150.0, 0.1, 0.5, -2.0, -80.0, -40.0, -80.0]
-     *  State #17. Score = 1236.5   [-0.02, -20.0, -150.0, -2.0, 2.0, -2.0, -10.0, -5.0, -20.0]
-     *  Hi-Score: 2340.5 | [-80.0, -5.0, 0.01, 0.02, 0.05, -20.0, -5.0, -2.0, -5.0]
-     *  Hi-Score: 2259.0 | [-2.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -3.0]
-     *  Hi-Score: 2525.0 | [-2.0, -100.0, -2.0, -0.01, 5.0, -500.0, -40.0, -70.0, -3.0]
-     *  Hi-Score: 4496.5 | [-0.01, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -3.0]
-     *  
-     *  
-     *  
-                (n) -> FeatureFunctions.lost(n),
-                (n) -> FeatureFunctions.bumpiness(n),
-                (n) -> FeatureFunctions.sumHeight(n),
-                (n) -> FeatureFunctions.numRowsCleared(n),
-                (n) -> FeatureFunctions.maxHeightDifference(n),
-                (n) -> FeatureFunctions.numHoles(n),
-                (n) -> FeatureFunctions.sumHoleDistanceFromTop(n),
-                (n) -> FeatureFunctions.holeAndPitColumns(n),
-                (n) -> FeatureFunctions.holeAndPitColumnsMin(n),
-                (n) -> FeatureFunctions.topPerimeter(n)
-     *  Hi-Score: 8299.5 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, 0.01, 0.5]
-     *  Hi-Score: 7358.25 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -0.1, 2.0]
-     *  Score =   6870.500 [  -100.00,    -2.00,    -0.50,     5.00,  -500.00,   -40.00,   -70.00,     0.01,    -3.00]
-     *  Hi-Score: 12067.75 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -0.1, -3.0]
-     *  Hi-Score: 13924.0 | [-99999.0, -100.0, -2.0, -0.01, 5.0, -500.0, -40.0, -70.0, -40.0, -3.0]
-     *  Hi-Score: 18838.75 | [-99999.0, -100.0, -2.0, -0.01, 5.0, -500.0, -40.0, -70.0, -40.0, -1.0]
-     *  Hi-Score: 24683.75 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -40.0, -3.0]
-     *
-     *  new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f};
+     * Set weights here
      */
     protected void initialiseWeights() {
         weights = new float[features.length];
 
+        // Our best set of weights (average 5mil)
         weights = new float[]{-99999999f,-1224f, -133f, -424f, -2026f, -832f, -663f, 0};
+        
+        // Another set of relatively good weights (average 5mil) using the same set of feature functions
         //weights = new float[]{-99999999, -1037, 573, -924, -1954, -2040, -1298, -288};
+        
+        // A set of good weights (average 100k) using the commeted out set of feature functions above.
         //weights = new float[]{-9999999f, -1835f, 1886f, 1881f, -1353f, -1668f, -1782f, -693f, 1304f, -77f, 873f, -1623f, -1990f, -805f, 752f, 901f, -1421f, 632f, -7f, -10f};
     };
     

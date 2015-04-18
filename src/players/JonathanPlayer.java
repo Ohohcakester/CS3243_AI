@@ -8,6 +8,8 @@ import weightadjuster.GeneticAlgorithmSD;
 
 /**
  * Jonathan's Player
+ * choose features in configure()
+ * choose weights in initialiseWeights()
  */
 public class JonathanPlayer extends WeightedHeuristicPlayer {
 
@@ -15,13 +17,13 @@ public class JonathanPlayer extends WeightedHeuristicPlayer {
     protected void configure() {
         features = new Feature[]{
                         (n)->FeatureFunctions.lost(n),
-                        (n)->FeatureFunctions2.totalHeightNewPiece(n),
+                        (n)->FeatureFunctions2.tetrominoHeight(n),
                         //(n)->FeatureFunctions2.clearLines(n),
                         (n)->FeatureFunctions.numRowsCleared(n),
                         (n)->FeatureFunctions2.rowTransitions(n),
                         (n)->FeatureFunctions2.columnTransitions(n),
                         (n)->FeatureFunctions.numEmptyCells(n),
-                        (n)->FeatureFunctions2.sumSquareWellsFixed(n)
+                        (n)->FeatureFunctions2.sumWellDepths(n)
         };
     }
     

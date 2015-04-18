@@ -13,7 +13,7 @@ public class PlayerSkeleton {
     public PlayerSkeleton() {
         p = new OhPlayer();
 
-        // Uncomment this to switch to 1-level minimax.
+        // Uncomment this to switch to 1-level minimax. (Note: does not work with current features due to the feature totalHeightNewPiece.
         //p.switchToMinimax(1);
     }
 
@@ -25,13 +25,10 @@ public class PlayerSkeleton {
     public static void main(String[] args) {
         State s = new State();
         new TFrame(s);
-        OhPlayer p = new OhPlayer();
-        
-        // Uncomment this to switch to 1-level minimax.
-        //p.switchToMinimax(1);
+        PlayerSkeleton p = new PlayerSkeleton();
         
         while(!s.hasLost()) {
-            s.makeMove(p.findBest(s,s.legalMoves()));
+            s.makeMove(p.pickMove(s,s.legalMoves()));
             s.draw();
             s.drawNext(0,0);
             try {

@@ -324,6 +324,9 @@ public class SequenceStore {
 }
 
 
+/**
+ * A sequence of pieces stored as a string for file processing.
+ */
 class TempSequence implements Comparable<TempSequence> {
     public final int score;
     public final String seqStr;

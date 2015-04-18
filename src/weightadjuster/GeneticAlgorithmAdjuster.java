@@ -402,7 +402,9 @@ public class GeneticAlgorithmAdjuster {
     
 }
 
-
+/**
+ * A heap to contain the k best weights (+ scores) found so far.
+ */
 class WeightHeap {
     private float[] scores;
     private float[][] weights;
@@ -503,12 +505,5 @@ class WeightHeap {
             }
         }
         throw new UnsupportedOperationException("Not supposed to reach here.");
-    }
-    
-    private float[] popMin() {
-        float[] weight = weights[0];
-        scores[0] = Integer.MAX_VALUE;
-        bubbleDown();
-        return weight;
     }
 }

@@ -182,7 +182,7 @@ public class FeatureFunctions2 {
         return sum;
     }
     
-    public static float sumSquareWellsFixed(NextState nextState) {
+    public static float sumWellDepths(NextState nextState) {
     	int sum = 0;
         int top[] = nextState.top;
         int field[][] = nextState.field;
@@ -207,7 +207,7 @@ public class FeatureFunctions2 {
     /**
      * compute the lowest and highest position of new piece. compute the total
      */
-    public static float totalHeightNewPiece(NextState nextState) {
+    public static float tetrominoHeight(NextState nextState) {
         int fieldBeforeCleared[][] = nextState.fieldBeforeCleared;
         if (nextState.lost) {
         	return State.ROWS;
