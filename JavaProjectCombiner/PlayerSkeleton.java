@@ -1,40 +1,56 @@
-import java.util.HashMap;
-import java.util.Random;
-import java.util.stream.IntStream;
-import java.io.BufferedReader;
-import java.util.Map;
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.TreeSet;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.stream.IntStream;
+import java.util.Map;
+import java.util.Arrays;
+import java.util.Random;
+import java.io.PrintWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.util.TreeSet;
 import java.util.ArrayList;
 
 
+/**
+ * WARNING: Requires Java Version 8 to run.
+ * If this does not compile, please upgrade to the latest version of Java.
+ */
 public class PlayerSkeleton {
+    
+    private OhPlayer p;
+    
+    public PlayerSkeleton() {
+        p = new OhPlayer();
+
+        // Uncomment this to switch to 1-level minimax. (Note: does not work with current features due to the feature totalHeightNewPiece.
+        //p.switchToMinimax(1);
+    }
 
     //implement this function to have a working system
-    public int pickMove(State s, int[][] legalMoves) {
-        
-        return 0;
+    public int[] pickMove(State s, int[][] legalMoves) {
+        return p.findBest(s, legalMoves);
     }
     
     public static void main(String[] args) {
         State s = new State();
-        new TFrame(s);
-        OhPlayer p = new OhPlayer();
-        p.switchToMinimax(1);
+        //new TFrame(s);
+        PlayerSkeleton p = new PlayerSkeleton();
+        int it = 0;
+        
         while(!s.hasLost()) {
-            s.makeMove(p.findBest(s,s.legalMoves()));
-            s.draw();
-            s.drawNext(0,0);
+            it++;
+            s.makeMove(p.pickMove(s,s.legalMoves()));
+            //s.draw();
+            //s.drawNext(0,0);
             try {
                 Thread.sleep(0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            int t = s.getRowsCleared();
+            if (it%2317 == 0) System.out.printf("%d,%03d,%03d rows\n",(t / 1000000),(t % 1000000) / 1000, t % 1000);
         }
         System.out.println("You have completed "+s.getRowsCleared()+" rows.");
     }
@@ -42,6 +58,12 @@ public class PlayerSkeleton {
 }
 
 
+/**
+ * FeatureFunctions is only for Feature Functions that are well defined.
+ * (The name must be descriptive)
+ * i.e. once you implement it, you will never change it.
+ * That's because changing the functions will affect already implemented algos!!!
+ */
 class FeatureFunctions {
 
     public static float exampleFeature(NextState nextState) {
@@ -918,6 +940,9 @@ class FeatureFunctions {
 }
 
 
+/**
+ * Extensions of the feature functions
+ */
 class FeatureFunctions2 {
     /**
      * Return weighted filled cells. cells at row-i costs i.
@@ -1095,10 +1120,32 @@ class FeatureFunctions2 {
         return sum;
     }
     
+    public static float sumWellDepths(NextState nextState) {
+    	int sum = 0;
+        int top[] = nextState.top;
+        int field[][] = nextState.field;
+        for (int j = 0; j < State.COLS; ++j) {
+            int wellDepth = 0;
+            for (int i = 0; i < State.ROWS; ++i) {
+                if (field[i][j] == 0) {
+                    ++wellDepth;
+                    boolean wallLeft = (j == 0 || field[i][j-1] != 0);
+                    boolean wallRight = (j == State.COLS-1 || field[i][j+1] != 0);
+                    if (wallLeft && wallRight) {
+                    	sum += wellDepth;
+                    }
+                } else {
+                    wellDepth = 0;
+                }
+            }
+        }
+        return sum;
+    }
+    
     /**
      * compute the lowest and highest position of new piece. compute the total
      */
-    public static float totalHeightNewPiece(NextState nextState) {
+    public static float tetrominoHeight(NextState nextState) {
         int fieldBeforeCleared[][] = nextState.fieldBeforeCleared;
         if (nextState.lost) {
         	return State.ROWS;
@@ -1113,7 +1160,7 @@ class FeatureFunctions2 {
                 }
             }
         }
-        return maxHeightPiece + minHeightPiece;
+        return (float)(maxHeightPiece + minHeightPiece) / 2f;
     }
     
     /**
@@ -1133,9 +1180,45 @@ class FeatureFunctions2 {
     	}
     	return 0;
     }
+    
+    public static float rowTransitions(NextState nextState) {
+    	int sum = 0;
+    	int field[][] = nextState.field;
+    	for (int i = 0; i < State.ROWS; ++i) {
+    		for (int j = 0; j < State.COLS; ++j) {
+    			boolean wallLeft = (j == 0 || field[i][j-1] != 0);
+    			boolean wallNow = (field[i][j] != 0);
+    			if (wallLeft ^ wallNow) {
+    				++sum;
+    			}
+    		}
+    		if (field[i][State.COLS - 1] == 0) {
+    			++sum;
+    		}
+    	}
+    	return sum;
+    }
+    
+    public static float columnTransitions(NextState nextState) {
+    	int sum = 0;
+    	int field[][] = nextState.field;
+    	for (int j = 0; j < State.COLS; ++j) {
+    		for (int i = 0; i < State.ROWS; ++i) {
+    			boolean wallDown = (i == 0 || field[i-1][j] != 0);
+    			boolean wallNow = (field[i][j] != 0);
+    			if (wallDown ^ wallNow) {
+    				++sum;
+    			}
+    		}
+    	}
+    	return sum;
+    }
 }
 
 
+/**
+ * Next state
+ */
 class NextState {
     
     public final int[][] field;
@@ -1319,6 +1402,9 @@ class NextState {
 }
 
 
+/**
+ * This class is used when we want to test the player with a predetermined sequence of pieces. 
+ */
 class PredeterminedState extends State {
     private final int[] pieces;
     private int pieceIndex;
@@ -1350,6 +1436,11 @@ class PredeterminedState extends State {
 }
 
 
+/**
+ * When the heap of good weights doesn't change for several iterations,
+ * we write the good weights to a file and reset the GA.
+ * This is the helper class to write the good weights to a randomly generated file.
+ */
 class ResultDump {
 
     public static final String PATH = "ResultDump/";
@@ -1384,6 +1475,11 @@ class ResultDump {
 }
 
 
+/**
+ * A state that generates a fixed sequence of pieces from a random seed.
+ * This is used for a fair comparison between states in our Genetic Algorithm.
+ * For each of the different set of weights in our GA, we give them the same game.
+ */
 class SeededState extends State {
     private Random rand;
     
@@ -1399,6 +1495,10 @@ class SeededState extends State {
 }
 
 
+/**
+ * A sequence of pieces that has killed an AI before.
+ * Stores an array of piece numbers and a score.
+ */
 class Sequence implements Comparable<Sequence> {
     private static final int SHORT_LIMIT = 30;
     
@@ -1517,6 +1617,15 @@ class Sequence implements Comparable<Sequence> {
     
 }
 
+/**
+ * The database of difficult sequences of pieces that killed an AI before
+ * Also contains functions to write and read sequences from files.
+ * 
+ * File Format: Score / Sequence, unsorted.
+ * 65525 216414371236757415273521
+ * 2153 10124621041520450120320121504105230125306
+ * 412 0123621046466213502121546210
+ */
 class SequenceStore {
     
     public static final String SEPARATOR_ROW = "\n";
@@ -1822,6 +1931,9 @@ class SequenceStore {
 }
 
 
+/**
+ * A sequence of pieces stored as a string for file processing.
+ */
 class TempSequence implements Comparable<TempSequence> {
     public final int score;
     public final String seqStr;
@@ -1849,111 +1961,43 @@ class TempSequence implements Comparable<TempSequence> {
     }
 }
 
-class BlahPlayer extends WeightedHeuristicPlayer {
-
-    protected void configure() {
-        features = new Feature[]{
-                (n)->FeatureFunctions.lost(n),
-                (n)->FeatureFunctions.maxHeight(n),
-                (n)->FeatureFunctions.numEmptyCells(n),
-                (n)->FeatureFunctions.sumHeight(n),
-                (n)->FeatureFunctions.bumpiness(n),
-                (n)->FeatureFunctions.numRowsCleared(n),
-                (n)->FeatureFunctions.numFilledCells(n)
-                //nextStateFeatureFunction(n)->FeatureFunctions.totalFilledCells(n)),
-                //good
-        };
-    }
-    
-    protected void initialiseWeights() {
-        weights = new float[features.length];
-        weights[0] = -99999.0f;
-        weights[1] = -1.0f;
-        weights[2] = -50.0f;
-        weights[3] = -30.0f;
-        weights[4] = -50.0f;
-        weights[5] = 50.0f;
-        weights[6] = -25.0f;
-    }
-    
-    private static Feature nextStateFeatureFunction(Feature feature) {
-        
-        return (nextState) -> {
-            int[] action = new int[]{0,3};
-            NextState nextNextState = nextState.generate(nextState, 0, action);
-            NextState nextNextNextState = nextNextState.generate(nextNextState, 0, action);
-            return feature.compute(nextNextNextState);
-        };
-    }
-
-    private static Feature good = (nextState) -> {
-
-        int[] action = new int[]{0,3};
-        NextState nextNextState = nextState.generate(nextState, 0, action);
-        NextState nextNextNextState = nextNextState.generate(nextNextState, 0, action);
-        return 4;
-        
-    };
-    
-    private static float good(NextState nextState) {
-        
-        
-        int[] action = new int[]{0,3};
-        NextState nextNextState = nextState.generate(nextState, 0, action);
-        NextState nextNextNextState = nextNextState.generate(nextNextState, 0, action);
-        return 4;
-    }
-
-
-    public static void main(String[] args) {
-        BlahPlayer p = new BlahPlayer();
-        SmoothingAdjuster adj = new SmoothingAdjuster(p.dim());
-        
-        adj.fixValue(0, -99999f);
-        learn(p, adj);
-    }
-    
-}
-
-
+/**
+ * Functional interface for feature functions
+ */
 interface Feature {
     float compute(NextState n);
 }
 
 
+/**
+ * Jonathan's Player
+ * choose features in configure()
+ * choose weights in initialiseWeights()
+ */
 class JonathanPlayer extends WeightedHeuristicPlayer {
 
 
     protected void configure() {
         features = new Feature[]{
                         (n)->FeatureFunctions.lost(n),
-                        (n)->FeatureFunctions.numFilledCells(n),
-                        (n)->FeatureFunctions2.weightedFilledCells(n),
-                        (n)->FeatureFunctions.maxHeight(n),
+                        (n)->FeatureFunctions2.tetrominoHeight(n),
+                        //(n)->FeatureFunctions2.clearLines(n),
+                        (n)->FeatureFunctions.numRowsCleared(n),
+                        (n)->FeatureFunctions2.rowTransitions(n),
+                        (n)->FeatureFunctions2.columnTransitions(n),
                         (n)->FeatureFunctions.numEmptyCells(n),
-                        (n)->FeatureFunctions2.clearLines(n),
-                        (n)->FeatureFunctions.maxHeightDifference(n),
-                        (n)->FeatureFunctions2.deepestOneHole(n),
-                        (n)->FeatureFunctions2.sumOfAllHoles(n),
-                        (n)->FeatureFunctions2.horizontalRoughness(n),
-                        (n)->FeatureFunctions2.verticalRoughness(n),
-                        (n)->FeatureFunctions2.wellCount(n),
-                        (n)->FeatureFunctions2.weightedEmptyCells(n),
-                        (n)->FeatureFunctions2.highestHole(n),
-                        (n)->FeatureFunctions2.surfaceSmoothness(n),
-                        (n)->FeatureFunctions2.sumSquareWells(n),
-                        (n)->FeatureFunctions2.totalHeightNewPiece(n),
-                        (n)->FeatureFunctions2.landingHeight(n),
-                        
-                        (n)->FeatureFunctions.bumpiness(n),
-                        (n)->FeatureFunctions.topPerimeter(n),
-                        (n)->FeatureFunctions.holeAndPitColumns(n),
-                        (n)->FeatureFunctions.holeAndPitColumnsMin(n),
+                        (n)->FeatureFunctions2.sumWellDepths(n)
         };
     }
     
     protected void initialiseWeights() {
         weights = new float[features.length];
+        //clearLines
+        //weights = new float[]{-999999f,-4500.158825082766f,3418.1268101392694f,-3217.8882868487753f,-9348.695305445199f,-7899.265427351652f,-3385.5972247263626f};
+        
+        //numRowsCleared
+        weights = new float[]{-99999999f,-1224f, -133f, -424f, -2026f, -832f, -663f};
+        
         //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -5, -30, 0};
         //weights = new float[]{-99999.0f, -12, -30, 20, -2, -26, 0, -15, -5, -10};
         //weights = new float[]{-99999.0f, 299.2644f, -241.19064f, -269.57117f, -271.10962f, -175.32292f, 149.07938f, -269.22433f, -184.39595f, -274.9451f, -233.19809f, -293.61053f};
@@ -1995,12 +2039,12 @@ class JonathanPlayer extends WeightedHeuristicPlayer {
 
     
     public static void main(String[] args) {
-        int choice = 1; // 0 to watch, 1 to learn.
+        int choice = 0; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new JonathanPlayer();
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
         GeneticAlgorithmSD adjuster = new GeneticAlgorithmSD(p, p.dim(), 20);
-        adjuster.fixValue(0, -9999999f);
+        adjuster.fixValue(0, -99999999f);
         /*adjuster.fixSign(0,-1);
         adjuster.fixSign(1,-1);
         adjuster.fixSign(2,-1);
@@ -2022,7 +2066,7 @@ class JonathanPlayer extends WeightedHeuristicPlayer {
         //adjuster.fixValue(6, 0f);
         
         //p.configure();
-        //p.switchToMinimax(2);
+        //p.switchToMinimax(1);
         int[] sequence = new int[]{6, 2, 3, 2, 6, 3, 6, 3, 3, 3, 4, 1, 6, 2, 3, 2, 5, 0, 6, 4, 3, 5, 2, 5, 2, 4, 3, 6, 5, 0, 4, 2, 2, 5, 0, 0, 4, 6, 0, 0, 6, 6, 6, 4, 6, 4, 4, 3, 3, 0, 5, 3, 6, 0, 3, 2, 4, 1, 4, 3, 2, 6, 1, 5, 3, 2, 2, 2, 6, 6, 4, 5, 6, 1, 4, 4, 4, 0, 6, 6, 1, 1, 6, 1, 5, 3, 5, 0, 3, 0, 5, 6, 2, 4, 4, 0, 5, 0, 2, 6, 0, 6, 2, 2, 0, 1, 3, 0, 3, 1, 1, 5, 5, 5, 5, 2};
         switch(choice) {
             case -1:
@@ -2040,12 +2084,19 @@ class JonathanPlayer extends WeightedHeuristicPlayer {
 }
 
 
+/**
+ * Oh's Player
+ * choose features in configure()
+ * choose weights in initialiseWeights()
+ */
 class OhPlayer extends WeightedHeuristicPlayer {
 
-
+    /**
+     * Choose features here
+     */
     protected void configure() {
         features = new Feature[]{
-                (n)->FeatureFunctions.lost(n),
+                /*(n)->FeatureFunctions.lost(n),
                 (n)->FeatureFunctions.bumpiness(n),
                 (n)->FeatureFunctions.sumHeight(n), //
                 // (n)->FeatureFunctions.numRowsCleared(n), //
@@ -2072,76 +2123,36 @@ class OhPlayer extends WeightedHeuristicPlayer {
                 (n)->FeatureFunctions2.surfaceSmoothness(n),
                 //(n)->FeatureFunctions2.totalHeightNewPiece(n), // messes up sequence database
                 (n)->FeatureFunctions2.sumSquareWells(n),
-                (n)->FeatureFunctions2.landingHeight(n)
+                (n)->FeatureFunctions2.landingHeight(n)*/
                 
 
-                /*(n)->FeatureFunctions.lost(n),
+                (n)->FeatureFunctions.lost(n),
+                (n)->FeatureFunctions2.tetrominoHeight(n),
+                //(n)->FeatureFunctions2.clearLines(n),
                 (n)->FeatureFunctions.numRowsCleared(n),
-                (n)->FeatureFunctions2.totalHeightNewPiece(n),
-                (n)->FeatureFunctions.sumHeight(n),
-                (n)->FeatureFunctions.sumHoleDistanceFromTop(n),
-                (n)->FeatureFunctions.holeAndPitColumns(n),
-                (n)->FeatureFunctions.holeAndPitColumnsMin(n),
-                (n)->FeatureFunctions2.deepestOneHole(n),
-                (n)->FeatureFunctions2.highestHole(n),
-                (n)->FeatureFunctions2.wellCount(n),
-                (n)->FeatureFunctions2.sumSquareWells(n),
-                (n)->FeatureFunctions.numHoles(n),
-                (n)->FeatureFunctions2.weightedEmptyCells(n),
-                (n)->FeatureFunctions2.horizontalRoughness(n),
-                (n)->FeatureFunctions2.verticalRoughness(n),
-                (n)->FeatureFunctions.bumpiness(n),
-                (n)->FeatureFunctions.topPerimeter(n)*/
+                (n)->FeatureFunctions2.rowTransitions(n),
+                (n)->FeatureFunctions2.columnTransitions(n),
+                (n)->FeatureFunctions.numEmptyCells(n),
+                (n)->FeatureFunctions2.sumWellDepths(n),
+                (n)->FeatureFunctions2.highestHole(n)
                 
         };
     }
     
     /**
-     * Genetic Algorithm Results
-     * Features: lost, bumpiness, sumHeight, numRowsCleared, maxHeightDifference,
-     *           numHoles, sumHoleDistanceFromTop, holeAndPitColumns, topPerimeter
-                (n) -> FeatureFunctions.lost(n),
-                (n) -> FeatureFunctions.bumpiness(n),
-                (n) -> FeatureFunctions.sumHeight(n),
-                (n) -> FeatureFunctions.numRowsCleared(n),
-                (n) -> FeatureFunctions.maxHeightDifference(n),
-                (n) -> FeatureFunctions.numHoles(n),
-                (n) -> FeatureFunctions.sumHoleDistanceFromTop(n),
-                (n) -> FeatureFunctions.holeAndPitColumns(n),
-                (n) -> FeatureFunctions.topPerimeter(n)
-     *  Hi-Score: 1561.0 | [2.0, -5.0, -150.0, 0.1, 0.5, -2.0, -80.0, -40.0, -80.0]
-     *  State #17. Score = 1236.5   [-0.02, -20.0, -150.0, -2.0, 2.0, -2.0, -10.0, -5.0, -20.0]
-     *  Hi-Score: 2340.5 | [-80.0, -5.0, 0.01, 0.02, 0.05, -20.0, -5.0, -2.0, -5.0]
-     *  Hi-Score: 2259.0 | [-2.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -3.0]
-     *  Hi-Score: 2525.0 | [-2.0, -100.0, -2.0, -0.01, 5.0, -500.0, -40.0, -70.0, -3.0]
-     *  Hi-Score: 4496.5 | [-0.01, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -3.0]
-     *  
-     *  
-     *  
-                (n) -> FeatureFunctions.lost(n),
-                (n) -> FeatureFunctions.bumpiness(n),
-                (n) -> FeatureFunctions.sumHeight(n),
-                (n) -> FeatureFunctions.numRowsCleared(n),
-                (n) -> FeatureFunctions.maxHeightDifference(n),
-                (n) -> FeatureFunctions.numHoles(n),
-                (n) -> FeatureFunctions.sumHoleDistanceFromTop(n),
-                (n) -> FeatureFunctions.holeAndPitColumns(n),
-                (n) -> FeatureFunctions.holeAndPitColumnsMin(n),
-                (n) -> FeatureFunctions.topPerimeter(n)
-     *  Hi-Score: 8299.5 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, 0.01, 0.5]
-     *  Hi-Score: 7358.25 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -0.1, 2.0]
-     *  Score =   6870.500 [  -100.00,    -2.00,    -0.50,     5.00,  -500.00,   -40.00,   -70.00,     0.01,    -3.00]
-     *  Hi-Score: 12067.75 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -0.1, -3.0]
-     *  Hi-Score: 13924.0 | [-99999.0, -100.0, -2.0, -0.01, 5.0, -500.0, -40.0, -70.0, -40.0, -3.0]
-     *  Hi-Score: 18838.75 | [-99999.0, -100.0, -2.0, -0.01, 5.0, -500.0, -40.0, -70.0, -40.0, -1.0]
-     *  Hi-Score: 24683.75 | [-99999.0, -100.0, -2.0, -0.5, 5.0, -500.0, -40.0, -70.0, -40.0, -3.0]
-     *
-     *  new float[]{-99999.0f, -100.0f, -2.0f, -0.5f, 5.0f, -500.0f, -40.0f, -70.0f, -40.0f, -3.0f};
+     * Set weights here
      */
     protected void initialiseWeights() {
         weights = new float[features.length];
-        //weights = new float[]{-9999999f, -2002f, 1883f, -1111f, -1386f, -1061f, -1922f, -702f, 1397f, -78f, -1651f, -1576f, -1963f, -844f, 57f, 910f, -1569f, 653f, -11f, -7f};
-        weights = new float[]{-9999999f, -1835f, 1886f, 1881f, -1353f, -1668f, -1782f, -693f, 1304f, -77f, 873f, -1623f, -1990f, -805f, 752f, 901f, -1421f, 632f, -7f, -10f};
+
+        // Our best set of weights (average 5mil)
+        weights = new float[]{-99999999f,-1224f, -133f, -424f, -2026f, -832f, -663f, 0};
+        
+        // Another set of relatively good weights (average 5mil) using the same set of feature functions
+        //weights = new float[]{-99999999, -1037, 573, -924, -1954, -2040, -1298, -288};
+        
+        // A set of good weights (average 100k) using the commeted out set of feature functions above.
+        //weights = new float[]{-9999999f, -1835f, 1886f, 1881f, -1353f, -1668f, -1782f, -693f, 1304f, -77f, 873f, -1623f, -1990f, -805f, 752f, 901f, -1421f, 632f, -7f, -10f};
     };
     
     /**
@@ -2178,6 +2189,7 @@ class OhPlayer extends WeightedHeuristicPlayer {
         int choice = -2; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new OhPlayer();
+        //System.out.println(Arrays.toString(p.weights));
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
         //adjuster.fixValue(1, -0f);
         //adjuster.fixValue(7, -0f);
@@ -2187,10 +2199,10 @@ class OhPlayer extends WeightedHeuristicPlayer {
         //adjuster.fixValue(5, 1000f);
         //adjuster.fixValue(6, 0f);
        
-        p.switchToMinimax(1);
+        //p.switchToMinimax(1);
         switch(choice) {
             case -2:
-                checkAverageScore(p, 20);break;
+                checkAverageScore(p, 5);break;
             case -1:
                 checkScore(p);break;
             case 0:
@@ -2211,165 +2223,14 @@ class OhPlayer extends WeightedHeuristicPlayer {
 }
 
 
-class OhTestPlayer {
-	private Random rand = new Random();
-	private int lastPiece;
-	private int lastOrient;
-	private int lastPos;
-	private int current;
-
-	public OhTestPlayer() {
-		current = 0;
-		lastPiece = 0;
-	}
-
-
-
-
-	public int[] findBest(State s, int[][] legalMoves) {
-		float largest = Float.NEGATIVE_INFINITY;
-		int[] bestMove = null;
-		for (int[] legalMove : legalMoves) {
-			NextState nextState = NextState.generate(s, legalMove);
-			float sum = 0;
-
-			sum += -1f * FeatureFunctions.sumHeight(nextState);
-			//sum += -20f * FeatureFunctions.maximumColumnHeight(nextState);
-			sum += -3f * FeatureFunctions.numEmptyCells(nextState);
-			sum += FeatureFunctions.lost(nextState) > 0 ? Float.NEGATIVE_INFINITY : 0;
-			sum += -1f * FeatureFunctions.bumpiness(nextState);
-			sum += 1000f * FeatureFunctions.numRowsCleared(nextState);
-
-			if (sum >= largest) {
-				bestMove = legalMove;
-				largest = sum;
-			}
-		}
-
-		return bestMove;
-	}
-
-
-
-
-	//implement this function to have a working system
-	public int[] pickMove(State s, int[][] legalMoves) {
-		int piece = s.getNextPiece();
-		int orient = chooseOrient(piece);
-		int position = State.COLS-1;
-
-		if (piece != 1 || rand.nextInt(3) != 0) {
-			current+=width(lastOrient, lastPiece);
-			if (current > posLimit(orient, piece)) {
-				current = 0;
-			}
-			position = current;
-		}
-
-		lastPiece = piece;
-		lastOrient = orient;
-		lastPos = position;
-		return new int[]{orient, position};
-	}
-
-
-	private int chooseOrient(int piece) {
-		final int[] o = new int[]{0,0,0,0,0,1,1};
-		return o[piece];
-	}
-
-
-	private int posLimit(int orient, int piece) {
-		return State.COLS-width(orient, piece);
-	}
-
-	private static int width(int orient, int piece) {
-		final int[][] w = new int[][]{
-				new int[]{2},
-				new int[]{1,4},
-				new int[]{2,3,2,3},
-				new int[]{2,3,2,3},
-				new int[]{2,3,2,3},
-				new int[]{3,2},
-				new int[]{3,2}
-		};
-		return w[piece][orient];
-	}
-
-	/*public static void main(String[] args) {
-        State s = new State();
-        new TFrame(s);
-        OhTestPlayer p = new OhTestPlayer();
-        while(!s.hasLost()) {
-            s.makeMove(p.findBest(s,s.legalMoves()));
-            s.draw();
-            s.drawNext(0,0);
-            try {
-                Thread.sleep(150);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println("You have completed "+s.getRowsCleared()+" rows.");
-    }*/
-
-	public static void main(String[] args) {
-		int sum = 0;
-		int sumSquare = 0;
-		int tries = 100;
-		//ArrayList<Integer> list = new ArrayList<>();
-
-		for (int i=0; i<tries; i++) {
-			State s = new State();
-			OhTestPlayer p = new OhTestPlayer();
-
-			while(!s.hasLost()) {
-				s.makeMove(p.findBest(s,s.legalMoves()));
-				//s.draw();
-				//s.drawNext(0,0);
-			}
-			sum += s.getRowsCleared();
-			//list.add(s.getRowsCleared());
-			sumSquare += s.getRowsCleared()*s.getRowsCleared();
-		}
-		double stdDev = Math.sqrt((float)(tries*sumSquare - sum*sum)/tries/tries);
-
-		//System.out.println(list);
-		System.out.println("Average rows cleared: " + (sum/tries));
-		System.out.println("Standard Dev: " + stdDev);
-	}    
-
-}
-
-
-class TemplateSkeleton {
-
-    //implement this function to have a working system
-    public int pickMove(State s, int[][] legalMoves) {
-        
-        return 0;
-    }
-    
-    public static void main(String[] args) {
-        State s = new State();
-        new TFrame(s);
-        TemplateSkeleton p = new TemplateSkeleton();
-        while(!s.hasLost()) {
-            s.makeMove(0, p.pickMove(s,s.legalMoves()));
-            s.draw();
-            s.drawNext(0,0);
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println("You have completed "+s.getRowsCleared()+" rows.");
-    }
-    
-}
-
-
+/**
+ * A configure, extensible weighted heuristic player.
+ * The other players extend this class.
+ * Override the functions "configure" and "initialiseWeights" with your own.
+ * 
+ * choose features in configure()
+ * choose weights in initialiseWeights()
+ */
 class WeightedHeuristicPlayer {
     protected float[] weights;
     protected Feature[] features;
@@ -2406,10 +2267,9 @@ class WeightedHeuristicPlayer {
     
     protected void initialiseWeights() {
         weights = new float[features.length];
-        //weights = new float[]{-99999.0f, -5f, -5f};
-        //weights = new float[]{-99999.0f, -0.0f, -72.27131f, -0.39263827f, -18.150364f, 1.9908575f, -4.523054f, 2.6717715f}; // <-- good weights.
-        weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, 100f, 100f, 10f}; // <-- better weights.
-        //weights = new float[]{-99999.0f, -1, -4, -95};
+        
+        // example weights
+        weights = new float[]{-99999.0f, -0.0f, -80.05821f, 0.2864133f, -16.635815f, -0.0488357f, -2.9707198f, -1f, 100f, 100f, 10f};
     }
 
     public float playWithWeights(float[] weights, int times) {
@@ -2732,7 +2592,7 @@ class WeightedHeuristicPlayer {
     public static void watch(WeightedHeuristicPlayer p) {
         final int REPORT_INTERVAL = 1000;
         State s = new State();
-        s = new PredeterminedState(new int[0]);
+        //s = new PredeterminedState(new int[0]);
         new TFrame(s);
 
         int counter = REPORT_INTERVAL;
@@ -2767,7 +2627,7 @@ class WeightedHeuristicPlayer {
             s.draw();
             s.drawNext(0,0);
             try {
-                Thread.sleep(10);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -2839,6 +2699,9 @@ class WeightedHeuristicPlayer {
 }
 
 
+/**
+ * Main Genetic Algorithm that we used 
+ */
 class GeneticAlgorithmAdjuster {
     protected static Random rand = new Random();
     protected int dim;
@@ -2848,7 +2711,7 @@ class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 0;
+    protected final int INITIAL_GOOD_STATES = 1;
     protected int PRINT_INTERVAL = 10;
     
     protected float total = 0;
@@ -2860,7 +2723,7 @@ class GeneticAlgorithmAdjuster {
     
     //protected float[] highScoreWeights;
     //protected float highScore;
-    protected int STALE_HEAP_THRESHOLD = 100; // terminate after 5 iterations of no improvement
+    protected int STALE_HEAP_THRESHOLD = 400; // terminate after 9 iterations of no improvement
     protected WeightHeap bestHeap = new WeightHeap(10);
     
     //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
@@ -2953,26 +2816,13 @@ class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-                new float[]{-1627f, 1817f, 1706f, -1361f, -1299f, -1786f, -706f, 1331f, -92f, 303f, -1602f, -1963f, -865f, -1516f, 910f, -2001f, 654f, 0f, -19f},
-                new float[]{-1917f, 1887f, 1714f, -1366f, -1069f, -1782f, -700f, 1331f, -79f, 304f, -1624f, -1971f, -794f, -1519f, 931f, -1996f, 654f, -7f, -13f},
-                new float[]{-1923f, 1890f, 1705f, -1353f, -1061f, -1794f, -709f, 1326f, -78f, 307f, -1621f, -1965f, -806f, 549f, 903f, -1990f, 655f, -13f, -5f},
-                new float[]{-1919f, 1882f, 1704f, -1369f, -1497f, -1783f, -704f, 1323f, -79f, 292f, -1612f, -1982f, -804f, 582f, 896f, -1981f, 671f, -6f, 4f},
-                new float[]{-1929f, 1902f, 1701f, -1362f, -1039f, -1796f, -696f, 1343f, -79f, 435f, -1612f, -1963f, -832f, 581f, 899f, -1924f, 668f, 2f, 6f},
-                new float[]{-1919f, 1883f, 1703f, -1360f, -1067f, -1777f, -702f, 1326f, -78f, 306f, -1614f, -1966f, -801f, 545f, 907f, -1992f, 644f, -6f, -13f},
-                new float[]{-1923f, 1891f, 1706f, -1353f, -1308f, -1779f, -696f, 1328f, -88f, 428f, -1619f, -1976f, -826f, 580f, 895f, -1932f, 642f, -8f, -3f},
-                new float[]{-1626f, 1805f, 1699f, -1361f, -1300f, -1796f, -707f, 1338f, -88f, 305f, -1614f, -1969f, -865f, -1514f, 896f, -2010f, 646f, -2f, -16f},
-                new float[]{-1916f, 1886f, 1699f, -1368f, -1069f, -1781f, -691f, 1339f, -92f, 308f, -1618f, -1978f, -808f, -1518f, 932f, -1990f, 652f, 4f, -13f},
-                new float[]{-1930f, 1878f, 1700f, -1356f, -1072f, -1780f, -702f, 1333f, -94f, 297f, -1618f, -1965f, -793f, 544f, 889f, -1992f, 653f, -10f, -8f},
-                new float[]{-1913f, 1889f, 1707f, -1353f, -1485f, -1783f, -711f, 1329f, -92f, 292f, -1613f, -1981f, -808f, 579f, 903f, -1981f, 688f, -11f, -7f},
-                new float[]{-1915f, 1900f, 1711f, -1349f, -1043f, -1792f, -704f, 1344f, -88f, 435f, -1631f, -1965f, -843f, 577f, 903f, -1941f, 670f, -8f, -2f},
-                new float[]{-1927f, 1891f, 1710f, -1369f, -1063f, -1795f, -716f, 1328f, -77f, 297f, -1627f, -1959f, -803f, 542f, 906f, -2003f, 639f, -15f, -11f},
-                new float[]{-1926f, 1887f, 1698f, -1360f, -1289f, -1794f, -692f, 1333f, -78f, 441f, -1625f, -1976f, -832f, 576f, 891f, -1937f, 640f, -13f, -2f}
+                new float[]{-1224f, -133f, -424f, -2026f, -832f, -663f, 0}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
         if (weights.length != dim) {
-            generateRandomState(dim);
-            //throw new UnsupportedOperationException("ERROR!!! WRONG DIM!");
+            //generateRandomState(dim);
+            throw new UnsupportedOperationException("ERROR!!! WRONG DIM!");
         }
         return weights;
     }
@@ -3244,7 +3094,9 @@ class GeneticAlgorithmAdjuster {
     
 }
 
-
+/**
+ * A heap to contain the k best weights (+ scores) found so far.
+ */
 class WeightHeap {
     private float[] scores;
     private float[][] weights;
@@ -3346,16 +3198,13 @@ class WeightHeap {
         }
         throw new UnsupportedOperationException("Not supposed to reach here.");
     }
-    
-    private float[] popMin() {
-        float[] weight = weights[0];
-        scores[0] = Integer.MAX_VALUE;
-        bubbleDown();
-        return weight;
-    }
 }
 
 
+/**
+ * Another idea of genetic algorithm that doesn't use Gray Code.
+ * Not in use - Did not work as well as GeneticAlgorithmAdjuster
+ */
 class GeneticAlgorithmAdjuster2 {
     private static Random rand = new Random();
     private int dim;
@@ -3529,6 +3378,10 @@ class GeneticAlgorithmAdjuster2 {
 }
 
 
+/**
+ * Another idea of genetic algorithm that makes use of the Sequence Database.
+ * We also used this.
+ */
 class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     //private static int SAVE_INTERVAL = 1;
     private static final double DATABASE_SEQUENCE_PROBABILTY = 1f;
@@ -3692,7 +3545,7 @@ class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     @Override
     protected int mutationBits() {
         int s = (int)lastAverage;
-        int bits = 12;
+        int bits = 9;
         while (s > 3) {
             s /= 3;
             bits--;
@@ -3760,6 +3613,9 @@ class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
 
 
 
+/**
+ * Not a very good weight adjuster.
+ * */
 class OhAdjuster implements WeightAdjuster {
     
     float currentBest;
@@ -3820,6 +3676,9 @@ class OhAdjuster implements WeightAdjuster {
 }
 
 
+/**
+ * Utility function to play partial games (maybe using a sequence from the sequence database).
+ */
 class PartialGamePlayer {
     private static final int CONST_ADD = 300;
     private static final int INITIAL_HEIGHT = 5;
@@ -3871,6 +3730,12 @@ class PartialGamePlayer {
 }
 
 
+/**
+ * Vector space model based learning algorithm.
+ * Attempts to create a n-dimensional map of the scores using a finite number
+ * of data points, which it will continually generate.
+ * Not in use - GA is much better.
+ */
 class SmoothingAdjuster implements WeightAdjuster {
     final float weightRange = 100f;
     //final int nIntervals = 12;
@@ -4193,6 +4058,10 @@ class SmoothingAdjuster implements WeightAdjuster {
 }
 
 
+/**
+ * An interface for learning algorithms. We didn't use it eventually.
+ * Not in use. 
+ */
 interface WeightAdjuster {
     /**
      * @return a string if it has something to report.

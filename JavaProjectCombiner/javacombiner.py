@@ -46,12 +46,28 @@ def getImports(file):
             impts.append(line)
     return impts
 
-def processFile(file):
+def processFile(file, isPublic):
     f = open(file)
     s = f.read()
     f.close()
     
-    return s[getFirstClassInterface(s):]
+    startIndex = getFirstClassInterface(s)
+    classCommentIndex = s.find('/*')
+    commentEndIndex = s.find('*/', classCommentIndex)
+    if classCommentIndex < startIndex < commentEndIndex:
+        startIndex = commentEndIndex + getFirstClassInterface(s[commentEndIndex:])
+    
+    publicString = ''
+    if isPublic:
+        publicString = 'public '
+        
+    if classCommentIndex > startIndex:
+        print('Missing class comment for ' + file)
+        return publicString + s[startIndex:]
+    else:
+        return s[classCommentIndex:commentEndIndex] + '*/\n' + publicString + s[startIndex:]
+
+    #return s[getFirstClassInterface(s):]
 
 if __name__ == '__main__':
     ds = os.listdir(folderPath)
@@ -67,21 +83,20 @@ if __name__ == '__main__':
     jImports = set()
     for file in allFiles:
         jImports = jImports.union(getImports(file))
-        
     
     s = []
     for imp in jImports:
         s.append(imp + '\n')
     
-    s.append('\n\npublic ')
+    s.append('\n\n')
     for file in allFiles:
         if isMain(file):
-            s.append(processFile(file))
+            s.append(processFile(file, True))
     
     s.append('\n\n')
     for file in allFiles:
         if not isMain(file):
-            pro = processFile(file)
+            pro = processFile(file, False)
             s.append(pro)
             print('- combine ' + getName(file))
             s.append('\n\n')
