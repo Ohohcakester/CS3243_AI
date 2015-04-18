@@ -1,5 +1,7 @@
 package players;
 
+import java.util.Arrays;
+
 import main.FeatureFunctions;
 import main.FeatureFunctions2;
 import main.NextState;
@@ -99,8 +101,9 @@ public class OhPlayer extends WeightedHeuristicPlayer {
      */
     protected void initialiseWeights() {
         weights = new float[features.length];
-        
-        weights = new float[]{-9999999, -1037, 573, -924, -1954, -2040, -1298, -288};
+
+        weights = new float[]{-99999999f,-1224f, -133f, -424f, -2026f, -832f, -663f, 0};
+        //weights = new float[]{-99999999, -1037, 573, -924, -1954, -2040, -1298, -288};
         //weights = new float[]{-9999999f, -1835f, 1886f, 1881f, -1353f, -1668f, -1782f, -693f, 1304f, -77f, 873f, -1623f, -1990f, -805f, 752f, 901f, -1421f, 632f, -7f, -10f};
     };
     
@@ -138,6 +141,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         int choice = -2; // 0 to watch, 1 to learn.
 
         WeightedHeuristicPlayer p = new OhPlayer();
+        //System.out.println(Arrays.toString(p.weights));
         //WeightAdjuster adjuster = new SmoothingAdjuster(p.dim());
         //adjuster.fixValue(1, -0f);
         //adjuster.fixValue(7, -0f);
@@ -150,7 +154,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
         //p.switchToMinimax(1);
         switch(choice) {
             case -2:
-                checkAverageScore(p, 20);break;
+                checkAverageScore(p, 5);break;
             case -1:
                 checkScore(p);break;
             case 0:
