@@ -5,8 +5,7 @@ import main.State;
 import players.WeightedHeuristicPlayer;
 
 /**
- * A configure, extensible weighted heuristic player.
- * Override the functions "configure" and "initialiseWeights" with your own.
+ * Utility function to play partial games (maybe using a sequence from the sequence database).
  */
 public class PartialGamePlayer {
     private static final int CONST_ADD = 300;

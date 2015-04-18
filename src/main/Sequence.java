@@ -3,6 +3,10 @@ package main;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * A sequence of pieces that has killed an AI before.
+ * Stores an array of piece numbers and a score.
+ */
 public class Sequence implements Comparable<Sequence> {
     private static final int SHORT_LIMIT = 30;
     

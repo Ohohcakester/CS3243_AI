@@ -11,13 +11,13 @@ import java.util.Random;
 import java.util.TreeSet;
 
 /**
- * Format: Score / Sequence, unsorted.
+ * The database of difficult sequences of pieces that killed an AI before
+ * Also contains functions to write and read sequences from files.
+ * 
+ * File Format: Score / Sequence, unsorted.
  * 65525 216414371236757415273521
  * 2153 10124621041520450120320121504105230125306
  * 412 0123621046466213502121546210
- * 
- * @author Oh
- *
  */
 public class SequenceStore {
     

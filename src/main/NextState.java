@@ -1,7 +1,9 @@
 package main;
 import java.util.Arrays;
 
-
+/**
+ * Next state
+ */
 public class NextState {
     
     public final int[][] field;

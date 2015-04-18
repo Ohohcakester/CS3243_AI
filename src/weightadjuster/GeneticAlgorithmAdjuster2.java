@@ -6,6 +6,10 @@ import java.util.Random;
 
 import players.WeightedHeuristicPlayer;
 
+/**
+ * Another idea of genetic algorithm that doesn't use Gray Code.
+ * Not in use - Did not work as well as GeneticAlgorithmAdjuster
+ */
 public class GeneticAlgorithmAdjuster2 {
     private static Random rand = new Random();
     private int dim;

@@ -7,6 +7,9 @@ import java.util.Random;
 import main.ResultDump;
 import players.WeightedHeuristicPlayer;
 
+/**
+ * Main Genetic Algorithm that we used 
+ */
 public class GeneticAlgorithmAdjuster {
     protected static Random rand = new Random();
     protected int dim;

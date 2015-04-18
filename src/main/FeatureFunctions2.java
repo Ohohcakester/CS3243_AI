@@ -2,6 +2,9 @@ package main;
 
 import java.util.Random;
 
+/**
+ * Extensions of the feature functions
+ */
 public class FeatureFunctions2 {
     /**
      * Return weighted filled cells. cells at row-i costs i.
