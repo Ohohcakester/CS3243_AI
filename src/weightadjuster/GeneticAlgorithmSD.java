@@ -169,7 +169,7 @@ public class GeneticAlgorithmSD extends GeneticAlgorithmAdjuster {
     @Override
     protected int mutationBits() {
         int s = (int)lastAverage;
-        int bits = 12;
+        int bits = 9;
         while (s > 3) {
             s /= 3;
             bits--;

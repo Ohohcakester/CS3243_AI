@@ -12,7 +12,7 @@ public class OhPlayer extends WeightedHeuristicPlayer {
 
     protected void configure() {
         features = new Feature[]{
-                (n)->FeatureFunctions.lost(n),
+                /*(n)->FeatureFunctions.lost(n),
                 (n)->FeatureFunctions.bumpiness(n),
                 (n)->FeatureFunctions.sumHeight(n), //
                 // (n)->FeatureFunctions.numRowsCleared(n), //
@@ -39,26 +39,18 @@ public class OhPlayer extends WeightedHeuristicPlayer {
                 (n)->FeatureFunctions2.surfaceSmoothness(n),
                 //(n)->FeatureFunctions2.totalHeightNewPiece(n), // messes up sequence database
                 (n)->FeatureFunctions2.sumSquareWells(n),
-                (n)->FeatureFunctions2.landingHeight(n)
+                (n)->FeatureFunctions2.landingHeight(n)*/
                 
 
-                /*(n)->FeatureFunctions.lost(n),
-                (n)->FeatureFunctions.numRowsCleared(n),
+                (n)->FeatureFunctions.lost(n),
                 (n)->FeatureFunctions2.totalHeightNewPiece(n),
-                (n)->FeatureFunctions.sumHeight(n),
-                (n)->FeatureFunctions.sumHoleDistanceFromTop(n),
-                (n)->FeatureFunctions.holeAndPitColumns(n),
-                (n)->FeatureFunctions.holeAndPitColumnsMin(n),
-                (n)->FeatureFunctions2.deepestOneHole(n),
-                (n)->FeatureFunctions2.highestHole(n),
-                (n)->FeatureFunctions2.wellCount(n),
-                (n)->FeatureFunctions2.sumSquareWells(n),
-                (n)->FeatureFunctions.numHoles(n),
-                (n)->FeatureFunctions2.weightedEmptyCells(n),
-                (n)->FeatureFunctions2.horizontalRoughness(n),
-                (n)->FeatureFunctions2.verticalRoughness(n),
-                (n)->FeatureFunctions.bumpiness(n),
-                (n)->FeatureFunctions.topPerimeter(n)*/
+                //(n)->FeatureFunctions2.clearLines(n),
+                (n)->FeatureFunctions.numRowsCleared(n),
+                (n)->FeatureFunctions2.rowTransitions(n),
+                (n)->FeatureFunctions2.columnTransitions(n),
+                (n)->FeatureFunctions.numEmptyCells(n),
+                (n)->FeatureFunctions2.sumSquareWellsFixed(n),
+                (n)->FeatureFunctions2.highestHole(n)
                 
         };
     }
@@ -107,7 +99,8 @@ public class OhPlayer extends WeightedHeuristicPlayer {
      */
     protected void initialiseWeights() {
         weights = new float[features.length];
-        weights = new float[]{-9999999f, -2002f, 1883f, -1111f, -1386f, -1061f, -1922f, -702f, 1397f, -78f, -1651f, -1576f, -1963f, -844f, 57f, 910f, -1569f, 653f, -11f, -7f};
+        
+        weights = new float[]{-9999999, -1037, 573, -924, -1954, -2040, -1298, -288};
         //weights = new float[]{-9999999f, -1835f, 1886f, 1881f, -1353f, -1668f, -1782f, -693f, 1304f, -77f, 873f, -1623f, -1990f, -805f, 752f, 901f, -1421f, 632f, -7f, -10f};
     };
     

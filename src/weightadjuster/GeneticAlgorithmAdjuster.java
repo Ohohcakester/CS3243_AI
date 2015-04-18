@@ -16,7 +16,7 @@ public class GeneticAlgorithmAdjuster {
     protected WeightedHeuristicPlayer w;
     protected PartialGamePlayer p;
     protected int stateNumber;
-    protected final int INITIAL_GOOD_STATES = 15;
+    protected final int INITIAL_GOOD_STATES = 1;
     protected int PRINT_INTERVAL = 10;
     
     protected float total = 0;
@@ -28,7 +28,7 @@ public class GeneticAlgorithmAdjuster {
     
     //protected float[] highScoreWeights;
     //protected float highScore;
-    protected int STALE_HEAP_THRESHOLD = 100; // terminate after 5 iterations of no improvement
+    protected int STALE_HEAP_THRESHOLD = 400; // terminate after 9 iterations of no improvement
     protected WeightHeap bestHeap = new WeightHeap(10);
     
     //protected static float[] conversionTable = new float[]{0.01f, 0.02f, 0.05f, 0.1f, 0.5f, 1f, 2f, 3f, 5f, 10f, 20f, 40f, 70f, 100f, 500f, 8000};
@@ -121,27 +121,13 @@ public class GeneticAlgorithmAdjuster {
     
     private float[] generateInitialGoodState() {
         float[][] goodWeights = new float[][] {
-        		new float[]{-4500.158825082766f,3418.1268101392694f,-3217.8882868487753f,-9348.695305445199f,-7899.265427351652f,-3385.5972247263626f}
-                /*new float[]{-1627f, 1817f, 1706f, -1361f, -1299f, -1786f, -706f, 1331f, -92f, 303f, -1602f, -1963f, -865f, -1516f, 910f, -2001f, 654f, 0f, -19f},
-                new float[]{-1917f, 1887f, 1714f, -1366f, -1069f, -1782f, -700f, 1331f, -79f, 304f, -1624f, -1971f, -794f, -1519f, 931f, -1996f, 654f, -7f, -13f},
-                new float[]{-1923f, 1890f, 1705f, -1353f, -1061f, -1794f, -709f, 1326f, -78f, 307f, -1621f, -1965f, -806f, 549f, 903f, -1990f, 655f, -13f, -5f},
-                new float[]{-1919f, 1882f, 1704f, -1369f, -1497f, -1783f, -704f, 1323f, -79f, 292f, -1612f, -1982f, -804f, 582f, 896f, -1981f, 671f, -6f, 4f},
-                new float[]{-1929f, 1902f, 1701f, -1362f, -1039f, -1796f, -696f, 1343f, -79f, 435f, -1612f, -1963f, -832f, 581f, 899f, -1924f, 668f, 2f, 6f},
-                new float[]{-1919f, 1883f, 1703f, -1360f, -1067f, -1777f, -702f, 1326f, -78f, 306f, -1614f, -1966f, -801f, 545f, 907f, -1992f, 644f, -6f, -13f},
-                new float[]{-1923f, 1891f, 1706f, -1353f, -1308f, -1779f, -696f, 1328f, -88f, 428f, -1619f, -1976f, -826f, 580f, 895f, -1932f, 642f, -8f, -3f},
-                new float[]{-1626f, 1805f, 1699f, -1361f, -1300f, -1796f, -707f, 1338f, -88f, 305f, -1614f, -1969f, -865f, -1514f, 896f, -2010f, 646f, -2f, -16f},
-                new float[]{-1916f, 1886f, 1699f, -1368f, -1069f, -1781f, -691f, 1339f, -92f, 308f, -1618f, -1978f, -808f, -1518f, 932f, -1990f, 652f, 4f, -13f},
-                new float[]{-1930f, 1878f, 1700f, -1356f, -1072f, -1780f, -702f, 1333f, -94f, 297f, -1618f, -1965f, -793f, 544f, 889f, -1992f, 653f, -10f, -8f},
-                new float[]{-1913f, 1889f, 1707f, -1353f, -1485f, -1783f, -711f, 1329f, -92f, 292f, -1613f, -1981f, -808f, 579f, 903f, -1981f, 688f, -11f, -7f},
-                new float[]{-1915f, 1900f, 1711f, -1349f, -1043f, -1792f, -704f, 1344f, -88f, 435f, -1631f, -1965f, -843f, 577f, 903f, -1941f, 670f, -8f, -2f},
-                new float[]{-1927f, 1891f, 1710f, -1369f, -1063f, -1795f, -716f, 1328f, -77f, 297f, -1627f, -1959f, -803f, 542f, 906f, -2003f, 639f, -15f, -11f},
-                new float[]{-1926f, 1887f, 1698f, -1360f, -1289f, -1794f, -692f, 1333f, -78f, 441f, -1625f, -1976f, -832f, 576f, 891f, -1937f, 640f, -13f, -2f}*/
+                new float[]{-1224f, -133f, -424f, -2026f, -832f, -663f, 0}
         };
         int choice = rand.nextInt(goodWeights.length);
         float[] weights = goodWeights[choice];
         if (weights.length != dim) {
-            generateRandomState(dim);
-            //throw new UnsupportedOperationException("ERROR!!! WRONG DIM!");
+            //generateRandomState(dim);
+            throw new UnsupportedOperationException("ERROR!!! WRONG DIM!");
         }
         return weights;
     }

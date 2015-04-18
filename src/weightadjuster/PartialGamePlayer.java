@@ -1,6 +1,4 @@
 package weightadjuster;
-import java.util.ArrayList;
-
 import main.PredeterminedState;
 import main.Sequence;
 import main.State;
